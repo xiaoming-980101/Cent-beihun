@@ -23,8 +23,12 @@ const Tasks = lazyWithReload(() => import("@/pages/tasks/Tasks"));
 const TaskCalendar = lazyWithReload(() => import("@/pages/tasks/TaskCalendar"));
 const Tools = lazyWithReload(() => import("@/pages/tools/Tools"));
 const GiftBook = lazyWithReload(() => import("@/pages/tools/GiftBook"));
-const GuestManagement = lazyWithReload(() => import("@/pages/tools/GuestManagement"));
-const WeddingBudget = lazyWithReload(() => import("@/pages/tools/WeddingBudget"));
+const GuestManagement = lazyWithReload(
+    () => import("@/pages/tools/GuestManagement"),
+);
+const WeddingBudget = lazyWithReload(
+    () => import("@/pages/tools/WeddingBudget"),
+);
 
 function RootRoute() {
     return (

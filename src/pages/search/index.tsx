@@ -225,7 +225,7 @@ export default function Page() {
         <div className="w-full h-full p-2 flex justify-center overflow-hidden page-show">
             <div className="h-full w-full px-2 max-w-[600px] flex flex-col">
                 <div className="search w-full flex justify-center pt-4">
-                    <div className="w-full h-10 shadow-md rounded-sm flex items-center px-4 focus-within:(shadow-lg)">
+                    <div className="w-full h-10 backdrop-blur-lg bg-white/80 dark:bg-stone-900/80 rounded-xl flex items-center px-4 shadow-sm border border-pink-200/20 dark:border-stone-700/30 focus-within:ring-2 focus-within:ring-pink-400/50 transition-all">
                         <div className="flex-1">
                             <Clearable
                                 visible={Boolean(form.comment?.length)}
@@ -240,7 +240,10 @@ export default function Page() {
                                     value={form.comment ?? ""}
                                     type="text"
                                     maxLength={50}
-                                    className="w-full bg-transparent outline-none"
+                                    className="w-full bg-transparent outline-none placeholder:text-gray-400 dark:placeholder:text-gray-500"
+                                    placeholder={t(
+                                        "search-comment-placeholder",
+                                    )}
                                     onChange={(e) => {
                                         setForm((v) => ({
                                             ...v,
@@ -252,7 +255,7 @@ export default function Page() {
                         </div>
                         <Button
                             variant="ghost"
-                            className="p-3 rounded-md"
+                            className="p-3 rounded-lg hover:bg-pink-100 dark:hover:bg-pink-900/30 text-pink-500 hover:text-pink-600 dark:text-pink-400 dark:hover:text-pink-300 transition-colors"
                             onClick={() => {
                                 toSearch();
                                 setTimeout(() => {
@@ -270,15 +273,21 @@ export default function Page() {
                     className="flex flex-col group pt-3 text-xs md:text-sm font-medium"
                 >
                     <Collapsible.Content className="data-[state=open]:animate-collapse-open data-[state=closed]:animate-collapse-close data-[state=closed]:overflow-hidden">
-                        <BillFilterForm form={form} setForm={setForm} />
+                        <div className="backdrop-blur-lg bg-white/80 dark:bg-stone-900/80 rounded-xl p-3 mb-2 shadow-sm border border-pink-200/20 dark:border-stone-700/30">
+                            <BillFilterForm form={form} setForm={setForm} />
+                        </div>
                     </Collapsible.Content>
                     <div className="w-full flex justify-between px-2 pt-1">
-                        <Button variant="ghost" onClick={toReset}>
+                        <Button
+                            variant="ghost"
+                            className="hover:bg-pink-100 dark:hover:bg-pink-900/30 text-pink-500 hover:text-pink-600 dark:text-pink-400 dark:hover:text-pink-300 transition-colors rounded-lg"
+                            onClick={toReset}
+                        >
                             {t("reset")}
                         </Button>
                         {searched && (
                             <Button
-                                className="text-xs underline animate-content-show"
+                                className="text-xs underline animate-content-show hover:bg-pink-100 dark:hover:bg-pink-900/30 text-pink-500 dark:text-pink-400 transition-colors rounded-lg"
                                 variant="ghost"
                                 size="sm"
                                 onClick={toSaveFilter}
@@ -293,7 +302,10 @@ export default function Page() {
                             content={"点击展开详细筛选面板"}
                         >
                             <Collapsible.Trigger asChild>
-                                <Button variant="ghost">
+                                <Button
+                                    variant="ghost"
+                                    className="hover:bg-pink-100 dark:hover:bg-pink-900/30 text-pink-500 hover:text-pink-600 dark:text-pink-400 transition-colors rounded-lg"
+                                >
                                     <i className="group-[[data-state=open]]:icon-[mdi--filter-variant-minus] group-[[data-state=closed]]:icon-[mdi--filter-variant-plus]"></i>
                                     {t("filter")}
                                 </Button>
@@ -303,8 +315,8 @@ export default function Page() {
                 </Collapsible.Root>
                 <div
                     className={cn(
-                        "flex items-center justify-between px-4 text-xs text-foreground/80",
-                        enableSelect && "pl-0",
+                        "backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl px-4 py-2 mx-2 text-xs text-foreground/80 shadow-sm border border-pink-200/20 dark:border-stone-700/30 flex items-center justify-between",
+                        enableSelect && "pl-2",
                     )}
                 >
                     <div className="flex gap-2 items-center">
@@ -312,7 +324,7 @@ export default function Page() {
                             <>
                                 {sorted.length > 0 && (
                                     <Button
-                                        className="p-1 h-fit"
+                                        className="p-1 h-fit hover:bg-pink-100 dark:hover:bg-pink-900/30 text-pink-500 hover:text-pink-600 dark:text-pink-400 transition-colors rounded-lg"
                                         variant={"ghost"}
                                         size="sm"
                                         onClick={() => {
@@ -322,7 +334,9 @@ export default function Page() {
                                         {t("multi-select")}
                                     </Button>
                                 )}
-                                {t("total-records", { n: sorted.length })}
+                                <span className="text-gray-600 dark:text-gray-300">
+                                    {t("total-records", { n: sorted.length })}
+                                </span>
                             </>
                         ) : (
                             <>
@@ -346,7 +360,7 @@ export default function Page() {
                                     }}
                                 ></Checkbox>
                                 <Button
-                                    className="p-1 h-fit"
+                                    className="p-1 h-fit hover:bg-gray-100 dark:hover:bg-stone-800 transition-colors rounded-lg"
                                     variant={"ghost"}
                                     size="sm"
                                     onClick={() => {
@@ -356,13 +370,13 @@ export default function Page() {
                                 >
                                     {t("cancel")}
                                 </Button>
-                                <span>
+                                <span className="text-pink-500 dark:text-pink-400 font-medium">
                                     {selectedIds.length}/{sorted.length}
                                 </span>
                                 {selectedIds.length > 0 && (
                                     <>
                                         <Button
-                                            className="p-1 h-fit"
+                                            className="p-1 h-fit hover:bg-pink-100 dark:hover:bg-pink-900/30 text-pink-500 hover:text-pink-600 dark:text-pink-400 transition-colors rounded-lg"
                                             variant={"ghost"}
                                             size="sm"
                                             onClick={toBatchEdit}
@@ -370,7 +384,7 @@ export default function Page() {
                                             {t("edit")}
                                         </Button>
                                         <Button
-                                            className="p-1 h-fit text-destructive"
+                                            className="p-1 h-fit text-destructive hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors rounded-lg"
                                             variant={"ghost"}
                                             size="sm"
                                             onClick={toBatchDelete}
@@ -386,6 +400,7 @@ export default function Page() {
                         <Button
                             size="sm"
                             variant="ghost"
+                            className="hover:bg-pink-100 dark:hover:bg-pink-900/30 text-pink-500 hover:text-pink-600 dark:text-pink-400 transition-colors rounded-lg"
                             onClick={() => {
                                 setSortIndex((v) => {
                                     if (v === SORTS.length - 1) {

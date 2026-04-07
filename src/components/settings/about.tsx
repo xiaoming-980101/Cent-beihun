@@ -89,7 +89,7 @@ export default function AboutSettingsItem() {
                     showAboutSettings();
                 }}
                 variant="ghost"
-                className="w-full py-4 rounded-none h-auto"
+                className="w-full py-4 rounded-none h-auto hover:bg-pink-50 dark:hover:bg-pink-900/10"
             >
                 <div className="w-full px-4 flex justify-between items-center">
                     <div className="flex items-center gap-2">
@@ -111,7 +111,7 @@ export function AdvancedGuideItem() {
             <a
                 href="https://glink25.github.io/post/Cent%E9%AB%98%E7%BA%A7%E8%AE%B0%E8%B4%A6%E6%8C%87%E5%8D%97/"
                 target="_blank"
-                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium hover:bg-accent hover:text-accent-foreground w-full p-4 rounded-none h-auto"
+                className="inline-flex items-center justify-center gap-2 whitespace-nowrap text-sm font-medium hover:bg-pink-50 dark:hover:bg-pink-900/10 w-full p-4 rounded-none h-auto"
                 rel="noopener"
             >
                 <div className="w-full px-4 flex justify-between items-center">

@@ -2,9 +2,6 @@
  * 亲友管理页面
  */
 
-import { useWeddingStore } from "@/store/wedding";
-import { RELATION_GROUPS, INVITE_STATUS } from "@/wedding/constants";
-import { GuestForm } from "@/wedding/components";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
@@ -12,10 +9,13 @@ import {
     Dialog,
     DialogContent,
     DialogHeader,
-    DialogTitle,
-    DialogPortal,
     DialogOverlay,
+    DialogPortal,
+    DialogTitle,
 } from "@/components/ui/dialog";
+import { useWeddingStore } from "@/store/wedding";
+import { GuestForm } from "@/wedding/components";
+import { INVITE_STATUS, RELATION_GROUPS } from "@/wedding/constants";
 
 export default function GuestManagement() {
     const navigate = useNavigate();
@@ -49,7 +49,7 @@ export default function GuestManagement() {
     return (
         <div className="flex flex-col h-full">
             {/* 顶部返回栏 */}
-            <div className="flex items-center p-3 border-b bg-white">
+            <div className="flex items-center p-3 border-b backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 border-white/20 dark:border-stone-700/30">
                 <button
                     onClick={() => navigate("/tools")}
                     className="flex items-center text-gray-600 hover:text-gray-900"
@@ -57,14 +57,29 @@ export default function GuestManagement() {
                     <i className="icon-[mdi--chevron-left] size-6" />
                     <span className="ml-1">返回</span>
                 </button>
-                <h1 className="flex-1 text-center font-semibold text-lg pr-16">亲友管理</h1>
+                <h1 className="flex-1 text-center font-semibold text-lg pr-16">
+                    亲友管理
+                </h1>
             </div>
             {/* 统计概览 */}
-            <div className="p-4 border-b">
-                <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-600">
-                        总人数: {totalCount} | 已确认: {confirmedCount}
-                    </span>
+            <div className="p-4">
+                <div className="bg-gradient-to-br from-pink-400 to-purple-500 dark:from-pink-600 dark:to-purple-700 rounded-xl shadow-lg p-4">
+                    <div className="flex justify-around items-center">
+                        <div className="text-center">
+                            <i className="icon-[mdi--account-group] size-6 text-white/80 mb-1" />
+                            <div className="text-white/80 text-xs">总人数</div>
+                            <div className="text-white font-bold text-xl">
+                                {totalCount}
+                            </div>
+                        </div>
+                        <div className="text-center">
+                            <i className="icon-[mdi--check-circle] size-6 text-white/80 mb-1" />
+                            <div className="text-white/80 text-xs">已确认</div>
+                            <div className="text-white font-bold text-xl">
+                                {confirmedCount}
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -73,14 +88,14 @@ export default function GuestManagement() {
                 <input
                     type="text"
                     placeholder="搜索姓名或电话..."
-                    className="w-full border rounded-lg px-3 py-2 text-sm"
+                    className="w-full backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl px-3 py-2 text-sm border border-white/20 dark:border-stone-700/30"
                     value={searchText}
                     onChange={(e) => setSearchText(e.target.value)}
                 />
                 <div className="flex gap-1 overflow-x-auto">
                     <button
                         className={`px-3 py-1 text-sm rounded-full whitespace-nowrap
-              ${filterRelation === "all" ? "bg-pink-500 text-white" : "bg-gray-100"}`}
+              ${filterRelation === "all" ? "bg-pink-500 dark:bg-pink-600 text-white" : "bg-white/50 dark:bg-stone-800/50 text-gray-600 dark:text-gray-400"}`}
                         onClick={() => setFilterRelation("all")}
                     >
                         全部
@@ -89,7 +104,7 @@ export default function GuestManagement() {
                         <button
                             key={group.id}
                             className={`px-3 py-1 text-sm rounded-full whitespace-nowrap
-                ${filterRelation === group.id ? "bg-pink-500 text-white" : "bg-gray-100"}`}
+                ${filterRelation === group.id ? "bg-pink-500 dark:bg-pink-600 text-white" : "bg-white/50 dark:bg-stone-800/50 text-gray-600 dark:text-gray-400"}`}
                             onClick={() => setFilterRelation(group.id)}
                         >
                             {group.name}
@@ -117,7 +132,7 @@ export default function GuestManagement() {
                             return (
                                 <div
                                     key={guest.id}
-                                    className="border rounded-lg p-3 bg-white shadow-sm"
+                                    className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-3 shadow-sm border border-white/20 dark:border-stone-700/30"
                                     onClick={() => {
                                         setEditingGuest(guest);
                                         setShowForm(true);
@@ -165,7 +180,7 @@ export default function GuestManagement() {
             {/* 添加按钮 */}
             <div className="p-4 border-t">
                 <Button
-                    className="w-full"
+                    className="w-full bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 text-white rounded-xl shadow-lg"
                     onClick={() => {
                         setEditingGuest(null);
                         setShowForm(true);

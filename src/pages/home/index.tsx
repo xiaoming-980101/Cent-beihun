@@ -33,8 +33,8 @@ import { denseDate } from "@/utils/time";
 import {
     CountdownCard,
     ProgressOverview,
-    UpcomingTasks,
     QuickEntry,
+    UpcomingTasks,
 } from "@/wedding/components";
 
 let ledgerAnimationShows = false;
@@ -135,21 +135,26 @@ export default function Page() {
         ledgerAnimationShows = true;
     }, []);
     // 初始化婚礼数据
-    const { weddingData, init: initWedding, initialized: weddingInitialized } = useWeddingStore();
+    const {
+        weddingData,
+        init: initWedding,
+        initialized: weddingInitialized,
+    } = useWeddingStore();
     useEffect(() => {
         if (!weddingInitialized) {
             initWedding();
         }
     }, [weddingInitialized, initWedding]);
 
-    const showWeddingSection = weddingData && (weddingData.engagementDate || weddingData.weddingDate);
+    const showWeddingSection =
+        weddingData && (weddingData.engagementDate || weddingData.weddingDate);
 
     return (
         <div className="w-full h-full p-2 flex flex-col overflow-hidden page-show">
             <div className="flex flex-wrap flex-col w-full gap-2">
                 {/* 婚礼筹备区域 */}
                 {showWeddingSection && (
-                    <div className="w-full space-y-2">
+                    <div className="w-full space-y-2 bg-gradient-to-br from-pink-50/50 to-purple-50/50 dark:from-pink-900/10 dark:to-purple-900/10 rounded-xl p-2">
                         <CountdownCard />
                         <div className="grid grid-cols-2 gap-2">
                             <ProgressOverview />
@@ -161,19 +166,19 @@ export default function Page() {
 
                 <div
                     data-today-overview
-                    className="bg-stone-800 text-background dark:bg-foreground/20 dark:text-foreground relative h-20 w-full flex justify-end rounded-lg sm:flex-1 p-4"
+                    className="backdrop-blur-lg bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 text-gray-800 dark:text-gray-100 relative h-20 w-full flex justify-end rounded-xl sm:flex-1 p-4 shadow-sm"
                 >
-                    <span className="absolute top-2 left-4">
+                    <span className="absolute top-2 left-4 text-gray-600 dark:text-gray-300">
                         {denseDate(currentDate)}
                     </span>
                     <AnimatedNumber
                         value={currentDateAmount}
-                        className="font-bold text-4xl "
+                        className="font-bold text-4xl text-gray-900 dark:text-gray-50"
                     />
                     {currentBook && (
                         <button
                             type="button"
-                            className="absolute bottom-2 left-4 text-xs opacity-60 flex items-center gap-1 cursor-pointer"
+                            className="absolute bottom-2 left-4 text-xs opacity-70 flex items-center gap-1 cursor-pointer text-gray-600 dark:text-gray-400"
                             onClick={() => {
                                 showBookGuide();
                             }}
@@ -184,7 +189,7 @@ export default function Page() {
                     )}
                 </div>
                 <Promotion />
-                <div className="w-full flex flex-col gap-1">
+                <div className="w-full flex flex-col gap-1 bg-gradient-to-br from-pink-50/30 to-purple-50/30 dark:from-pink-900/5 dark:to-purple-900/5 rounded-xl p-2">
                     <div
                         ref={budgetContainer}
                         className="w-full flex overflow-x-auto gap-2 scrollbar-hidden snap-mandatory snap-x"

@@ -264,6 +264,62 @@ button {
 	--current-tag-color: var(--tag-gray);
 }
 
+/* 婚礼主题颜色系统 (Wedding Theme Colors) */
+:root {
+	/* 主色 - 粉紫渐变系 */
+	--wedding-pink: #f472b6;
+	--wedding-pink-light: #fdf2f8;
+	--wedding-purple: #a855f7;
+	--wedding-purple-light: #f3e8ff;
+	--wedding-gradient: linear-gradient(135deg, #fdf2f8 0%, #f3e8ff 100%);
+	--wedding-gradient-pink-purple: linear-gradient(
+		90deg,
+		#f472b6 0%,
+		#a855f7 100%
+	);
+
+	/* 功能色 */
+	--color-success: #22c55e;
+	--color-error: #ef4444;
+	--color-warning: #f97316;
+	--color-info: #3b82f6;
+
+	/* 快捷入口图标色 */
+	--entry-color-pink: #f472b6;
+	--entry-color-purple: #a855f7;
+	--entry-color-blue: #3b82f6;
+	--entry-color-green: #22c55e;
+
+	/* 玻璃效果 */
+	--glass-bg: rgba(255, 255, 255, 0.7);
+	--glass-border: rgba(255, 255, 255, 0.2);
+}
+
+/* 婚礼主题深色模式 */
+.dark {
+	/* 主色 - 粉紫渐变系 (深色模式调整) */
+	--wedding-pink: #f472b6;
+	--wedding-pink-light: #1c1917;
+	--wedding-purple: #a855f7;
+	--wedding-purple-light: #27272a;
+	--wedding-gradient: linear-gradient(135deg, #1c1917 0%, #27272a 100%);
+	--wedding-gradient-pink-purple: linear-gradient(
+		90deg,
+		#f472b6 0%,
+		#a855f7 100%
+	);
+
+	/* 功能色 (深色模式保持) */
+	--color-success: #22c55e;
+	--color-error: #ef4444;
+	--color-warning: #f97316;
+	--color-info: #3b82f6;
+
+	/* 玻璃效果 */
+	--glass-bg: rgba(39, 39, 42, 0.7);
+	--glass-border: rgba(255, 255, 255, 0.1);
+}
+
 /* 图表分类 / 协作者系列色（ECharts 风格调色板，供 `src/utils/color.ts` 读取） */
 :root {
 	--category-color-1: #5470c6;
@@ -284,4 +340,24 @@ button {
 	--collaborator-color-7: var(--category-color-7);
 	--collaborator-color-8: var(--category-color-8);
 	--collaborator-color-9: var(--category-color-9);
+}
+
+/* 玻璃效果工具类 */
+.glass-card {
+	background: var(--glass-bg);
+	border: 1px solid var(--glass-border);
+	backdrop-filter: blur(10px);
+	-webkit-backdrop-filter: blur(10px);
+}
+
+/* 婚礼渐变背景 */
+.wedding-gradient-bg {
+	background: var(--wedding-gradient);
+}
+
+.wedding-gradient-text {
+	background: var(--wedding-gradient-pink-purple);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
 }

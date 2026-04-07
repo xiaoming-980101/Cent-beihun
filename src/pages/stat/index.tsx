@@ -275,7 +275,7 @@ export default function Page() {
         <div className="w-full h-full p-2 flex flex-col items-center justify-center gap-4 overflow-hidden page-show">
             <div className="w-full mx-2 max-w-[600px] flex flex-col gap-2">
                 <div className="w-full flex flex-col gap-2">
-                    <div className="w-full flex">
+                    <div className="w-full flex backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-2 shadow-sm">
                         <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hidden">
                             {allFilterViews.map((filter) => {
                                 const displayCurrency =
@@ -292,8 +292,8 @@ export default function Page() {
                                         size={"sm"}
                                         className={cn(
                                             filterViewId !== filter.id
-                                                ? "text-primary/50"
-                                                : "relative after:absolute after:bottom-[2px] after:left-3 after:w-[calc(100%-24px)] after:h-[2px] after:rounded-full after:bg-primary/20",
+                                                ? "text-gray-500 dark:text-gray-400"
+                                                : "text-pink-500 dark:text-pink-400 relative after:absolute after:bottom-[2px] after:left-3 after:w-[calc(100%-24px)] after:h-[2px] after:rounded-full after:bg-pink-500",
                                         )}
                                         variant="ghost"
                                         onClick={() => {
@@ -363,8 +363,8 @@ export default function Page() {
                     <Assistant env={envArg} />
                     {Part}
                     {tagStructure.length > 0 && (
-                        <div className="rounded-md border p-2 w-full flex flex-col">
-                            <h2 className="font-medium text-lg my-3 text-center">
+                        <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 shadow-sm border border-white/20 dark:border-stone-700/30 w-full flex flex-col">
+                            <h2 className="font-medium text-lg my-3 text-center text-pink-600 dark:text-pink-400">
                                 {t("tag-details")}
                             </h2>
                             <div className="table w-full border-collapse">
@@ -416,8 +416,8 @@ export default function Page() {
                         }
                     />
                     {analysis && (
-                        <div className="rounded-md border p-2 w-full flex flex-col">
-                            <h2 className="font-medium text-lg my-3 text-center">
+                        <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 shadow-sm border border-white/20 dark:border-stone-700/30 w-full flex flex-col">
+                            <h2 className="font-medium text-lg my-3 text-center text-pink-600 dark:text-pink-400">
                                 {t("analysis")}
                             </h2>
                             <AnalysisDetail
@@ -429,7 +429,7 @@ export default function Page() {
                     )}
                     <div className="w-full flex flex-col gap-4">
                         {dataSources.highestExpenseBill && (
-                            <div className="rounded-md border p-2">
+                            <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 shadow-sm border border-white/20 dark:border-stone-700/30">
                                 {t("highest-expense")}:
                                 <BillItem
                                     className="w-full"
@@ -444,7 +444,7 @@ export default function Page() {
                             </div>
                         )}
                         {dataSources.highestIncomeBill && (
-                            <div className="rounded-md border p-2">
+                            <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 shadow-sm border border-white/20 dark:border-stone-700/30">
                                 {t("highest-income")}:
                                 <BillItem
                                     className="w-full"
@@ -460,7 +460,7 @@ export default function Page() {
                         )}
                     </div>
                     <div>
-                        <Button variant="ghost" onClick={() => seeDetails()}>
+                        <Button variant="ghost" onClick={() => seeDetails()} className="text-pink-500 dark:text-pink-400 hover:bg-pink-100 dark:hover:bg-pink-900/30">
                             {t("see-all-ledgers")}
                             <i className="icon-[mdi--arrow-up-right]"></i>
                         </Button>

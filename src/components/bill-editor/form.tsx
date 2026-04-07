@@ -280,7 +280,7 @@ export default function EditorForm({
                     <div className="pl-[54px] w-full min-h-12 rounded-lg flex pt-2 pb-0 overflow-hidden scrollbar-hidden">
                         <div className="text-white">
                             <Switch.Root
-                                className="w-24 h-12 relative bg-stone-900 rounded-lg p-1 flex justify-center items-center"
+                                className="w-24 h-12 relative bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 rounded-lg p-1 flex justify-center items-center"
                                 checked={billState.type === "income"}
                                 onCheckedChange={() => {
                                     setBillState((v) => ({
@@ -296,7 +296,7 @@ export default function EditorForm({
                                     }));
                                 }}
                             >
-                                <Switch.Thumb className="w-1/2 h-full flex justify-center items-center transition-all rounded-md bg-semantic-expense -translate-x-[22px] data-[state=checked]:bg-semantic-income data-[state=checked]:translate-x-[21px]">
+                                <Switch.Thumb className="w-1/2 h-full flex justify-center items-center transition-all rounded-lg bg-semantic-expense -translate-x-[22px] data-[state=checked]:bg-semantic-income data-[state=checked]:translate-x-[21px]">
                                     <span className="text-[8px]">
                                         {billState.type === "expense"
                                             ? t("expense")
@@ -305,7 +305,7 @@ export default function EditorForm({
                                 </Switch.Thumb>
                             </Switch.Root>
                         </div>
-                        <div className="flex-1 flex bg-stone-400 focus:outline rounded-lg ml-2 px-2 relative">
+                        <div className="flex-1 flex backdrop-blur-lg bg-white/20 dark:bg-black/20 focus:outline rounded-lg ml-2 px-2 relative">
                             {quickCurrencies.length > 0 && (
                                 <Select
                                     value={targetCurrency?.id}
@@ -370,7 +370,7 @@ export default function EditorForm({
             >
                 {/* categories */}
                 <div className="flex-1 flex-shrink-0 overflow-y-auto min-h-[80px] scrollbar-hidden flex flex-col px-2 text-sm font-medium gap-2">
-                    <div className="flex flex-col min-h-[80px] grow-[2] shrink overflow-y-auto scrollbar-hidden w-full">
+                    <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-2 m-1 flex flex-col min-h-[80px] grow-[2] shrink overflow-y-auto scrollbar-hidden w-full">
                         <div
                             className={cn(
                                 "grid gap-1",
@@ -402,7 +402,7 @@ export default function EditorForm({
                         </div>
                     </div>
                     {(subCategories?.length ?? 0) > 0 && (
-                        <div className="flex flex-col min-h-[68px] grow-[1] shrink max-h-fit overflow-y-auto rounded-md border p-2 shadow scrollbar-hidden">
+                        <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl border p-2 shadow scrollbar-hidden flex flex-col min-h-[68px] grow-[1] shrink max-h-fit overflow-y-auto">
                             <div
                                 className={cn(
                                     "grid gap-1",
@@ -434,7 +434,7 @@ export default function EditorForm({
                 {/* tags */}
                 <div
                     ref={tagSelectorRef}
-                    className="w-full h-[40px] flex-shrink-0 flex-grow-0 flex gap-1 py-1 items-center overflow-x-auto px-2 text-sm font-medium scrollbar-hidden"
+                    className="w-full h-[40px] flex-shrink-0 flex-grow-0 backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl flex gap-1 py-1 items-center overflow-x-auto px-2 text-sm font-medium scrollbar-hidden"
                 >
                     <TagGroupSelector
                         isCreate={isCreate}
@@ -452,7 +452,7 @@ export default function EditorForm({
                     <button
                         type="button"
                         className={cn(
-                            `rounded-lg border py-1 px-2 h-8 flex gap-2 items-center justify-center whitespace-nowrap cursor-pointer`,
+                            `rounded-lg border py-1 px-2 h-8 flex gap-2 items-center justify-center whitespace-nowrap cursor-pointer hover:bg-pink-100 dark:hover:bg-pink-900/30`,
                         )}
                         onClick={() => {
                             showTagList();
@@ -467,7 +467,7 @@ export default function EditorForm({
                 <div
                     className={cn(
                         "h-[calc(480px+160px*(var(--bekh,0.5)-0.5))] sm:h-[calc(380px+160px*(var(--bekh,0.5)-0.5))] min-h-[264px] max-h-[calc(100%-124px)]",
-                        "keyboard-field relative flex gap-2 flex-col justify-start bg-stone-900 sm:rounded-b-md text-[white] p-2 pb-[max(env(safe-area-inset-bottom),8px)]",
+                        "keyboard-field relative flex gap-2 flex-col justify-start bg-gradient-to-br from-pink-600 to-purple-600 dark:from-pink-700 dark:to-purple-700 sm:rounded-b-md text-[white] p-2 pb-[max(env(safe-area-inset-bottom),8px)]",
                     )}
                 >
                     <ResizeHandle />
@@ -604,7 +604,7 @@ export default function EditorForm({
 
                     <button
                         type="button"
-                        className="flex h-[80px] min-h-[48px] justify-center items-center bg-green-700 rounded-lg font-bold text-lg cursor-pointer"
+                        className="flex h-[80px] min-h-[48px] justify-center items-center bg-gradient-to-r from-pink-400 to-purple-500 dark:from-pink-500 dark:to-purple-600 rounded-xl shadow-lg font-bold text-lg cursor-pointer"
                         onClick={toConfirm}
                     >
                         <i className="icon-[mdi--check] icon-md"></i>

@@ -41,17 +41,17 @@ function UserInfo() {
         location.reload();
     };
     return (
-        <div className="flex items-center justify-between gap-2 px-8 py-4">
+        <div className="flex items-center justify-between gap-2 px-4 py-4 m-2 backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl shadow-sm border border-white/20 dark:border-stone-700/30">
             <div className="flex-1 flex items-center gap-2 overflow-hidden">
                 <img
                     src={avatar_url}
                     alt={`${id}`}
-                    className="w-12 h-12 rounded-full border"
+                    className="w-12 h-12 rounded-full border border-pink-200 dark:border-pink-800"
                 />
 
                 <div className="flex flex-col overflow-hidden">
                     <div className="flex">
-                        <div className="font-semibold flex-1 truncate">
+                        <div className="font-semibold flex-1 truncate text-pink-600 dark:text-pink-400">
                             {name}
                         </div>
                         <div
@@ -79,7 +79,7 @@ function UserInfo() {
                         {t("re-login")}
                     </Button>
                 )}
-                <Button size="sm" variant="destructive" onClick={toLogOut}>
+                <Button size="sm" className="bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 dark:hover:from-pink-700 dark:hover:to-purple-700" onClick={toLogOut}>
                     {t("logout")}
                 </Button>
             </div>
@@ -108,10 +108,10 @@ export default function SettingsForm({
                 <UserInfo />
                 <div className="flex-1 overflow-y-auto flex flex-col py-4">
                     <div>
-                        <div className="text-xs opacity-60 px-8">
+                        <div className="text-xs px-6 py-2 text-pink-500/80 dark:text-pink-400/80 font-medium">
                             {t("book-settings")}
                         </div>
-                        <div className="flex flex-col divide-y">
+                        <div className="flex flex-col divide-y backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl m-2 shadow-sm border border-white/20 dark:border-stone-700/30">
                             <BookSettings />
                             <PresetSettingsItem />
                             <UserSettingsItem />
@@ -119,18 +119,18 @@ export default function SettingsForm({
                         </div>
                     </div>
                     <div>
-                        <div className="text-xs opacity-60 px-8">{t("ai")}</div>
-                        <div className="flex flex-col divide-y">
+                        <div className="text-xs px-6 py-2 text-pink-500/80 dark:text-pink-400/80 font-medium">{t("ai")}</div>
+                        <div className="flex flex-col divide-y backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl m-2 shadow-sm border border-white/20 dark:border-stone-700/30">
                             <AssistantSettingsItem />
                             {showRelyr && <QuickEntrySettingsItem />}
                             <VoiceSettingsItem />
                         </div>
                     </div>
                     <div>
-                        <div className="text-xs opacity-60 px-8">
+                        <div className="text-xs px-6 py-2 text-pink-500/80 dark:text-pink-400/80 font-medium">
                             {t("billing-functions")}
                         </div>
-                        <div className="flex flex-col divide-y">
+                        <div className="flex flex-col divide-y backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl m-2 shadow-sm border border-white/20 dark:border-stone-700/30">
                             <CategorySettingsItem />
                             <TagSettingsItem />
                             <Budget />
@@ -140,10 +140,10 @@ export default function SettingsForm({
                     </div>
 
                     <div>
-                        <div className="text-xs opacity-60 px-8">
+                        <div className="text-xs px-6 py-2 text-pink-500/80 dark:text-pink-400/80 font-medium">
                             {t("other-settings")}
                         </div>
-                        <div className="flex flex-col divide-y">
+                        <div className="flex flex-col divide-y backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl m-2 shadow-sm border border-white/20 dark:border-stone-700/30">
                             <MapSettingsItem />
                             <LabSettingsItem />
                             <AboutSettingsItem />

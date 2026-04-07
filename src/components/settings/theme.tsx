@@ -12,7 +12,7 @@ export default function ThemeSettingsItem() {
     const t = useIntl();
     const { theme, setTheme } = useTheme();
     return (
-        <div className="w-full px-4 py-1 text-sm">
+        <div className="w-full px-4 py-1 text-sm hover:bg-pink-50 dark:hover:bg-pink-900/10 rounded-lg">
             <div className="w-full px-4 flex justify-between items-center text-sm font-medium">
                 <div className="flex items-center gap-2">
                     <i className="icon-[mdi--clothes-hanger] size-5"></i>

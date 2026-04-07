@@ -12,7 +12,7 @@ export default function LanguageSettingsItem() {
     const t = useIntl();
     const { locale, setLocale } = useLocale();
     return (
-        <div className="w-full px-4 py-1 text-sm">
+        <div className="w-full px-4 py-1 text-sm hover:bg-pink-50 dark:hover:bg-pink-900/10 rounded-lg">
             <div className="w-full px-4 flex justify-between items-center text-sm font-medium">
                 <div className="flex items-center gap-2">
                     <i className="icon-[mdi--language] size-5"></i>

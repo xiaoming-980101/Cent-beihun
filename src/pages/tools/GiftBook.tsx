@@ -2,10 +2,6 @@
  * 礼金簿页面
  */
 
-import { useWeddingStore } from "@/store/wedding";
-import { calculateGiftStats, formatAmount } from "@/wedding/utils";
-import { GIFT_EVENTS, PAYMENT_METHODS } from "@/wedding/constants";
-import { GiftForm } from "@/wedding/components";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
@@ -13,10 +9,14 @@ import {
     Dialog,
     DialogContent,
     DialogHeader,
-    DialogTitle,
-    DialogPortal,
     DialogOverlay,
+    DialogPortal,
+    DialogTitle,
 } from "@/components/ui/dialog";
+import { useWeddingStore } from "@/store/wedding";
+import { GiftForm } from "@/wedding/components";
+import { GIFT_EVENTS, PAYMENT_METHODS } from "@/wedding/constants";
+import { calculateGiftStats, formatAmount } from "@/wedding/utils";
 
 export default function GiftBook() {
     const navigate = useNavigate();
@@ -39,36 +39,36 @@ export default function GiftBook() {
     return (
         <div className="flex flex-col h-full">
             {/* 顶部返回栏 */}
-            <div className="flex items-center p-3 border-b bg-white">
+            <div className="flex items-center p-3 border-b backdrop-blur-lg bg-white/70 dark:bg-stone-900/70">
                 <button
                     onClick={() => navigate("/tools")}
-                    className="flex items-center text-gray-600 hover:text-gray-900"
+                    className="flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
                 >
                     <i className="icon-[mdi--chevron-left] size-6" />
                     <span className="ml-1">返回</span>
                 </button>
-                <h1 className="flex-1 text-center font-semibold text-lg pr-16">礼金簿</h1>
+                <h1 className="flex-1 text-center font-semibold text-lg pr-16 dark:text-white">
+                    礼金簿
+                </h1>
             </div>
             {/* 统计概览 */}
-            <div className="p-4 border-b bg-gradient-to-r from-pink-50 to-purple-50">
+            <div className="p-4 bg-gradient-to-br from-pink-400 to-purple-500 dark:from-pink-600 dark:to-purple-700 rounded-xl shadow-lg mx-4 mt-2">
                 <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
-                        <div className="text-sm text-gray-600">收礼总额</div>
-                        <div className="text-xl font-bold text-green-600">
+                        <div className="text-sm text-white/80">收礼总额</div>
+                        <div className="text-xl text-white font-bold">
                             {formatAmount(stats.receivedTotal)}
                         </div>
                     </div>
                     <div>
-                        <div className="text-sm text-gray-600">送礼总额</div>
-                        <div className="text-xl font-bold text-red-500">
+                        <div className="text-sm text-white/80">送礼总额</div>
+                        <div className="text-xl text-white font-bold">
                             {formatAmount(stats.sentTotal)}
                         </div>
                     </div>
                     <div>
-                        <div className="text-sm text-gray-600">净收入</div>
-                        <div
-                            className={`text-xl font-bold ${stats.netIncome >= 0 ? "text-green-600" : "text-red-500"}`}
-                        >
+                        <div className="text-sm text-white/80">净收入</div>
+                        <div className="text-xl text-white font-bold">
                             {formatAmount(stats.netIncome)}
                         </div>
                     </div>
@@ -76,25 +76,27 @@ export default function GiftBook() {
             </div>
 
             {/* 类型切换 */}
-            <div className="p-2 border-b flex gap-1">
-                {(["all", "received", "sent"] as const).map((type) => (
-                    <button
-                        key={type}
-                        className={`flex-1 py-2 text-sm rounded-lg transition-colors
+            <div className="p-4">
+                <div className="bg-white/10 dark:bg-white/5 rounded-xl p-1 flex gap-1">
+                    {(["all", "received", "sent"] as const).map((type) => (
+                        <button
+                            key={type}
+                            className={`flex-1 py-2 text-sm rounded-lg transition-colors
               ${
                   filterType === type
-                      ? "bg-pink-500 text-white"
-                      : "bg-gray-100 hover:bg-gray-200"
+                      ? "bg-white/20 dark:bg-white/10 text-white"
+                      : "text-white/70"
               }`}
-                        onClick={() => setFilterType(type)}
-                    >
-                        {type === "all"
-                            ? "全部"
-                            : type === "received"
-                              ? "收礼"
-                              : "送礼"}
-                    </button>
-                ))}
+                            onClick={() => setFilterType(type)}
+                        >
+                            {type === "all"
+                                ? "全部"
+                                : type === "received"
+                                  ? "收礼"
+                                  : "送礼"}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* 记录列表 */}
@@ -115,7 +117,7 @@ export default function GiftBook() {
                             return (
                                 <div
                                     key={record.id}
-                                    className="border rounded-lg p-3 bg-white shadow-sm"
+                                    className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-3 shadow-sm border border-white/20 dark:border-stone-700/30"
                                 >
                                     <div className="flex justify-between items-start">
                                         <div>
@@ -152,9 +154,9 @@ export default function GiftBook() {
             </div>
 
             {/* 添加按钮 */}
-            <div className="p-4 border-t">
+            <div className="p-4">
                 <Button
-                    className="w-full"
+                    className="w-full bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 text-white rounded-xl shadow-lg"
                     onClick={() => {
                         setEditingRecord(null);
                         setShowForm(true);
@@ -176,7 +178,9 @@ export default function GiftBook() {
                         >
                             <DialogHeader>
                                 <DialogTitle className="text-lg font-semibold border-b pb-3 mb-4 pt-2 pl-1">
-                                    {editingRecord ? "编辑礼金记录" : "添加礼金记录"}
+                                    {editingRecord
+                                        ? "编辑礼金记录"
+                                        : "添加礼金记录"}
                                 </DialogTitle>
                             </DialogHeader>
                             <GiftForm

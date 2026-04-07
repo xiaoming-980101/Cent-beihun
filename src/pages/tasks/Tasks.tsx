@@ -2,30 +2,30 @@
  * 任务列表页
  */
 
-import { useWeddingStore } from "@/store/wedding";
-import {
-    TASK_CATEGORIES,
-    TASK_PRIORITIES,
-    TASK_STATUSES,
-} from "@/wedding/constants";
-import { getCategoryName, getCategoryIcon } from "@/wedding/utils";
-import { TaskForm } from "@/wedding/components";
-import type {
-    WeddingTask,
-    TaskCategory,
-    TaskPriority,
-    TaskStatus,
-} from "@/wedding/type";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
     DialogHeader,
-    DialogTitle,
-    DialogPortal,
     DialogOverlay,
+    DialogPortal,
+    DialogTitle,
 } from "@/components/ui/dialog";
+import { useWeddingStore } from "@/store/wedding";
+import { TaskForm } from "@/wedding/components";
+import {
+    TASK_CATEGORIES,
+    TASK_PRIORITIES,
+    TASK_STATUSES,
+} from "@/wedding/constants";
+import type {
+    TaskCategory,
+    TaskPriority,
+    TaskStatus,
+    WeddingTask,
+} from "@/wedding/type";
+import { getCategoryIcon, getCategoryName } from "@/wedding/utils";
 
 export default function Tasks() {
     const { weddingData, addTask, updateTask, deleteTask } = useWeddingStore();
@@ -52,25 +52,25 @@ export default function Tasks() {
     return (
         <div className="flex flex-col h-full">
             {/* 进度条 */}
-            <div className="p-4 border-b">
+            <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 m-2 shadow-sm border border-white/20 dark:border-stone-700/30">
                 <div className="flex justify-between text-sm mb-2">
                     <span>
                         进度: {completedCount}/{totalCount} 完成
                     </span>
                     <span>{progress}%</span>
                 </div>
-                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-gray-200/50 dark:bg-gray-700/50 rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-green-500 transition-all"
+                        className="h-full bg-gradient-to-r from-pink-400 to-purple-400 dark:from-pink-500 dark:to-purple-500 rounded-full transition-all"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
             </div>
 
             {/* 筛选器 */}
-            <div className="p-4 border-b flex gap-2 flex-wrap">
+            <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 m-2 shadow-sm border border-white/20 dark:border-stone-700/30 flex gap-2 flex-wrap">
                 <select
-                    className="border rounded px-2 py-1 text-sm"
+                    className="bg-white/50 dark:bg-stone-800/50 rounded-lg border border-white/20 dark:border-stone-700/30 px-3 py-2 text-sm"
                     value={filterCategory}
                     onChange={(e) => setFilterCategory(e.target.value)}
                 >
@@ -83,7 +83,7 @@ export default function Tasks() {
                 </select>
 
                 <select
-                    className="border rounded px-2 py-1 text-sm"
+                    className="bg-white/50 dark:bg-stone-800/50 rounded-lg border border-white/20 dark:border-stone-700/30 px-3 py-2 text-sm"
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                 >
@@ -97,6 +97,7 @@ export default function Tasks() {
 
                 <Button
                     size="sm"
+                    className="bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 text-white rounded-lg shadow-md"
                     onClick={() => {
                         setEditingTask(null);
                         setShowForm(true);
@@ -110,7 +111,7 @@ export default function Tasks() {
             {/* 任务列表 */}
             <div className="flex-1 overflow-y-auto p-4">
                 {filteredTasks.length === 0 ? (
-                    <div className="text-center text-gray-500 py-8">
+                    <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 m-2 shadow-sm border border-white/20 dark:border-stone-700/30 text-center text-gray-500 py-8">
                         暂无任务
                     </div>
                 ) : (
@@ -179,18 +180,22 @@ function TaskItem({
     const priorityInfo = TASK_PRIORITIES.find((p) => p.id === task.priority);
     const statusInfo = TASK_STATUSES.find((s) => s.id === task.status);
 
+    const getStatusColor = (status: TaskStatus) => {
+        if (status === "completed") return "bg-green-500 border-green-500";
+        if (status === "in_progress") return "bg-pink-500 border-pink-500";
+        return "bg-purple-400 border-purple-400";
+    };
+
     return (
         <div
-            className="border rounded-lg p-3 bg-white shadow-sm"
+            className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-3 shadow-sm border border-white/20 dark:border-stone-700/30 hover:shadow-md transition-shadow"
             onClick={onEdit}
         >
             <div className="flex items-start gap-3">
                 {/* 状态切换 */}
                 <button
                     onClick={onToggleStatus}
-                    className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center
-            ${task.status === "completed" ? "bg-green-500 border-green-500" : "border-gray-300"}
-          `}
+                    className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center ${getStatusColor(task.status)}`}
                 >
                     {task.status === "completed" && (
                         <i className="icon-[mdi--check] text-white text-sm" />

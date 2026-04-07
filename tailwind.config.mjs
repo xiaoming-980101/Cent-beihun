@@ -19,6 +19,24 @@ module.exports = {
                     "income-medium": "var(--color-income-medium-legacy)",
                     "income-muted": "var(--color-income-400)",
                 },
+                // Wedding theme colors
+                wedding: {
+                    pink: "var(--wedding-pink)",
+                    "pink-light": "var(--wedding-pink-light)",
+                    purple: "var(--wedding-purple)",
+                    "purple-light": "var(--wedding-purple-light)",
+                },
+                // Functional colors
+                success: "var(--color-success)",
+                error: "var(--color-error)",
+                warning: "var(--color-warning)",
+                info: "var(--color-info)",
+            },
+            // Gradient backgrounds
+            backgroundImage: {
+                "wedding-gradient": "var(--wedding-gradient)",
+                "wedding-gradient-pink-purple":
+                    "var(--wedding-gradient-pink-purple)",
             },
             keyframes: {
                 "overlay-show": {
@@ -95,6 +113,23 @@ module.exports = {
                     "-ms-overflow-style": "none",
                     /* 针对 Firefox */
                     "scrollbar-width": "none",
+                },
+                // Glass effect utilities
+                ".glass-card": {
+                    background: "var(--glass-bg)",
+                    border: "1px solid var(--glass-border)",
+                    "backdrop-filter": "blur(10px)",
+                    "-webkit-backdrop-filter": "blur(10px)",
+                },
+                // Wedding gradient utilities
+                ".wedding-gradient-bg": {
+                    background: "var(--wedding-gradient)",
+                },
+                ".wedding-gradient-text": {
+                    background: "var(--wedding-gradient-pink-purple)",
+                    "-webkit-background-clip": "text",
+                    "-webkit-text-fill-color": "transparent",
+                    "background-clip": "text",
                 },
             });
         }),

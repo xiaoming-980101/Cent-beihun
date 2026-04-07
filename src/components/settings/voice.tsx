@@ -125,7 +125,7 @@ export default function VoiceSettingsItem() {
                     showVoiceSettings();
                 }}
                 variant="ghost"
-                className="w-full py-4 rounded-none h-auto"
+                className="w-full py-4 rounded-none h-auto hover:bg-pink-50 dark:hover:bg-pink-900/10"
             >
                 <div className="w-full px-4 flex justify-between items-center">
                     <div className={`${betaClassName} flex items-center gap-2`}>
