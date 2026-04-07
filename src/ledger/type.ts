@@ -106,6 +106,9 @@ export type BillTag = {
     preferCurrency?: string;
 };
 
+// 导入婚礼数据类型
+import type { WeddingData } from "@/wedding/type";
+
 // 全局文件配置
 export type GlobalMeta = {
     // 自定义过滤器，可以略过
@@ -126,6 +129,8 @@ export type GlobalMeta = {
         amapKey?: string;
         amapSecurityCode?: string;
     };
+    // 婚礼筹备数据
+    wedding?: WeddingData;
 };
 
 // 这是最终导出的核心JSON数据结构，使用这个数据结构可以直接被解析成可以识别的数据

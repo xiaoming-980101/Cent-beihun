@@ -26,9 +26,16 @@ import { useBookStore } from "@/store/book";
 import { useLedgerStore } from "@/store/ledger";
 import { usePreferenceStore } from "@/store/preference";
 import { useUserStore } from "@/store/user";
+import { useWeddingStore } from "@/store/wedding";
 import { cn } from "@/utils";
 import { filterOrderedBillListByTimeRange } from "@/utils/filter";
 import { denseDate } from "@/utils/time";
+import {
+    CountdownCard,
+    ProgressOverview,
+    UpcomingTasks,
+    QuickEntry,
+} from "@/wedding/components";
 
 let ledgerAnimationShows = false;
 
@@ -127,9 +134,31 @@ export default function Page() {
     useEffect(() => {
         ledgerAnimationShows = true;
     }, []);
+    // 初始化婚礼数据
+    const { weddingData, init: initWedding, initialized: weddingInitialized } = useWeddingStore();
+    useEffect(() => {
+        if (!weddingInitialized) {
+            initWedding();
+        }
+    }, [weddingInitialized, initWedding]);
+
+    const showWeddingSection = weddingData && (weddingData.engagementDate || weddingData.weddingDate);
+
     return (
         <div className="w-full h-full p-2 flex flex-col overflow-hidden page-show">
             <div className="flex flex-wrap flex-col w-full gap-2">
+                {/* 婚礼筹备区域 */}
+                {showWeddingSection && (
+                    <div className="w-full space-y-2">
+                        <CountdownCard />
+                        <div className="grid grid-cols-2 gap-2">
+                            <ProgressOverview />
+                            <QuickEntry />
+                        </div>
+                        <UpcomingTasks />
+                    </div>
+                )}
+
                 <div
                     data-today-overview
                     className="bg-stone-800 text-background dark:bg-foreground/20 dark:text-foreground relative h-20 w-full flex justify-end rounded-lg sm:flex-1 p-4"
