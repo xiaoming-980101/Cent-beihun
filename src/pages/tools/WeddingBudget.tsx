@@ -40,9 +40,9 @@ export default function WeddingBudget() {
     const remaining = totalBudget - totalPaid;
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-background">
             {/* 顶部返回栏 */}
-            <div className="flex items-center p-3 border-b backdrop-blur-lg bg-white/70 dark:bg-stone-900/70">
+            <div className="flex items-center p-3 border-b border-pink-100/50 dark:border-white/10 bg-card">
                 <button
                     onClick={() => navigate("/tools")}
                     className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
@@ -50,7 +50,7 @@ export default function WeddingBudget() {
                     <i className="icon-[mdi--chevron-left] size-6" />
                     <span className="ml-1">返回</span>
                 </button>
-                <h1 className="flex-1 text-center font-semibold text-lg pr-16 dark:text-white">
+                <h1 className="flex-1 text-center font-semibold text-lg pr-16 text-[#544249] dark:text-white">
                     婚礼预算
                 </h1>
             </div>
@@ -110,8 +110,8 @@ export default function WeddingBudget() {
                             key={status}
                             className={`px-4 py-1.5 text-sm whitespace-nowrap transition-all ${
                                 filterStatus === status
-                                    ? "bg-pink-500 dark:bg-pink-600 text-white rounded-full shadow-sm"
-                                    : "bg-white/50 dark:bg-stone-800/50 text-gray-600 dark:text-gray-400 rounded-full"
+                                    ? "bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 text-white rounded-full shadow-sm"
+                                    : "bg-card border border-pink-100/50 dark:border-white/10 text-[#544249] dark:text-gray-300 rounded-full"
                             }`}
                             onClick={() => setFilterStatus(status)}
                         >
@@ -127,7 +127,7 @@ export default function WeddingBudget() {
             {/* 预算列表 */}
             <div className="flex-1 overflow-y-auto p-4">
                 {filteredBudgets.length === 0 ? (
-                    <div className="text-center text-gray-500 dark:text-gray-400 py-8">
+                    <div className="text-center text-[#6b7280] dark:text-gray-400 py-8">
                         暂无预算记录
                     </div>
                 ) : (
@@ -147,7 +147,7 @@ export default function WeddingBudget() {
                             return (
                                 <div
                                     key={budget.id}
-                                    className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-3 shadow-sm border border-white/20 dark:border-stone-700/30 active:bg-white/90 dark:active:bg-stone-900/90 cursor-pointer"
+                                    className="bg-card rounded-xl p-3 shadow-sm border border-pink-100/50 dark:border-white/10 cursor-pointer"
                                     onClick={() => {
                                         setEditingBudget(budget);
                                         setShowForm(true);
@@ -155,10 +155,10 @@ export default function WeddingBudget() {
                                 >
                                     <div className="flex justify-between items-start mb-2">
                                         <div>
-                                            <div className="font-medium dark:text-white">
+                                            <div className="font-medium text-[#544249] dark:text-white">
                                                 {budget.category}
                                             </div>
-                                            <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                                            <div className="text-xs text-[#6b7280] dark:text-gray-400 mt-1">
                                                 {budget.vendor &&
                                                     `${budget.vendor}`}
                                                 {budget.vendorPhone &&
@@ -177,7 +177,7 @@ export default function WeddingBudget() {
 
                                     {/* 进度条 */}
                                     <div className="mb-2">
-                                        <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 mb-1">
+                                        <div className="flex justify-between text-xs text-[#6b7280] dark:text-gray-400 mb-1">
                                             <span>
                                                 已付:{" "}
                                                 {formatAmount(budget.spent)}
@@ -191,11 +191,11 @@ export default function WeddingBudget() {
                                             <div
                                                 className={`h-full transition-all rounded-full ${
                                                     budgetStatus.isOverBudget
-                                                        ? "bg-red-500"
+                                                        ? "bg-gradient-to-r from-red-400 to-red-500"
                                                         : budgetStatus.remaining <
                                                             budget.budget * 0.1
-                                                          ? "bg-orange-500"
-                                                          : "bg-green-500"
+                                                          ? "bg-gradient-to-r from-orange-400 to-orange-500"
+                                                          : "bg-gradient-to-r from-pink-400 to-purple-500"
                                                 }`}
                                                 style={{
                                                     width: `${Math.min(progress, 100)}%`,
@@ -217,7 +217,7 @@ export default function WeddingBudget() {
                                             )}
                                         {budget.balance &&
                                             budget.balance > 0 && (
-                                                <span className="text-gray-500 dark:text-gray-400">
+                                                <span className="text-[#6b7280] dark:text-gray-400">
                                                     尾款:{" "}
                                                     {formatAmount(
                                                         budget.balance,
@@ -225,7 +225,7 @@ export default function WeddingBudget() {
                                                 </span>
                                             )}
                                         {budget.dueDate && (
-                                            <span className="text-gray-400 dark:text-gray-500">
+                                            <span className="text-[#6b7280] dark:text-gray-500">
                                                 截止:{" "}
                                                 {new Date(
                                                     budget.dueDate,
@@ -264,7 +264,7 @@ export default function WeddingBudget() {
                             onInteractOutside={() => setShowForm(false)}
                         >
                             <DialogHeader>
-                                <DialogTitle className="text-lg font-semibold border-b pb-3 mb-4 pt-2 pl-1">
+                                <DialogTitle className="text-lg font-semibold border-b border-pink-100/50 dark:border-white/10 pb-3 mb-4 pt-2 pl-1 text-[#544249] dark:text-white">
                                     {editingBudget ? "编辑预算" : "添加预算"}
                                 </DialogTitle>
                             </DialogHeader>

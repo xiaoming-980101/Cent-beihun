@@ -15,17 +15,19 @@ export function UpcomingTasks() {
 
     if (upcomingTasks.length === 0) {
         return (
-            <div className="bg-white rounded-xl p-4 shadow-sm border">
+            <div className="bg-card rounded-xl border border-border shadow-sm p-4">
                 <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-gray-600">近期待办</span>
+                    <span className="text-sm text-muted-foreground">
+                        近期待办
+                    </span>
                     <button
-                        className="text-xs text-pink-500"
+                        className="text-xs text-primary"
                         onClick={() => navigate("/tasks")}
                     >
                         查看全部
                     </button>
                 </div>
-                <div className="text-center text-gray-400 py-4 text-sm">
+                <div className="text-center text-muted-foreground py-4 text-sm">
                     暂无待办任务
                 </div>
             </div>
@@ -33,11 +35,11 @@ export function UpcomingTasks() {
     }
 
     return (
-        <div className="bg-white rounded-xl p-4 shadow-sm border">
+        <div className="bg-card rounded-xl border border-border shadow-sm p-4">
             <div className="flex justify-between items-center mb-3">
-                <span className="text-sm text-gray-600">近期待办</span>
+                <span className="text-sm text-muted-foreground">近期待办</span>
                 <button
-                    className="text-xs text-pink-500"
+                    className="text-xs text-primary"
                     onClick={() => navigate("/tasks")}
                 >
                     查看全部
@@ -59,17 +61,17 @@ export function UpcomingTasks() {
                     return (
                         <div
                             key={task.id}
-                            className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 hover:bg-gray-100 cursor-pointer"
+                            className="flex items-center gap-2 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer"
                             onClick={() => navigate("/tasks")}
                         >
                             <i
-                                className={`${getCategoryIcon(task.category)} text-lg text-pink-500`}
+                                className={`${getCategoryIcon(task.category)} text-lg text-primary`}
                             />
                             <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium truncate">
+                                <div className="text-sm font-medium text-foreground truncate">
                                     {task.title}
                                 </div>
-                                <div className="text-xs text-gray-400">
+                                <div className="text-xs text-muted-foreground">
                                     {deadline && deadline.toLocaleDateString()}
                                 </div>
                             </div>
@@ -77,10 +79,10 @@ export function UpcomingTasks() {
                                 <span
                                     className={`text-xs px-1.5 py-0.5 rounded ${
                                         daysLeft <= 1
-                                            ? "bg-red-100 text-red-500"
+                                            ? "bg-destructive/10 text-destructive"
                                             : daysLeft <= 2
-                                              ? "bg-orange-100 text-orange-500"
-                                              : "bg-yellow-100 text-yellow-600"
+                                              ? "bg-orange-100 text-orange-500 dark:bg-orange-900/30 dark:text-orange-400"
+                                              : "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400"
                                     }`}
                                 >
                                     {daysLeft === 0

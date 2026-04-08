@@ -150,7 +150,7 @@ export default function Page() {
         weddingData && (weddingData.engagementDate || weddingData.weddingDate);
 
     return (
-        <div className="w-full h-full p-2 flex flex-col overflow-hidden page-show">
+        <div className="w-full h-full p-2 flex flex-col overflow-hidden page-show bg-background">
             <div className="flex flex-wrap flex-col w-full gap-2">
                 {/* 婚礼筹备区域 */}
                 {showWeddingSection && (
@@ -164,21 +164,22 @@ export default function Page() {
                     </div>
                 )}
 
+                {/* 今日概览卡片 */}
                 <div
                     data-today-overview
-                    className="backdrop-blur-lg bg-gradient-to-br from-pink-50 to-purple-50 dark:from-pink-900/20 dark:to-purple-900/20 text-gray-800 dark:text-gray-100 relative h-20 w-full flex justify-end rounded-xl sm:flex-1 p-4 shadow-sm"
+                    className="bg-card rounded-xl border border-border shadow-sm relative h-20 w-full flex justify-end p-4"
                 >
-                    <span className="absolute top-2 left-4 text-gray-600 dark:text-gray-300">
+                    <span className="absolute top-2 left-4 text-muted-foreground">
                         {denseDate(currentDate)}
                     </span>
                     <AnimatedNumber
                         value={currentDateAmount}
-                        className="font-bold text-4xl text-gray-900 dark:text-gray-50"
+                        className="font-bold text-4xl text-foreground"
                     />
                     {currentBook && (
                         <button
                             type="button"
-                            className="absolute bottom-2 left-4 text-xs opacity-70 flex items-center gap-1 cursor-pointer text-gray-600 dark:text-gray-400"
+                            className="absolute bottom-2 left-4 text-xs opacity-70 flex items-center gap-1 cursor-pointer text-muted-foreground"
                             onClick={() => {
                                 showBookGuide();
                             }}
@@ -189,7 +190,8 @@ export default function Page() {
                     )}
                 </div>
                 <Promotion />
-                <div className="w-full flex flex-col gap-1 bg-gradient-to-br from-pink-50/30 to-purple-50/30 dark:from-pink-900/5 dark:to-purple-900/5 rounded-xl p-2">
+                {/* 预算卡片区域 */}
+                <div className="w-full flex flex-col gap-1 bg-card rounded-xl border border-border p-2">
                     <div
                         ref={budgetContainer}
                         className="w-full flex overflow-x-auto gap-2 scrollbar-hidden snap-mandatory snap-x"

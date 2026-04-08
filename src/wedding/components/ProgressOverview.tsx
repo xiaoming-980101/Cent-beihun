@@ -12,41 +12,39 @@ export function ProgressOverview() {
     const progress = calculateTaskProgress(tasks);
 
     return (
-        <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 shadow-sm border border-white/20 dark:border-stone-700/30">
+        <div className="bg-card rounded-xl border border-border shadow-sm p-4">
             <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-gray-600 dark:text-gray-300">
-                    筹备进度
-                </span>
-                <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                <span className="text-sm text-muted-foreground">筹备进度</span>
+                <span className="text-sm font-medium text-foreground">
                     {progress.percentage}%
                 </span>
             </div>
 
             {/* 进度条 */}
-            <div className="w-full h-3 bg-gray-200/50 dark:bg-gray-700/50 rounded-full overflow-hidden mb-3">
+            <div className="w-full h-3 bg-muted/50 rounded-full overflow-hidden mb-3">
                 <div
-                    className="h-full bg-gradient-to-r from-pink-400 to-purple-400 dark:from-pink-500 dark:to-purple-500 transition-all duration-500 rounded-full"
+                    className="h-full bg-gradient-to-r from-primary/80 to-primary transition-all duration-500 rounded-full"
                     style={{ width: `${progress.percentage}%` }}
                 />
             </div>
 
             {/* 统计数字 */}
-            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400">
+            <div className="flex justify-between text-xs text-muted-foreground">
                 <span>
                     已完成{" "}
-                    <span className="text-green-500 dark:text-green-400 font-medium">
+                    <span className="text-green-500 font-medium">
                         {progress.completed}
                     </span>
                 </span>
                 <span>
                     进行中{" "}
-                    <span className="text-blue-500 dark:text-blue-400 font-medium">
+                    <span className="text-blue-500 font-medium">
                         {progress.inProgress}
                     </span>
                 </span>
                 <span>
                     待开始{" "}
-                    <span className="text-gray-400 dark:text-gray-500 font-medium">
+                    <span className="text-muted-foreground/60 font-medium">
                         {progress.pending}
                     </span>
                 </span>

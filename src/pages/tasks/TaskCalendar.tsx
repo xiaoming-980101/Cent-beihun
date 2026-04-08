@@ -58,37 +58,37 @@ export default function TaskCalendar() {
     };
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-background">
             {/* 月份导航 */}
-            <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 m-2 shadow-sm border border-white/20 dark:border-stone-700/30 flex justify-between items-center">
+            <div className="bg-card rounded-xl border border-border p-4 m-2 shadow-sm flex justify-between items-center">
                 <button
                     onClick={prevMonth}
-                    className="p-2 rounded-full hover:bg-pink-100/50 dark:hover:bg-pink-900/30 transition-colors"
+                    className="p-2 rounded-full hover:bg-primary/10 transition-colors"
                 >
-                    <i className="icon-[mdi--chevron-left] text-gray-600 dark:text-gray-300" />
+                    <i className="icon-[mdi--chevron-left] text-foreground" />
                 </button>
-                <span className="font-medium text-gray-800 dark:text-gray-200">
+                <span className="font-medium text-foreground">
                     {currentMonth.getFullYear()}年{currentMonth.getMonth() + 1}
                     月
                 </span>
                 <button
                     onClick={nextMonth}
-                    className="p-2 rounded-full hover:bg-pink-100/50 dark:hover:bg-pink-900/30 transition-colors"
+                    className="p-2 rounded-full hover:bg-primary/10 transition-colors"
                 >
-                    <i className="icon-[mdi--chevron-right] text-gray-600 dark:text-gray-300" />
+                    <i className="icon-[mdi--chevron-right] text-foreground" />
                 </button>
             </div>
 
             {/* 日历网格 */}
             <div className="flex-1 overflow-y-auto">
-                <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 m-2 shadow-sm border border-white/20 dark:border-stone-700/30">
+                <div className="bg-card rounded-xl border border-border p-4 m-2 shadow-sm">
                     {/* 星期标题 */}
                     <div className="grid grid-cols-7 gap-1 mb-2 text-center text-sm">
                         {["日", "一", "二", "三", "四", "五", "六"].map(
                             (day) => (
                                 <div
                                     key={day}
-                                    className="py-2 text-gray-500/80 dark:text-gray-400/80 font-medium border-b border-pink-200/30 dark:border-pink-800/30"
+                                    className="py-2 text-muted-foreground font-medium border-b border-border"
                                 >
                                     {day}
                                 </div>
@@ -102,7 +102,7 @@ export default function TaskCalendar() {
                         {Array.from({ length: firstDayOfWeek }).map((_, i) => (
                             <div
                                 key={`empty-${i}`}
-                                className="min-h-[80px] bg-gray-100/50 dark:bg-gray-800/50 rounded-lg"
+                                className="min-h-[80px] bg-muted/50 rounded-lg"
                             />
                         ))}
 
@@ -125,15 +125,15 @@ export default function TaskCalendar() {
                                     key={day}
                                     className={`min-h-[80px] p-1.5 rounded-lg border transition-all duration-200 cursor-pointer hover:shadow-md ${
                                         isToday
-                                            ? "border-pink-400 dark:border-pink-500 bg-pink-50/50 dark:bg-pink-900/20 hover:bg-pink-100/60 dark:hover:bg-pink-900/30"
-                                            : "border-white/20 dark:border-stone-700/30 bg-white/50 dark:bg-stone-800/50 hover:bg-white/70 dark:hover:bg-stone-700/50"
+                                            ? "bg-primary/20 border-primary hover:bg-primary/30"
+                                            : "border-border bg-card hover:bg-accent"
                                     }`}
                                 >
                                     <div
                                         className={`text-sm mb-1 ${
                                             isToday
-                                                ? "text-pink-500 dark:text-pink-400 font-bold"
-                                                : "text-gray-700 dark:text-gray-300"
+                                                ? "text-primary font-bold"
+                                                : "text-foreground"
                                         }`}
                                     >
                                         {day}
@@ -144,11 +144,11 @@ export default function TaskCalendar() {
                                                 key={task.id}
                                                 className={`text-xs px-1.5 py-0.5 rounded truncate ${
                                                     task.status === "completed"
-                                                        ? "bg-green-100/80 dark:bg-green-900/30 text-green-600 dark:text-green-400"
+                                                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
                                                         : task.status ===
                                                             "in_progress"
-                                                          ? "bg-pink-100/80 dark:bg-pink-900/30 text-pink-600 dark:text-pink-400"
-                                                          : "bg-purple-100/80 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400"
+                                                          ? "bg-primary/20 text-primary"
+                                                          : "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400"
                                                 }`}
                                                 title={task.title}
                                             >
@@ -156,7 +156,7 @@ export default function TaskCalendar() {
                                             </div>
                                         ))}
                                         {dayTasks.length > 3 && (
-                                            <div className="text-xs text-gray-400/80 dark:text-gray-500/80">
+                                            <div className="text-xs text-muted-foreground">
                                                 +{dayTasks.length - 3}项
                                             </div>
                                         )}

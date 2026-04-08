@@ -37,22 +37,23 @@ export default function GiftBook() {
             : records.filter((r) => r.type === filterType);
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-[#f9f9f9] dark:bg-[#0c0e0e]">
             {/* 顶部返回栏 */}
-            <div className="flex items-center p-3 border-b backdrop-blur-lg bg-white/70 dark:bg-stone-900/70">
+            <div className="flex items-center p-3 border-b border-[#fdf2f8] dark:border-stone-700 bg-white dark:bg-stone-900">
                 <button
+                    type="button"
                     onClick={() => navigate("/tools")}
-                    className="flex items-center text-gray-600 hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                    className="flex items-center text-[#544249] hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
                 >
                     <i className="icon-[mdi--chevron-left] size-6" />
                     <span className="ml-1">返回</span>
                 </button>
-                <h1 className="flex-1 text-center font-semibold text-lg pr-16 dark:text-white">
+                <h1 className="flex-1 text-center font-semibold text-lg pr-16 text-[#544249] dark:text-white">
                     礼金簿
                 </h1>
             </div>
             {/* 统计概览 */}
-            <div className="p-4 bg-gradient-to-br from-pink-400 to-purple-500 dark:from-pink-600 dark:to-purple-700 rounded-xl shadow-lg mx-4 mt-2">
+            <div className="p-4 bg-gradient-to-br from-pink-400 to-purple-500 dark:from-pink-600 dark:to-purple-700 rounded-xl shadow-lg mx-4 mt-4">
                 <div className="grid grid-cols-3 gap-4 text-center">
                     <div>
                         <div className="text-sm text-white/80">收礼总额</div>
@@ -77,15 +78,16 @@ export default function GiftBook() {
 
             {/* 类型切换 */}
             <div className="p-4">
-                <div className="bg-white/10 dark:bg-white/5 rounded-xl p-1 flex gap-1">
+                <div className="bg-white dark:bg-stone-800 rounded-xl p-1 flex gap-1 border border-[#fdf2f8] dark:border-stone-700">
                     {(["all", "received", "sent"] as const).map((type) => (
                         <button
                             key={type}
+                            type="button"
                             className={`flex-1 py-2 text-sm rounded-lg transition-colors
               ${
                   filterType === type
-                      ? "bg-white/20 dark:bg-white/10 text-white"
-                      : "text-white/70"
+                      ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-sm"
+                      : "text-[#544249] dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-stone-700"
               }`}
                             onClick={() => setFilterType(type)}
                         >
@@ -102,7 +104,7 @@ export default function GiftBook() {
             {/* 记录列表 */}
             <div className="flex-1 overflow-y-auto p-4">
                 {filteredRecords.length === 0 ? (
-                    <div className="text-center text-gray-500 py-8">
+                    <div className="text-center text-[#6b7280] dark:text-gray-400 py-8 bg-white dark:bg-stone-800 rounded-xl border border-[#fdf2f8] dark:border-stone-700">
                         暂无礼金记录
                     </div>
                 ) : (
@@ -117,14 +119,14 @@ export default function GiftBook() {
                             return (
                                 <div
                                     key={record.id}
-                                    className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-3 shadow-sm border border-white/20 dark:border-stone-700/30"
+                                    className="bg-white dark:bg-stone-800 rounded-xl p-3 shadow-sm border border-[#fdf2f8] dark:border-stone-700"
                                 >
                                     <div className="flex justify-between items-start">
                                         <div>
-                                            <div className="font-medium">
+                                            <div className="font-medium text-[#544249] dark:text-white">
                                                 {guestName}
                                             </div>
-                                            <div className="text-xs text-gray-500 mt-1">
+                                            <div className="text-xs text-[#6b7280] dark:text-gray-400 mt-1">
                                                 {new Date(
                                                     record.date,
                                                 ).toLocaleDateString()}
@@ -142,7 +144,7 @@ export default function GiftBook() {
                                         </div>
                                     </div>
                                     {record.note && (
-                                        <div className="text-xs text-gray-400 mt-2">
+                                        <div className="text-xs text-[#6b7280] dark:text-gray-500 mt-2">
                                             {record.note}
                                         </div>
                                     )}

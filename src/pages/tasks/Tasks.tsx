@@ -50,27 +50,27 @@ export default function Tasks() {
         totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
     return (
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col h-full bg-background">
             {/* 进度条 */}
-            <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 m-2 shadow-sm border border-white/20 dark:border-stone-700/30">
+            <div className="bg-card rounded-xl border border-border p-4 m-2 shadow-sm">
                 <div className="flex justify-between text-sm mb-2">
                     <span>
                         进度: {completedCount}/{totalCount} 完成
                     </span>
                     <span>{progress}%</span>
                 </div>
-                <div className="w-full h-2 bg-gray-200/50 dark:bg-gray-700/50 rounded-full overflow-hidden">
+                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
                     <div
-                        className="h-full bg-gradient-to-r from-pink-400 to-purple-400 dark:from-pink-500 dark:to-purple-500 rounded-full transition-all"
+                        className="h-full bg-gradient-to-r from-primary to-purple-400 rounded-full transition-all"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
             </div>
 
             {/* 筛选器 */}
-            <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 m-2 shadow-sm border border-white/20 dark:border-stone-700/30 flex gap-2 flex-wrap">
+            <div className="bg-card rounded-xl border border-border p-4 m-2 shadow-sm flex gap-2 flex-wrap">
                 <select
-                    className="bg-white/50 dark:bg-stone-800/50 rounded-lg border border-white/20 dark:border-stone-700/30 px-3 py-2 text-sm"
+                    className="bg-background rounded-lg border border-border px-3 py-2 text-sm"
                     value={filterCategory}
                     onChange={(e) => setFilterCategory(e.target.value)}
                 >
@@ -83,7 +83,7 @@ export default function Tasks() {
                 </select>
 
                 <select
-                    className="bg-white/50 dark:bg-stone-800/50 rounded-lg border border-white/20 dark:border-stone-700/30 px-3 py-2 text-sm"
+                    className="bg-background rounded-lg border border-border px-3 py-2 text-sm"
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                 >
@@ -97,7 +97,7 @@ export default function Tasks() {
 
                 <Button
                     size="sm"
-                    className="bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 text-white rounded-lg shadow-md"
+                    className="bg-gradient-to-r from-primary to-purple-400 text-white rounded-lg shadow-md"
                     onClick={() => {
                         setEditingTask(null);
                         setShowForm(true);
@@ -111,7 +111,7 @@ export default function Tasks() {
             {/* 任务列表 */}
             <div className="flex-1 overflow-y-auto p-4">
                 {filteredTasks.length === 0 ? (
-                    <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-4 m-2 shadow-sm border border-white/20 dark:border-stone-700/30 text-center text-gray-500 py-8">
+                    <div className="bg-card rounded-xl border border-border p-4 m-2 shadow-sm text-center text-muted-foreground py-8">
                         暂无任务
                     </div>
                 ) : (
@@ -188,7 +188,7 @@ function TaskItem({
 
     return (
         <div
-            className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-3 shadow-sm border border-white/20 dark:border-stone-700/30 hover:shadow-md transition-shadow"
+            className="bg-card rounded-xl border border-border p-3 shadow-sm hover:shadow-md transition-shadow"
             onClick={onEdit}
         >
             <div className="flex items-start gap-3">
@@ -209,13 +209,13 @@ function TaskItem({
                             className={`${getCategoryIcon(task.category)} text-lg`}
                         />
                         <span
-                            className={`font-medium ${task.status === "completed" ? "line-through text-gray-400" : ""}`}
+                            className={`font-medium ${task.status === "completed" ? "line-through text-muted-foreground" : ""}`}
                         >
                             {task.title}
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-2 mt-1 text-xs text-gray-500">
+                    <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
                         <span
                             className={`px-1.5 py-0.5 rounded ${priorityInfo?.bgColor || ""} ${priorityInfo?.color || ""}`}
                         >
@@ -236,7 +236,7 @@ function TaskItem({
                 {/* 删除按钮 */}
                 <button
                     onClick={onDelete}
-                    className="text-gray-400 hover:text-red-500"
+                    className="text-muted-foreground hover:text-destructive"
                 >
                     <i className="icon-[mdi--delete-outline]" />
                 </button>

@@ -65,15 +65,19 @@ export default function BudgetCard({
                 data-budget-card
                 data-budget-finished
                 className={cn(
-                    "rounded-lg border flex flex-col w-full px-4 py-2 cursor-pointer",
+                    "rounded-xl border border-border bg-card flex flex-col w-full px-4 py-2 cursor-pointer shadow-sm",
                     className,
                 )}
                 onClick={() => {
                     showBudgetDetail(budget);
                 }}
             >
-                <div className="font-semibold">{budget.title}</div>
-                <div className="text-xs opacity-60">{t("budget-finished")}</div>
+                <div className="font-semibold text-foreground">
+                    {budget.title}
+                </div>
+                <div className="text-xs text-muted-foreground">
+                    {t("budget-finished")}
+                </div>
             </div>
         );
     }
@@ -107,7 +111,7 @@ export default function BudgetCard({
         <div
             data-budget-card
             className={cn(
-                "rounded-lg border flex flex-col w-full px-4 py-2 cursor-pointer",
+                "rounded-xl border border-border bg-card flex flex-col w-full px-4 py-2 cursor-pointer shadow-sm",
                 className,
             )}
             onClick={() => {
@@ -116,8 +120,10 @@ export default function BudgetCard({
         >
             <Collapsible.Root className="group">
                 <div className="w-full flex items-center justify-between">
-                    <div className="font-semibold">{budget.title}</div>
-                    <div className="text-sm">
+                    <div className="font-semibold text-foreground">
+                        {budget.title}
+                    </div>
+                    <div className="text-sm text-muted-foreground">
                         {todayEncountered && time && (
                             <>
                                 {t("today-left")}:
