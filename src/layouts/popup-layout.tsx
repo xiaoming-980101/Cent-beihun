@@ -8,6 +8,7 @@ export default function PopupLayout({
     onBack,
     className,
     hideBack,
+    hideHeaderOnMobile,
     right,
 }: {
     title?: string | ReactNode;
@@ -15,6 +16,7 @@ export default function PopupLayout({
     onBack?: () => void;
     className?: string;
     hideBack?: boolean;
+    hideHeaderOnMobile?: boolean;
     right?: ReactNode;
 }) {
     const t = useIntl();
@@ -25,8 +27,13 @@ export default function PopupLayout({
                 className,
             )}
         >
-            <div className="w-full flex justify-center items-center relative px-4 pt-4 pb-2 flex-shrink-0">
-                {!hideBack && (
+            <div
+                className={cn(
+                    "relative flex w-full flex-shrink-0 items-center justify-center px-4 pt-4 pb-2",
+                    hideHeaderOnMobile && "hidden sm:flex",
+                )}
+            >
+                {!hideBack && onBack && (
                     <button
                         type="button"
                         className="absolute left-0 flex buttoned rounded-full py-1 pl-1 pr-3 cursor-pointer"

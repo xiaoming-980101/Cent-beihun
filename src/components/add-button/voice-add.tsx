@@ -16,7 +16,13 @@ const [VoiceFormProvider, , showVoiceForm] = createConfirmProvider(VoiceForm, {
     swipe: false,
 });
 
-export function VoiceAddButton({ onClick }: { onClick?: () => void }) {
+export function VoiceAddButton({
+    onClick,
+    className,
+}: {
+    onClick?: () => void;
+    className?: string;
+}) {
     const cancelRef = useRef<(() => void) | undefined>(undefined);
     const stopRef = useRef<(() => void) | undefined>(undefined);
 
@@ -93,7 +99,7 @@ export function VoiceAddButton({ onClick }: { onClick?: () => void }) {
 
     return (
         <VoiceFormContext.Provider value={formState}>
-            <BaseButton {...presses?.()}>
+            <BaseButton className={className} {...presses?.()}>
                 {/* <i className="icon-[mdi--microphone-plus] text-[white] size-7"></i> */}
                 <i className="icon-[mdi--add] text-[white] size-7"></i>
             </BaseButton>

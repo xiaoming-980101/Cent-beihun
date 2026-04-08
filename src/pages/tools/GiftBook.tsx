@@ -3,8 +3,6 @@
  */
 
 import { useState } from "react";
-import { useNavigate } from "react-router";
-import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -13,14 +11,21 @@ import {
     DialogPortal,
     DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    WeddingActionButton,
+    WeddingEmptyState,
+    WeddingFilterChip,
+    WeddingPageShell,
+    WeddingStat,
+    WeddingTopBar,
+} from "@/components/wedding-ui";
 import { useWeddingStore } from "@/store/wedding";
 import { GiftForm } from "@/wedding/components";
-import { GIFT_EVENTS, PAYMENT_METHODS } from "@/wedding/constants";
+import { PAYMENT_METHODS } from "@/wedding/constants";
 import { calculateGiftStats, formatAmount } from "@/wedding/utils";
 
 export default function GiftBook() {
-    const navigate = useNavigate();
-    const { weddingData, addGiftRecord, deleteGiftRecord } = useWeddingStore();
+    const { weddingData, deleteGiftRecord } = useWeddingStore();
     const records = weddingData?.giftRecords || [];
     const guests = weddingData?.guests || [];
 
@@ -28,7 +33,9 @@ export default function GiftBook() {
         "all",
     );
     const [showForm, setShowForm] = useState(false);
-    const [editingRecord, setEditingRecord] = useState<any>(null);
+    const [editingRecord, setEditingRecord] = useState<
+        undefined | (typeof records)[number]
+    >(undefined);
 
     const stats = calculateGiftStats(records);
     const filteredRecords =
@@ -37,143 +44,133 @@ export default function GiftBook() {
             : records.filter((r) => r.type === filterType);
 
     return (
-        <div className="flex flex-col h-full bg-[#f9f9f9] dark:bg-[#0c0e0e]">
-            {/* 顶部返回栏 */}
-            <div className="flex items-center p-3 border-b border-[#fdf2f8] dark:border-stone-700 bg-white dark:bg-stone-900">
-                <button
-                    type="button"
-                    onClick={() => navigate("/tools")}
-                    className="flex items-center text-[#544249] hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
-                >
-                    <i className="icon-[mdi--chevron-left] size-6" />
-                    <span className="ml-1">返回</span>
-                </button>
-                <h1 className="flex-1 text-center font-semibold text-lg pr-16 text-[#544249] dark:text-white">
-                    礼金簿
-                </h1>
-            </div>
-            {/* 统计概览 */}
-            <div className="p-4 bg-gradient-to-br from-pink-400 to-purple-500 dark:from-pink-600 dark:to-purple-700 rounded-xl shadow-lg mx-4 mt-4">
-                <div className="grid grid-cols-3 gap-4 text-center">
-                    <div>
-                        <div className="text-sm text-white/80">收礼总额</div>
-                        <div className="text-xl text-white font-bold">
-                            {formatAmount(stats.receivedTotal)}
-                        </div>
-                    </div>
-                    <div>
-                        <div className="text-sm text-white/80">送礼总额</div>
-                        <div className="text-xl text-white font-bold">
-                            {formatAmount(stats.sentTotal)}
-                        </div>
-                    </div>
-                    <div>
-                        <div className="text-sm text-white/80">净收入</div>
-                        <div className="text-xl text-white font-bold">
-                            {formatAmount(stats.netIncome)}
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <WeddingPageShell>
+            <WeddingTopBar title="礼金簿" subtitle="记录收礼送礼与人情往来" backTo="/tools" />
 
-            {/* 类型切换 */}
-            <div className="p-4">
-                <div className="bg-white dark:bg-stone-800 rounded-xl p-1 flex gap-1 border border-[#fdf2f8] dark:border-stone-700">
+            <section className="wedding-hero p-5">
+                <div className="text-sm text-white/80">礼金往来概览</div>
+                <div className="mt-2 text-4xl font-black tracking-tight text-white">
+                    {formatAmount(stats.netIncome)}
+                </div>
+                <div className="mt-4 grid grid-cols-3 gap-3">
+                    <WeddingStat label="收礼总额" value={formatAmount(stats.receivedTotal)} />
+                    <WeddingStat label="送礼总额" value={formatAmount(stats.sentTotal)} />
+                    <WeddingStat label="净收入" value={formatAmount(stats.netIncome)} />
+                </div>
+            </section>
+
+            <section className="wedding-surface-card p-3">
+                <div className="flex flex-wrap gap-2">
                     {(["all", "received", "sent"] as const).map((type) => (
-                        <button
+                        <WeddingFilterChip
                             key={type}
-                            type="button"
-                            className={`flex-1 py-2 text-sm rounded-lg transition-colors
-              ${
-                  filterType === type
-                      ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-sm"
-                      : "text-[#544249] dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-stone-700"
-              }`}
+                            active={filterType === type}
                             onClick={() => setFilterType(type)}
                         >
-                            {type === "all"
-                                ? "全部"
-                                : type === "received"
-                                  ? "收礼"
-                                  : "送礼"}
-                        </button>
+                            {type === "all" ? "全部" : type === "received" ? "收礼" : "送礼"}
+                        </WeddingFilterChip>
                     ))}
                 </div>
-            </div>
+            </section>
 
-            {/* 记录列表 */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <section className="space-y-3">
                 {filteredRecords.length === 0 ? (
-                    <div className="text-center text-[#6b7280] dark:text-gray-400 py-8 bg-white dark:bg-stone-800 rounded-xl border border-[#fdf2f8] dark:border-stone-700">
-                        暂无礼金记录
-                    </div>
+                    <WeddingEmptyState
+                        icon="icon-[mdi--gift-outline]"
+                        title="还没有礼金记录"
+                        description="第一笔收礼或送礼记下来后，这里会自动汇总往来情况。"
+                    />
                 ) : (
-                    <div className="space-y-2">
-                        {filteredRecords.map((record) => {
-                            const guest = record.guestId
-                                ? guests.find((g) => g.id === record.guestId)
-                                : null;
-                            const guestName =
-                                guest?.name || record.guestName || "未知";
+                    filteredRecords.map((record) => {
+                        const guest = record.guestId
+                            ? guests.find((g) => g.id === record.guestId)
+                            : null;
+                        const guestName = guest?.name || record.guestName || "未知";
 
-                            return (
-                                <div
-                                    key={record.id}
-                                    className="bg-white dark:bg-stone-800 rounded-xl p-3 shadow-sm border border-[#fdf2f8] dark:border-stone-700"
-                                >
-                                    <div className="flex justify-between items-start">
-                                        <div>
-                                            <div className="font-medium text-[#544249] dark:text-white">
-                                                {guestName}
+                        return (
+                            <div
+                                key={record.id}
+                                className="wedding-surface-card cursor-pointer p-4"
+                                onClick={() => {
+                                    setEditingRecord(record);
+                                    setShowForm(true);
+                                }}
+                            >
+                                <div className="flex items-start gap-3">
+                                    <div
+                                        className={`mt-1 flex h-11 w-11 items-center justify-center rounded-2xl ${
+                                            record.type === "received"
+                                                ? "bg-emerald-100 text-emerald-500 dark:bg-emerald-500/10"
+                                                : "bg-rose-100 text-rose-500 dark:bg-rose-500/10"
+                                        }`}
+                                    >
+                                        <i className="icon-[mdi--hand-heart-outline] text-xl" />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex items-start justify-between gap-3">
+                                            <div>
+                                                <div className="text-lg font-semibold text-[color:var(--wedding-text)]">
+                                                    {guestName}
+                                                </div>
+                                                <div className="mt-1 text-xs wedding-muted">
+                                                    {new Date(record.date).toLocaleDateString()}
+                                                    {record.method
+                                                        ? ` · ${PAYMENT_METHODS.find((m) => m.id === record.method)?.name || ""}`
+                                                        : ""}
+                                                </div>
                                             </div>
-                                            <div className="text-xs text-[#6b7280] dark:text-gray-400 mt-1">
-                                                {new Date(
-                                                    record.date,
-                                                ).toLocaleDateString()}
-                                                {record.method &&
-                                                    ` · ${PAYMENT_METHODS.find((m) => m.id === record.method)?.name || ""}`}
+                                            <div
+                                                className={`text-xl font-bold ${
+                                                    record.type === "received"
+                                                        ? "text-emerald-500"
+                                                        : "text-rose-500"
+                                                }`}
+                                            >
+                                                {record.type === "received" ? "+" : "-"}
+                                                {formatAmount(record.amount)}
                                             </div>
                                         </div>
-                                        <div
-                                            className={`text-lg font-bold ${record.type === "received" ? "text-green-600" : "text-red-500"}`}
-                                        >
-                                            {record.type === "received"
-                                                ? "+"
-                                                : "-"}
-                                            {formatAmount(record.amount)}
+                                        {record.note ? (
+                                            <div className="mt-3 text-sm wedding-muted">
+                                                {record.note}
+                                            </div>
+                                        ) : null}
+                                        <div className="mt-3 flex justify-end">
+                                            <button
+                                                type="button"
+                                                className="text-xs text-rose-400"
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    deleteGiftRecord(record.id);
+                                                }}
+                                            >
+                                                删除
+                                            </button>
                                         </div>
                                     </div>
-                                    {record.note && (
-                                        <div className="text-xs text-[#6b7280] dark:text-gray-500 mt-2">
-                                            {record.note}
-                                        </div>
-                                    )}
                                 </div>
-                            );
-                        })}
-                    </div>
+                            </div>
+                        );
+                    })
                 )}
-            </div>
+            </section>
 
-            {/* 添加按钮 */}
-            <div className="p-4">
-                <Button
-                    className="w-full bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 text-white rounded-xl shadow-lg"
-                    onClick={() => {
-                        setEditingRecord(null);
-                        setShowForm(true);
-                    }}
-                >
-                    <i className="icon-[mdi--plus] mr-2" />
-                    添加礼金记录
-                </Button>
-            </div>
+            <WeddingActionButton
+                className="h-14 w-full rounded-[20px] text-base"
+                onClick={() => {
+                    setEditingRecord(undefined);
+                    setShowForm(true);
+                }}
+            >
+                <i className="icon-[mdi--plus] mr-1 size-5" />
+                添加礼金记录
+            </WeddingActionButton>
 
             {/* 表单弹窗 */}
             <Dialog open={showForm} onOpenChange={setShowForm}>
                 <DialogPortal>
                     <DialogOverlay className="fixed inset-0 bg-black/50" />
-                    <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center pointer-events-none">
+                    <div className="fixed top-0 left-0 z-[61] flex h-full w-full items-center justify-center pointer-events-none">
                         <DialogContent
                             className="pointer-events-auto bg-background w-[90vw] max-w-[500px] rounded-md overflow-y-auto max-h-[80vh]"
                             onInteractOutside={() => setShowForm(false)}
@@ -193,6 +190,6 @@ export default function GiftBook() {
                     </div>
                 </DialogPortal>
             </Dialog>
-        </div>
+        </WeddingPageShell>
     );
 }

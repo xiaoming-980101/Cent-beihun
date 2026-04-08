@@ -14,7 +14,13 @@ const [KeyboardFormProvider, showKeyboardForm] = createConfirmProvider(
     },
 );
 
-export function KeyboardAddButton({ onClick }: { onClick?: () => void }) {
+export function KeyboardAddButton({
+    onClick,
+    className,
+}: {
+    onClick?: () => void;
+    className?: string;
+}) {
     const presses = useLongPress({
         onClick,
         onLongPressStart: useCallback(async () => {
@@ -25,7 +31,7 @@ export function KeyboardAddButton({ onClick }: { onClick?: () => void }) {
 
     return (
         <>
-            <BaseButton className="relative" {...presses?.()}>
+            <BaseButton className={className ?? "relative"} {...presses?.()}>
                 {/* <i className="icon-[mdi--add] text-[white] size-7 -translate-x-1 -translate-y-1"></i>
                 <i className="icon-[mdi--keyboard] text-[white] size-4 absolute translate-x-2 translate-y-2"></i> */}
                 <i className="icon-[mdi--add] text-[white] size-7"></i>

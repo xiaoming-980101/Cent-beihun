@@ -10,7 +10,7 @@ import { BudgetDetailProvider } from "@/components/budget/detail";
 import { CategoryListProvider } from "@/components/category";
 import { CurrencyListProvider } from "@/components/currency";
 import { ModalProvider } from "@/components/modal";
-import Navigation from "@/components/navigation";
+import Navigation, { MobileTopBar } from "@/components/navigation";
 import {
     ScheduledEditProvider,
     ScheduledProvider,
@@ -58,15 +58,17 @@ export default function MainLayout() {
     return (
         <ThemeProvider>
             <TooltipProvider>
-                <Navigation />
-                <div className="w-full h-full sm:pl-18">
-                    <Outlet />
+                <div className="flex h-full w-full flex-col overflow-hidden sm:pl-[116px]">
+                    <MobileTopBar />
+                    <div className="min-h-0 flex-1 overflow-hidden pb-[calc(var(--mobile-bottombar-height)+env(safe-area-inset-bottom))] sm:pb-0">
+                        <Outlet />
+                    </div>
                 </div>
+                <Navigation />
                 <BillEditorProvider />
                 <BillInfoProvider />
                 <SortableListProvider />
                 <SortableGroupProvider />
-                <Settings />
                 <CurrencyListProvider />
                 <BookGuide />
                 <BookConfirmProvider />
@@ -78,6 +80,7 @@ export default function MainLayout() {
                 <TagListProvider />
                 <CategoryListProvider />
                 <ModalProvider />
+                <Settings />
                 <Toaster />
             </TooltipProvider>
         </ThemeProvider>

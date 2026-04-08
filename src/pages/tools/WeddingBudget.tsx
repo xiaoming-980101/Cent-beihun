@@ -3,8 +3,6 @@
  */
 
 import { useState } from "react";
-import { useNavigate } from "react-router";
-import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -13,20 +11,27 @@ import {
     DialogPortal,
     DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    WeddingActionButton,
+    WeddingEmptyState,
+    WeddingFilterChip,
+    WeddingPageShell,
+    WeddingTopBar,
+} from "@/components/wedding-ui";
 import { useWeddingStore } from "@/store/wedding";
 import { BudgetForm } from "@/wedding/components";
 import { BUDGET_STATUSES } from "@/wedding/constants";
 import { checkBudgetStatus, formatAmount } from "@/wedding/utils";
 
 export default function WeddingBudget() {
-    const navigate = useNavigate();
-    const { weddingData, addBudget, updateBudget, deleteBudget } =
-        useWeddingStore();
+    const { weddingData } = useWeddingStore();
     const budgets = weddingData?.weddingBudgets || [];
 
     const [filterStatus, setFilterStatus] = useState<string>("all");
     const [showForm, setShowForm] = useState(false);
-    const [editingBudget, setEditingBudget] = useState<any>(null);
+    const [editingBudget, setEditingBudget] = useState<
+        undefined | (typeof budgets)[number]
+    >(undefined);
 
     const filteredBudgets =
         filterStatus === "all"
@@ -40,225 +45,164 @@ export default function WeddingBudget() {
     const remaining = totalBudget - totalPaid;
 
     return (
-        <div className="flex flex-col h-full bg-background">
-            {/* 顶部返回栏 */}
-            <div className="flex items-center p-3 border-b border-pink-100/50 dark:border-white/10 bg-card">
-                <button
-                    onClick={() => navigate("/tools")}
-                    className="flex items-center text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
-                >
-                    <i className="icon-[mdi--chevron-left] size-6" />
-                    <span className="ml-1">返回</span>
-                </button>
-                <h1 className="flex-1 text-center font-semibold text-lg pr-16 text-[#544249] dark:text-white">
-                    婚礼预算
-                </h1>
-            </div>
-            {/* 统计概览 */}
-            <div className="p-4 bg-gradient-to-br from-pink-400 to-purple-500 dark:from-pink-600 dark:to-purple-700 rounded-xl shadow-lg mx-4 mt-2">
-                <div className="grid grid-cols-2 gap-4 text-center">
-                    <div className="p-2">
-                        <div className="flex items-center justify-center gap-1 mb-1">
-                            <i className="icon-[mdi--wallet-outline] size-4 text-white/80" />
-                            <div className="text-sm text-white/90">
-                                预算总额
-                            </div>
+        <WeddingPageShell>
+            <WeddingTopBar title="婚礼预算" subtitle="跟踪定金、尾款与执行情况" backTo="/tools" />
+
+            <section className="wedding-hero p-5">
+                <div className="text-sm text-white/80">预算总额</div>
+                <div className="mt-2 text-5xl font-black tracking-tight text-white">
+                    {formatAmount(totalBudget)}
+                </div>
+                <div className="mt-5 grid grid-cols-3 gap-3">
+                    <div className="rounded-[18px] bg-white/12 p-3 backdrop-blur">
+                        <div className="text-[11px] uppercase tracking-[0.14em] text-white/75">
+                            已支付
                         </div>
-                        <div className="text-xl font-bold text-white">
-                            {formatAmount(totalBudget)}
-                        </div>
-                    </div>
-                    <div className="p-2">
-                        <div className="flex items-center justify-center gap-1 mb-1">
-                            <i className="icon-[mdi--check-circle-outline] size-4 text-white/80" />
-                            <div className="text-sm text-white/90">已支付</div>
-                        </div>
-                        <div className="text-xl font-bold text-white">
+                        <div className="mt-2 text-lg font-bold text-white">
                             {formatAmount(totalPaid)}
                         </div>
                     </div>
-                    <div className="p-2">
-                        <div className="flex items-center justify-center gap-1 mb-1">
-                            <i className="icon-[mdi--cash-multiple] size-4 text-white/80" />
-                            <div className="text-sm text-white/90">定金</div>
+                    <div className="rounded-[18px] bg-white/12 p-3 backdrop-blur">
+                        <div className="text-[11px] uppercase tracking-[0.14em] text-white/75">
+                            定金
                         </div>
-                        <div className="text-lg font-medium text-white">
+                        <div className="mt-2 text-lg font-bold text-white">
                             {formatAmount(totalDeposit)}
                         </div>
                     </div>
-                    <div className="p-2">
-                        <div className="flex items-center justify-center gap-1 mb-1">
-                            <i className="icon-[mdi--clock-outline] size-4 text-white/80" />
-                            <div className="text-sm text-white/90">
-                                待付尾款
-                            </div>
+                    <div className="rounded-[18px] bg-white/12 p-3 backdrop-blur">
+                        <div className="text-[11px] uppercase tracking-[0.14em] text-white/75">
+                            待付尾款
                         </div>
-                        <div
-                            className={`text-lg font-medium text-white ${remaining > 0 ? "" : "text-white/70"}`}
-                        >
+                        <div className="mt-2 text-lg font-bold text-white">
                             {formatAmount(remaining)}
                         </div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            {/* 状态筛选 */}
-            <div className="px-4 py-3 flex gap-2 overflow-x-auto">
-                {(["all", ...BUDGET_STATUSES.map((s) => s.id)] as const).map(
-                    (status) => (
-                        <button
-                            key={status}
-                            className={`px-4 py-1.5 text-sm whitespace-nowrap transition-all ${
-                                filterStatus === status
-                                    ? "bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 text-white rounded-full shadow-sm"
-                                    : "bg-card border border-pink-100/50 dark:border-white/10 text-[#544249] dark:text-gray-300 rounded-full"
-                            }`}
-                            onClick={() => setFilterStatus(status)}
-                        >
-                            {status === "all"
-                                ? "全部"
-                                : BUDGET_STATUSES.find((s) => s.id === status)
-                                      ?.name || status}
-                        </button>
-                    ),
-                )}
-            </div>
+            <section className="wedding-surface-card p-3">
+                <div className="flex gap-2 overflow-x-auto pb-1">
+                    {(["all", ...BUDGET_STATUSES.map((s) => s.id)] as const).map(
+                        (status) => (
+                            <WeddingFilterChip
+                                key={status}
+                                active={filterStatus === status}
+                                onClick={() => setFilterStatus(status)}
+                            >
+                                {status === "all"
+                                    ? "全部"
+                                    : BUDGET_STATUSES.find((s) => s.id === status)
+                                          ?.name || status}
+                            </WeddingFilterChip>
+                        ),
+                    )}
+                </div>
+            </section>
 
-            {/* 预算列表 */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <section className="space-y-3">
                 {filteredBudgets.length === 0 ? (
-                    <div className="text-center text-[#6b7280] dark:text-gray-400 py-8">
-                        暂无预算记录
-                    </div>
+                    <WeddingEmptyState
+                        icon="icon-[mdi--wallet-outline]"
+                        title="还没有预算项目"
+                        description="添加婚宴、摄影、策划等预算后，这里会自动计算进度与付款状态。"
+                    />
                 ) : (
-                    <div className="space-y-2">
-                        {filteredBudgets.map((budget) => {
-                            const statusInfo = BUDGET_STATUSES.find(
-                                (s) => s.id === budget.status,
-                            );
-                            const budgetStatus = checkBudgetStatus(budget);
-                            const progress =
-                                budget.budget > 0
-                                    ? Math.round(
-                                          (budget.spent / budget.budget) * 100,
-                                      )
-                                    : 0;
+                    filteredBudgets.map((budget) => {
+                        const statusInfo = BUDGET_STATUSES.find(
+                            (s) => s.id === budget.status,
+                        );
+                        const budgetStatus = checkBudgetStatus(budget);
+                        const progress =
+                            budget.budget > 0
+                                ? Math.round((budget.spent / budget.budget) * 100)
+                                : 0;
 
-                            return (
-                                <div
-                                    key={budget.id}
-                                    className="bg-card rounded-xl p-3 shadow-sm border border-pink-100/50 dark:border-white/10 cursor-pointer"
-                                    onClick={() => {
-                                        setEditingBudget(budget);
-                                        setShowForm(true);
-                                    }}
-                                >
-                                    <div className="flex justify-between items-start mb-2">
-                                        <div>
-                                            <div className="font-medium text-[#544249] dark:text-white">
+                        return (
+                            <div
+                                key={budget.id}
+                                className="wedding-surface-card cursor-pointer p-4"
+                                onClick={() => {
+                                    setEditingBudget(budget);
+                                    setShowForm(true);
+                                }}
+                            >
+                                <div className="flex items-start justify-between gap-3">
+                                    <div className="flex min-w-0 gap-3">
+                                        <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-fuchsia-100 text-fuchsia-500 dark:bg-fuchsia-500/10">
+                                            <i className="icon-[mdi--wallet-giftcard] text-xl" />
+                                        </div>
+                                        <div className="min-w-0">
+                                            <div className="text-lg font-semibold text-[color:var(--wedding-text)]">
                                                 {budget.category}
                                             </div>
-                                            <div className="text-xs text-[#6b7280] dark:text-gray-400 mt-1">
-                                                {budget.vendor &&
-                                                    `${budget.vendor}`}
-                                                {budget.vendorPhone &&
-                                                    ` · ${budget.vendorPhone}`}
+                                            <div className="mt-1 text-sm wedding-muted">
+                                                {budget.vendor ? `${budget.vendor}` : "未设置供应商"}
+                                                {budget.vendorPhone ? ` · ${budget.vendorPhone}` : ""}
                                             </div>
                                         </div>
-                                        <span
-                                            className={`text-xs px-2 py-1 rounded-full ${
-                                                statusInfo?.color ||
-                                                "bg-gray-100"
-                                            }`}
-                                        >
-                                            {statusInfo?.name || budget.status}
-                                        </span>
                                     </div>
-
-                                    {/* 进度条 */}
-                                    <div className="mb-2">
-                                        <div className="flex justify-between text-xs text-[#6b7280] dark:text-gray-400 mb-1">
-                                            <span>
-                                                已付:{" "}
-                                                {formatAmount(budget.spent)}
-                                            </span>
-                                            <span>
-                                                预算:{" "}
-                                                {formatAmount(budget.budget)}
-                                            </span>
-                                        </div>
-                                        <div className="w-full h-2 bg-gray-200/50 dark:bg-gray-700/50 rounded-full overflow-hidden">
-                                            <div
-                                                className={`h-full transition-all rounded-full ${
-                                                    budgetStatus.isOverBudget
-                                                        ? "bg-gradient-to-r from-red-400 to-red-500"
-                                                        : budgetStatus.remaining <
-                                                            budget.budget * 0.1
-                                                          ? "bg-gradient-to-r from-orange-400 to-orange-500"
-                                                          : "bg-gradient-to-r from-pink-400 to-purple-500"
-                                                }`}
-                                                style={{
-                                                    width: `${Math.min(progress, 100)}%`,
-                                                }}
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {/* 定金和尾款 */}
-                                    <div className="flex gap-4 text-xs">
-                                        {budget.deposit &&
-                                            budget.deposit > 0 && (
-                                                <span className="text-orange-500 dark:text-orange-400">
-                                                    定金:{" "}
-                                                    {formatAmount(
-                                                        budget.deposit,
-                                                    )}
-                                                </span>
-                                            )}
-                                        {budget.balance &&
-                                            budget.balance > 0 && (
-                                                <span className="text-[#6b7280] dark:text-gray-400">
-                                                    尾款:{" "}
-                                                    {formatAmount(
-                                                        budget.balance,
-                                                    )}
-                                                </span>
-                                            )}
-                                        {budget.dueDate && (
-                                            <span className="text-[#6b7280] dark:text-gray-500">
-                                                截止:{" "}
-                                                {new Date(
-                                                    budget.dueDate,
-                                                ).toLocaleDateString()}
-                                            </span>
-                                        )}
-                                    </div>
+                                    <span className="rounded-full bg-white/80 px-3 py-1 text-xs text-[color:var(--wedding-text-soft)] dark:bg-white/8">
+                                        {statusInfo?.name || budget.status}
+                                    </span>
                                 </div>
-                            );
-                        })}
-                    </div>
+                                <div className="mt-4 flex items-center justify-between text-sm">
+                                    <span className="wedding-muted">
+                                        ¥ {budget.spent.toLocaleString()} / ¥{" "}
+                                        {budget.budget.toLocaleString()}
+                                    </span>
+                                    <span className="font-semibold text-[color:var(--wedding-text)]">
+                                        {progress}%
+                                    </span>
+                                </div>
+                                <div className="mt-2 h-2 rounded-full bg-black/6 dark:bg-white/8">
+                                    <div
+                                        className={`h-full rounded-full transition-all ${
+                                            budgetStatus.isOverBudget
+                                                ? "bg-gradient-to-r from-rose-400 to-red-500"
+                                                : budgetStatus.remaining < budget.budget * 0.1
+                                                  ? "bg-gradient-to-r from-amber-400 to-orange-500"
+                                                  : "bg-gradient-to-r from-pink-500 to-violet-500"
+                                        }`}
+                                        style={{ width: `${Math.min(progress, 100)}%` }}
+                                    />
+                                </div>
+                                <div className="mt-3 flex flex-wrap gap-3 text-xs wedding-muted">
+                                    {budget.deposit && budget.deposit > 0 ? (
+                                        <span>定金: {formatAmount(budget.deposit)}</span>
+                                    ) : null}
+                                    {budget.balance && budget.balance > 0 ? (
+                                        <span>尾款: {formatAmount(budget.balance)}</span>
+                                    ) : null}
+                                    {budget.dueDate ? (
+                                        <span>
+                                            截止:{" "}
+                                            {new Date(budget.dueDate).toLocaleDateString()}
+                                        </span>
+                                    ) : null}
+                                </div>
+                            </div>
+                        );
+                    })
                 )}
-            </div>
+            </section>
 
-            {/* 添加按钮 */}
-            <div className="p-4">
-                <Button
-                    className="w-full bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 text-white rounded-xl shadow-lg hover:from-pink-600 hover:to-purple-600 dark:hover:from-pink-700 dark:hover:to-purple-700"
-                    onClick={() => {
-                        setEditingBudget(null);
-                        setShowForm(true);
-                    }}
-                >
-                    <i className="icon-[mdi--plus] mr-2" />
-                    添加预算项目
-                </Button>
-            </div>
+            <WeddingActionButton
+                className="h-14 w-full rounded-[20px] text-base"
+                onClick={() => {
+                    setEditingBudget(undefined);
+                    setShowForm(true);
+                }}
+            >
+                <i className="icon-[mdi--plus] mr-1 size-5" />
+                添加预算项目
+            </WeddingActionButton>
 
             {/* 表单弹窗 */}
             <Dialog open={showForm} onOpenChange={setShowForm}>
                 <DialogPortal>
                     <DialogOverlay className="fixed inset-0 bg-black/50" />
-                    <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center pointer-events-none">
+                    <div className="fixed top-0 left-0 z-[61] flex h-full w-full items-center justify-center pointer-events-none">
                         <DialogContent
                             className="pointer-events-auto bg-background w-[90vw] max-w-[500px] rounded-md overflow-y-auto max-h-[80vh]"
                             onInteractOutside={() => setShowForm(false)}
@@ -276,6 +220,6 @@ export default function WeddingBudget() {
                     </div>
                 </DialogPortal>
             </Dialog>
-        </div>
+        </WeddingPageShell>
     );
 }

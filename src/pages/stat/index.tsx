@@ -25,6 +25,7 @@ import {
 } from "@/components/stat/focus-type";
 import { TagItem } from "@/components/stat/static-item";
 import { Button } from "@/components/ui/button";
+import { WeddingPageShell, WeddingTopBar } from "@/components/wedding-ui";
 import { useCurrency } from "@/hooks/use-currency";
 import {
     DefaultFilterViewId,
@@ -272,83 +273,86 @@ export default function Page() {
         [selectedFilterView, focusType, viewType, realRange],
     );
     return (
-        <div className="w-full h-full p-2 flex flex-col items-center justify-center gap-4 overflow-hidden page-show bg-background">
-            <div className="w-full mx-2 max-w-[600px] flex flex-col gap-2">
-                <div className="w-full flex flex-col gap-2">
-                    <div className="w-full flex bg-card rounded-xl border border-border p-2 shadow-sm">
-                        <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hidden">
-                            {allFilterViews.map((filter) => {
-                                const displayCurrency =
-                                    filter.displayCurrency === baseCurrency.id
-                                        ? undefined
-                                        : allCurrencies.find(
-                                              (v) =>
-                                                  v.id ===
-                                                  filter.displayCurrency,
-                                          );
-                                return (
-                                    <Button
-                                        key={filter.id}
-                                        size={"sm"}
-                                        className={cn(
-                                            filterViewId !== filter.id
-                                                ? "text-muted-foreground"
-                                                : "text-primary relative after:absolute after:bottom-[2px] after:left-3 after:w-[calc(100%-24px)] after:h-[2px] after:rounded-full after:bg-primary",
-                                        )}
-                                        variant="ghost"
-                                        onClick={() => {
-                                            setSliceId(undefined);
-                                            setFilterViewId(filter.id);
-                                        }}
-                                    >
-                                        {displayCurrency?.symbol}
-                                        {filter.name}
-                                    </Button>
-                                );
-                            })}
-                        </div>
-                        <div className="">
-                            <Button
-                                variant="ghost"
-                                onClick={toAddFilter}
-                                size="sm"
-                            >
-                                <i className="icon-[mdi--plus] size-4"></i>
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                onClick={toReOrder}
-                                size="sm"
-                            >
-                                <i className="icon-[mdi--menu] size-4"></i>
-                            </Button>
-                        </div>
-                    </div>
-                </div>
-                <DateSliced
-                    {...dateSlicedProps}
-                    onClickSettings={toChangeFilter}
-                >
-                    <div className="flex items-center pr-2 relative">
-                        <Switch.Root
-                            checked={dimension === "user"}
-                            onCheckedChange={() => {
-                                setDimension((v) => {
-                                    return v === "category"
-                                        ? "user"
-                                        : "category";
-                                });
-                            }}
-                            className="relative z-[0] h-[29px] w-[54px] cursor-pointer rounded-sm bg-muted outline-none group"
-                        >
-                            <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center gap-2 z-[1]">
-                                <i className="icon-[mdi--view-grid-outline] group-[data-[state=checked]]:text-white"></i>
-                                <i className="icon-[mdi--account-outline]"></i>
+        <WeddingPageShell className="page-show" contentClassName="desktop-grid">
+            <WeddingTopBar title="统计分析" subtitle="婚礼支出与收入结构总览" />
+            <div className="w-full flex flex-col gap-4 lg:grid lg:grid-cols-[0.9fr_1.1fr]">
+                <div className="space-y-3">
+                    <div className="w-full flex flex-col gap-2">
+                        <div className="wedding-surface-card w-full flex p-2">
+                            <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hidden">
+                                {allFilterViews.map((filter) => {
+                                    const displayCurrency =
+                                        filter.displayCurrency === baseCurrency.id
+                                            ? undefined
+                                            : allCurrencies.find(
+                                                  (v) =>
+                                                      v.id ===
+                                                      filter.displayCurrency,
+                                              );
+                                    return (
+                                        <Button
+                                            key={filter.id}
+                                            size={"sm"}
+                                            className={cn(
+                                                filterViewId !== filter.id
+                                                    ? "text-[color:var(--wedding-text-soft)]"
+                                                    : "text-pink-500 relative after:absolute after:bottom-[2px] after:left-3 after:w-[calc(100%-24px)] after:h-[2px] after:rounded-full after:bg-pink-500",
+                                            )}
+                                            variant="ghost"
+                                            onClick={() => {
+                                                setSliceId(undefined);
+                                                setFilterViewId(filter.id);
+                                            }}
+                                        >
+                                            {displayCurrency?.symbol}
+                                            {filter.name}
+                                        </Button>
+                                    );
+                                })}
                             </div>
-                            <Switch.Thumb className="block size-[22px] translate-x-[4px] rounded-sm bg-background transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[28px]" />
-                        </Switch.Root>
+                            <div>
+                                <Button
+                                    variant="ghost"
+                                    onClick={toAddFilter}
+                                    size="sm"
+                                >
+                                    <i className="icon-[mdi--plus] size-4"></i>
+                                </Button>
+                                <Button
+                                    variant="ghost"
+                                    onClick={toReOrder}
+                                    size="sm"
+                                >
+                                    <i className="icon-[mdi--menu] size-4"></i>
+                                </Button>
+                            </div>
+                        </div>
                     </div>
-                </DateSliced>
+                    <DateSliced
+                        {...dateSlicedProps}
+                        onClickSettings={toChangeFilter}
+                    >
+                        <div className="relative flex items-center pr-2">
+                            <Switch.Root
+                                checked={dimension === "user"}
+                                onCheckedChange={() => {
+                                    setDimension((v) => {
+                                        return v === "category"
+                                            ? "user"
+                                            : "category";
+                                    });
+                                }}
+                                className="group relative z-[0] h-[29px] w-[54px] cursor-pointer rounded-sm bg-pink-100 outline-none dark:bg-white/10"
+                            >
+                                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center gap-2 z-[1]">
+                                    <i className="icon-[mdi--view-grid-outline] group-[data-[state=checked]]:text-white"></i>
+                                    <i className="icon-[mdi--account-outline]"></i>
+                                </div>
+                                <Switch.Thumb className="block size-[22px] translate-x-[4px] rounded-sm bg-background transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[28px]" />
+                            </Switch.Root>
+                        </div>
+                    </DateSliced>
+                </div>
             </div>
             <FocusTypeSelector
                 value={focusType}
@@ -358,13 +362,13 @@ export default function Page() {
                 }}
                 money={totalMoneys}
             />
-            <div className="w-full px-2 flex-1 flex justify-center overflow-y-auto">
-                <div className="w-full max-w-[600px] flex flex-col items-center gap-4 relative">
+            <div className="w-full flex-1 overflow-y-auto px-1">
+                <div className="relative flex w-full flex-col items-center gap-4">
                     <Assistant env={envArg} />
                     {Part}
                     {tagStructure.length > 0 && (
-                        <div className="bg-card rounded-xl border border-border p-4 shadow-sm w-full flex flex-col">
-                            <h2 className="font-medium text-lg my-3 text-center text-primary">
+                        <div className="wedding-surface-card w-full p-4 flex flex-col">
+                            <h2 className="my-3 text-center text-lg font-medium text-pink-500">
                                 {t("tag-details")}
                             </h2>
                             <div className="table w-full border-collapse">
@@ -416,8 +420,8 @@ export default function Page() {
                         }
                     />
                     {analysis && (
-                        <div className="bg-card rounded-xl border border-border p-4 shadow-sm w-full flex flex-col">
-                            <h2 className="font-medium text-lg my-3 text-center text-primary">
+                        <div className="wedding-surface-card w-full p-4 flex flex-col">
+                            <h2 className="my-3 text-center text-lg font-medium text-pink-500">
                                 {t("analysis")}
                             </h2>
                             <AnalysisDetail
@@ -429,7 +433,7 @@ export default function Page() {
                     )}
                     <div className="w-full flex flex-col gap-4">
                         {dataSources.highestExpenseBill && (
-                            <div className="bg-card rounded-xl border border-border p-4 shadow-sm">
+                            <div className="wedding-surface-card p-4">
                                 {t("highest-expense")}:
                                 <BillItem
                                     className="w-full"
@@ -444,7 +448,7 @@ export default function Page() {
                             </div>
                         )}
                         {dataSources.highestIncomeBill && (
-                            <div className="bg-card rounded-xl border border-border p-4 shadow-sm">
+                            <div className="wedding-surface-card p-4">
                                 {t("highest-income")}:
                                 <BillItem
                                     className="w-full"
@@ -463,7 +467,7 @@ export default function Page() {
                         <Button
                             variant="ghost"
                             onClick={() => seeDetails()}
-                            className="text-primary hover:bg-primary/10"
+                            className="text-pink-500 hover:bg-pink-500/10"
                         >
                             {t("see-all-ledgers")}
                             <i className="icon-[mdi--arrow-up-right]"></i>
@@ -473,6 +477,6 @@ export default function Page() {
                 </div>
             </div>
             <BillFilterViewProvider />
-        </div>
+        </WeddingPageShell>
     );
 }

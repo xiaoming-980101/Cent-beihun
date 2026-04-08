@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { MemoryRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Route, Routes } from "react-router";
 import Home from "@/pages/home";
 import { LoadingSkeleton } from "./components/loading";
 import MainLayout from "./layouts/main-layout";
@@ -17,6 +17,7 @@ const Stat = lazyWithReload(
 );
 
 const Search = lazyWithReload(() => import("@/pages/search"));
+const SettingsPage = lazyWithReload(() => import("@/pages/settings"));
 
 // 婚礼筹备助手页面
 const Tasks = lazyWithReload(() => import("@/pages/tasks/Tasks"));
@@ -48,6 +49,14 @@ function RootRoute() {
                     element={
                         <Suspense fallback={<LoadingSkeleton />}>
                             <Stat />
+                        </Suspense>
+                    }
+                />
+                <Route
+                    path="/settings"
+                    element={
+                        <Suspense fallback={<LoadingSkeleton />}>
+                            <SettingsPage />
                         </Suspense>
                     }
                 />
@@ -107,8 +116,8 @@ function RootRoute() {
 
 export default function Rooot() {
     return (
-        <MemoryRouter>
+        <BrowserRouter>
             <RootRoute />
-        </MemoryRouter>
+        </BrowserRouter>
     );
 }

@@ -1,4 +1,4 @@
-import { StorageAPI, StorageDeferredAPI } from "@/api/storage";
+import { StorageAPI } from "@/api/storage";
 import PopupLayout from "@/layouts/popup-layout";
 import { useIntl } from "@/locale";
 import { useUserStore } from "@/store/user";
@@ -79,7 +79,11 @@ function UserInfo() {
                         {t("re-login")}
                     </Button>
                 )}
-                <Button size="sm" className="bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 dark:hover:from-pink-700 dark:hover:to-purple-700" onClick={toLogOut}>
+                <Button
+                    size="sm"
+                    className="bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 text-white rounded-lg hover:from-pink-600 hover:to-purple-600 dark:hover:from-pink-700 dark:hover:to-purple-700"
+                    onClick={toLogOut}
+                >
                     {t("logout")}
                 </Button>
             </div>
@@ -88,11 +92,13 @@ function UserInfo() {
 }
 
 export default function SettingsForm({
-    onConfirm,
     onCancel,
+    hideBack,
+    hideHeaderOnMobile,
 }: {
-    onConfirm?: (isEdit: boolean) => void;
     onCancel?: () => void;
+    hideBack?: boolean;
+    hideHeaderOnMobile?: boolean;
 }) {
     const t = useIntl();
 
@@ -103,6 +109,8 @@ export default function SettingsForm({
             onBack={onCancel}
             title={t("settings")}
             className="h-full overflow-hidden"
+            hideBack={hideBack}
+            hideHeaderOnMobile={hideHeaderOnMobile}
         >
             <div className="divide-y divide-solid flex flex-col overflow-hidden">
                 <UserInfo />
@@ -119,7 +127,9 @@ export default function SettingsForm({
                         </div>
                     </div>
                     <div>
-                        <div className="text-xs px-6 py-2 text-pink-500/80 dark:text-pink-400/80 font-medium">{t("ai")}</div>
+                        <div className="text-xs px-6 py-2 text-pink-500/80 dark:text-pink-400/80 font-medium">
+                            {t("ai")}
+                        </div>
                         <div className="flex flex-col divide-y backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl m-2 shadow-sm border border-white/20 dark:border-stone-700/30">
                             <AssistantSettingsItem />
                             {showRelyr && <QuickEntrySettingsItem />}

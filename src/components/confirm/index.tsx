@@ -46,7 +46,7 @@ export default function createConfirmProvider<Value, Returned = Value>(
             () =>
                 state?.zIndex != null
                     ? { zIndex: `${state.zIndex}` }
-                    : undefined,
+                    : { zIndex: "60" },
             [state?.zIndex],
         );
         // 3. 组件卸载时清理全局 Store 中的数据，避免内存泄漏
@@ -124,7 +124,7 @@ export default function createConfirmProvider<Value, Returned = Value>(
 
     // 4. 暴露的 open 方法封装了 instanceId
     const confirm = (value?: Value) => {
-        const [promise, cancel] = useGlobalConfirmStore
+        const [promise] = useGlobalConfirmStore
             .getState()
             .open<Value, Returned>(instanceId, value);
         return promise;

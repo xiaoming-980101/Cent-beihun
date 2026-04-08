@@ -4,7 +4,6 @@ import {
     AnimatePresence,
     type HTMLMotionProps,
     motion,
-    type PanInfo,
     type Transition,
     usePresence,
 } from "motion/react";
@@ -97,7 +96,6 @@ function transformMotionToNative(transition: Transition) {
         duration = 0.3,
         ease = "easeOut",
         delay = 0,
-        times,
         repeat = 0,
         repeatType = "loop",
     } = transition;
@@ -218,7 +216,10 @@ function DialogOverlay({
                 key="dialog-overlay"
                 {...props}
                 style={{ ...props.style }}
-                className={cn("!transition-none opacity-0", props.className)}
+                className={cn(
+                    "!transition-none opacity-0 z-[60]",
+                    props.className,
+                )}
                 // initial={{ opacity: 0 }}
                 // animate={{ opacity: 1 }}
                 // exit={{ opacity: 0 }}
@@ -240,16 +241,6 @@ type DialogContentProps = Omit<
         swipe?: boolean;
         fade?: boolean;
     };
-
-const toPx = (v: string) => {
-    const p = ["vw", "vh"].find((x) => v.includes(x));
-    if (!p) {
-        return Number(v);
-    }
-    const W = p === "vw" ? window.innerWidth : window.innerHeight;
-    const [w, x] = v.split(p).map((c) => (!c ? 0 : Number(c)));
-    return x + (w / 100) * W;
-};
 
 function DialogContent({
     onOpenAutoFocus,
@@ -277,67 +268,12 @@ function DialogContent({
         [transition],
     );
 
-    const { setIsOpen, setProgress } = useDialog();
+    const { setIsOpen } = useDialog();
     const onClose = useCallback(() => {
         setIsOpen?.(false);
     }, [setIsOpen]);
 
     const dragDismiss = useRef(false);
-
-    // 3. 定义拖拽结束时的处理逻辑（保持不变）
-    const handleDragEnd = useCallback(
-        (event: PointerEvent, info: PanInfo) => {
-            const { offset, velocity } = info;
-            console.log("drag stopped");
-            // ... (拖拽结束逻辑与原先保持一致) ...
-
-            const dismissThreshold = 200;
-            const velocityThreshold = 500;
-
-            const shouldDismiss =
-                offset.x > dismissThreshold || velocity.x > velocityThreshold;
-
-            if (shouldDismiss && offset.x > 0) {
-                contentRef.current
-                    ?.animate(
-                        [
-                            {
-                                transform: `translateX(100vw)`,
-                            },
-                        ],
-                        {
-                            easing: "cubic-bezier(0, 0, 0.58, 1)",
-                            duration: 300,
-                            fill: "forwards",
-                        },
-                    )
-                    .finished.then(() => {
-                        dragDismiss.current = true;
-                        onClose();
-                    });
-            } else {
-                contentRef.current
-                    ?.animate(
-                        [
-                            {
-                                transform: `translateX(0px)`,
-                            },
-                        ],
-                        {
-                            easing: "cubic-bezier(0, 0, 0.58, 1)",
-                            duration: 300,
-                            fill: "forwards",
-                        },
-                    )
-                    .finished.then((ani) => {
-                        ani.commitStyles();
-                        ani.cancel();
-                        contentRef.current?.style.removeProperty("transform");
-                    });
-            }
-        },
-        [onClose],
-    );
 
     useEffect(() => {
         if (isDesktop || fade) return;
@@ -427,9 +363,13 @@ function DialogContent({
             initialPlayed.current = true;
             exitPlayed.current = false;
             // 执行“进入”动画
+            const content = contentRef.current;
+            if (!content) {
+                return;
+            }
             Array.from(Object.entries(currentVariant.animate)).forEach(
                 ([prop, value]) => {
-                    contentRef.current!.style[prop as any] = value;
+                    content.style.setProperty(prop, String(value));
                 },
             );
             contentRef.current
@@ -478,6 +418,7 @@ function DialogContent({
                 key="dialog-content"
                 data-slot="dialog-content"
                 {...props}
+                className={cn("z-[61]", props.className)}
             />
         </DialogPrimitive.Content>
     );

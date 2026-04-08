@@ -1,4 +1,4 @@
-import { orderBy, sortBy } from "lodash-es";
+import { orderBy } from "lodash-es";
 import { Collapsible } from "radix-ui";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
@@ -15,6 +15,11 @@ import {
 } from "@/components/ledger/batch-edit";
 import modal from "@/components/modal";
 import { Button } from "@/components/ui/button";
+import {
+    WeddingEmptyState,
+    WeddingPageShell,
+    WeddingTopBar,
+} from "@/components/wedding-ui";
 import { Checkbox } from "@/components/ui/checkbox";
 import useCategory from "@/hooks/use-category";
 import { useCurrency } from "@/hooks/use-currency";
@@ -222,72 +227,73 @@ export default function Page() {
         await toSearch();
     };
     return (
-        <div className="w-full h-full p-2 flex justify-center overflow-hidden bg-background page-show">
-            <div className="h-full w-full px-2 max-w-[600px] flex flex-col">
-                <div className="search w-full flex justify-center pt-4">
-                    <div className="w-full h-10 bg-card rounded-xl flex items-center px-4 shadow-sm border border-border focus-within:ring-2 focus-within:ring-primary/50 transition-all">
-                        <div className="flex-1">
-                            <Clearable
-                                visible={Boolean(form.comment?.length)}
-                                onClear={() =>
-                                    setForm((v) => ({
-                                        ...v,
-                                        comment: undefined,
-                                    }))
-                                }
-                            >
-                                <input
-                                    value={form.comment ?? ""}
-                                    type="text"
-                                    maxLength={50}
-                                    className="w-full bg-transparent outline-none placeholder:text-muted-foreground"
-                                    placeholder={t(
-                                        "search-comment-placeholder",
-                                    )}
-                                    onChange={(e) => {
+        <WeddingPageShell className="page-show">
+            <WeddingTopBar title="搜索记录" subtitle="按备注、分类、金额和标签筛选账单" />
+            <div className="flex w-full flex-1 flex-col gap-4 lg:grid lg:grid-cols-[0.92fr_1.08fr]">
+                <div className="space-y-4">
+                    <div className="wedding-surface-card w-full p-4">
+                        <div className="flex h-12 items-center rounded-2xl border border-[color:var(--wedding-line)] bg-white/70 px-4 shadow-sm focus-within:ring-2 focus-within:ring-pink-300/40 dark:bg-white/6">
+                            <div className="flex-1">
+                                <Clearable
+                                    visible={Boolean(form.comment?.length)}
+                                    onClear={() =>
                                         setForm((v) => ({
                                             ...v,
-                                            comment: e.target.value,
-                                        }));
-                                    }}
-                                />
-                            </Clearable>
+                                            comment: undefined,
+                                        }))
+                                    }
+                                >
+                                    <input
+                                        value={form.comment ?? ""}
+                                        type="text"
+                                        maxLength={50}
+                                        className="w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--wedding-text-mute)]"
+                                        placeholder="搜索备注、分类、金额和标签..."
+                                        onChange={(e) => {
+                                            setForm((v) => ({
+                                                ...v,
+                                                comment: e.target.value,
+                                            }));
+                                        }}
+                                    />
+                                </Clearable>
+                            </div>
+                            <Button
+                                variant="ghost"
+                                className="h-10 rounded-xl px-4 text-pink-500 hover:bg-pink-500/10 transition-colors"
+                                onClick={() => {
+                                    toSearch();
+                                    setTimeout(() => {
+                                        setSearched(true);
+                                    }, 1000);
+                                }}
+                            >
+                                <i className="icon-[mdi--search]"></i>
+                            </Button>
                         </div>
-                        <Button
-                            variant="ghost"
-                            className="p-3 rounded-lg text-primary hover:bg-primary/10 transition-colors"
-                            onClick={() => {
-                                toSearch();
-                                setTimeout(() => {
-                                    setSearched(true);
-                                }, 1000);
-                            }}
-                        >
-                            <i className="icon-[mdi--search]"></i>
-                        </Button>
                     </div>
                 </div>
                 <Collapsible.Root
                     open={filterOpen}
                     onOpenChange={setFilterOpen}
-                    className="flex flex-col group pt-3 text-xs md:text-sm font-medium"
+                    className="group flex flex-col text-xs font-medium md:text-sm"
                 >
                     <Collapsible.Content className="data-[state=open]:animate-collapse-open data-[state=closed]:animate-collapse-close data-[state=closed]:overflow-hidden">
-                        <div className="bg-card rounded-xl p-3 mb-2 shadow-sm border border-border">
+                        <div className="wedding-surface-card mb-2 p-3">
                             <BillFilterForm form={form} setForm={setForm} />
                         </div>
                     </Collapsible.Content>
-                    <div className="w-full flex justify-between px-2 pt-1">
+                    <div className="wedding-surface-card flex w-full justify-between px-3 py-2">
                         <Button
                             variant="ghost"
-                            className="text-primary hover:bg-primary/10 transition-colors rounded-lg"
+                            className="rounded-lg text-pink-500 hover:bg-pink-500/10 transition-colors"
                             onClick={toReset}
                         >
                             {t("reset")}
                         </Button>
                         {searched && (
                             <Button
-                                className="text-xs underline animate-content-show text-primary hover:bg-primary/10 transition-colors rounded-lg"
+                                className="animate-content-show rounded-lg text-xs text-pink-500 underline hover:bg-pink-500/10 transition-colors"
                                 variant="ghost"
                                 size="sm"
                                 onClick={toSaveFilter}
@@ -304,7 +310,7 @@ export default function Page() {
                             <Collapsible.Trigger asChild>
                                 <Button
                                     variant="ghost"
-                                    className="text-primary hover:bg-primary/10 transition-colors rounded-lg"
+                                    className="rounded-lg text-pink-500 hover:bg-pink-500/10 transition-colors"
                                 >
                                     <i className="group-[[data-state=open]]:icon-[mdi--filter-variant-minus] group-[[data-state=closed]]:icon-[mdi--filter-variant-plus]"></i>
                                     {t("filter")}
@@ -315,7 +321,7 @@ export default function Page() {
                 </Collapsible.Root>
                 <div
                     className={cn(
-                        "bg-card rounded-xl px-4 py-2 mx-2 text-xs text-foreground shadow-sm border border-border flex items-center justify-between",
+                        "wedding-surface-card mx-1 flex items-center justify-between px-4 py-2 text-xs text-[color:var(--wedding-text)]",
                         enableSelect && "pl-2",
                     )}
                 >
@@ -324,7 +330,7 @@ export default function Page() {
                             <>
                                 {sorted.length > 0 && (
                                     <Button
-                                        className="p-1 h-fit text-primary hover:bg-primary/10 transition-colors rounded-lg"
+                                        className="h-fit rounded-lg p-1 text-pink-500 hover:bg-pink-500/10 transition-colors"
                                         variant={"ghost"}
                                         size="sm"
                                         onClick={() => {
@@ -371,12 +377,13 @@ export default function Page() {
                                     {t("cancel")}
                                 </Button>
                                 <span className="text-primary font-medium">
+                                    {" "}
                                     {selectedIds.length}/{sorted.length}
                                 </span>
                                 {selectedIds.length > 0 && (
                                     <>
                                         <Button
-                                            className="p-1 h-fit text-primary hover:bg-primary/10 transition-colors rounded-lg"
+                                            className="h-fit rounded-lg p-1 text-pink-500 hover:bg-pink-500/10 transition-colors"
                                             variant={"ghost"}
                                             size="sm"
                                             onClick={toBatchEdit}
@@ -384,7 +391,7 @@ export default function Page() {
                                             {t("edit")}
                                         </Button>
                                         <Button
-                                            className="p-1 h-fit text-destructive hover:bg-destructive/10 transition-colors rounded-lg"
+                                            className="h-fit rounded-lg p-1 text-destructive hover:bg-destructive/10 transition-colors"
                                             variant={"ghost"}
                                             size="sm"
                                             onClick={toBatchDelete}
@@ -400,7 +407,7 @@ export default function Page() {
                         <Button
                             size="sm"
                             variant="ghost"
-                            className="text-primary hover:bg-primary/10 transition-colors rounded-lg"
+                            className="rounded-lg text-pink-500 hover:bg-pink-500/10 transition-colors"
                             onClick={() => {
                                 setSortIndex((v) => {
                                     if (v === SORTS.length - 1) {
@@ -415,16 +422,26 @@ export default function Page() {
                         </Button>
                     </div>
                 </div>
-                <Ledger
-                    bills={sorted}
-                    showTime
-                    selectedIds={enableSelect ? selectedIds : undefined}
-                    onSelectChange={onSelectChange}
-                    afterEdit={toSearch}
-                    showAssets={showAssets}
-                />
+                <div className="wedding-surface-card min-h-[320px] overflow-hidden p-1">
+                    {sorted.length > 0 ? (
+                        <Ledger
+                            bills={sorted}
+                            showTime
+                            selectedIds={enableSelect ? selectedIds : undefined}
+                            onSelectChange={onSelectChange}
+                            afterEdit={toSearch}
+                            showAssets={showAssets}
+                        />
+                    ) : (
+                        <WeddingEmptyState
+                            icon="icon-[mdi--file-search-outline]"
+                            title="还没有搜索结果"
+                            description="输入关键字或展开筛选面板，账本记录会在这里展示。"
+                        />
+                    )}
+                </div>
             </div>
             <BatchEditProvider />
-        </div>
+        </WeddingPageShell>
     );
 }

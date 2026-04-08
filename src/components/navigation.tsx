@@ -4,151 +4,295 @@ import { useLocation, useNavigate } from "react-router";
 import ComplexAddButton from "./add-button";
 import { goAddBill } from "./bill-editor";
 import { afterAddBillPromotion } from "./promotion";
-import { showSettings } from "./settings";
+
+const mobileTabItems = [
+    { path: "/", label: "首页", icon: "icon-[mdi--home-outline]" },
+    {
+        path: "/tasks",
+        label: "任务",
+        icon: "icon-[mdi--format-list-checkbox]",
+    },
+    { path: "/tools", label: "工具", icon: "icon-[mdi--toolbox-outline]" },
+    { path: "/settings", label: "设置", icon: "icon-[mdi--cog-outline]" },
+];
+
+export function getMobileHeaderMeta(pathname: string) {
+    if (pathname === "/") {
+        return { title: "Cent", subtitle: "婚礼账本与筹备中心" };
+    }
+    if (pathname === "/tasks") {
+        return { title: "Cent", subtitle: "婚礼任务进度" };
+    }
+    if (pathname === "/tools") {
+        return { title: "Cent", subtitle: "高效备婚，从这里开始" };
+    }
+    if (pathname === "/settings") {
+        return { title: "设置", subtitle: "偏好、同步与账本配置" };
+    }
+    if (pathname === "/tasks/calendar") {
+        return {
+            title: "任务日历",
+            subtitle: "按日期查看婚礼待办",
+            backTo: "/tasks",
+        };
+    }
+    if (pathname === "/tools/gift-book") {
+        return {
+            title: "礼金簿",
+            subtitle: "记录收礼送礼与人情往来",
+            backTo: "/tools",
+        };
+    }
+    if (pathname === "/tools/guests") {
+        return {
+            title: "亲友管理",
+            subtitle: "管理宾客名单与邀请状态",
+            backTo: "/tools",
+        };
+    }
+    if (pathname === "/tools/wedding-budget") {
+        return {
+            title: "婚礼预算",
+            subtitle: "跟踪定金、尾款与执行情况",
+            backTo: "/tools",
+        };
+    }
+    if (pathname.startsWith("/search")) {
+        return {
+            title: "搜索记录",
+            subtitle: "按备注、分类、金额和标签筛选账单",
+            backTo: "/",
+        };
+    }
+    if (pathname.startsWith("/stat")) {
+        return {
+            title: "统计分析",
+            subtitle: "婚礼支出与收入结构总览",
+            backTo: "/",
+        };
+    }
+    return { title: "Cent" };
+}
+
+export function MobileTopBar() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const headerMeta = getMobileHeaderMeta(location.pathname);
+
+    return (
+        <header className="shrink-0 sm:hidden">
+            <div className="border-b border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)]/96 px-4 pb-3 pt-[calc(env(safe-area-inset-top)+0.75rem)] backdrop-blur-xl">
+                <div className="mx-auto flex h-[calc(var(--mobile-topbar-height)-1rem)] max-w-[880px] items-center justify-between gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
+                        {headerMeta.backTo ? (
+                            <button
+                                type="button"
+                                className="flex h-10 w-10 items-center justify-center rounded-full text-[color:var(--wedding-text)] transition-colors hover:bg-white/70"
+                                onClick={() => navigate(headerMeta.backTo)}
+                            >
+                                <i className="icon-[mdi--chevron-left] size-5" />
+                            </button>
+                        ) : (
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-gradient-to-br from-slate-700 to-slate-900 text-white shadow-sm">
+                                <i className="icon-[mdi--account] size-4" />
+                            </div>
+                        )}
+                        <div className="min-w-0">
+                            <div
+                                className={
+                                    headerMeta.backTo
+                                        ? "wedding-topbar-title truncate text-[24px] leading-none text-[color:var(--wedding-text)]"
+                                        : "wedding-brand truncate text-[24px] leading-none"
+                                }
+                            >
+                                {headerMeta.title}
+                            </div>
+                            {headerMeta.subtitle ? (
+                                <div className="mt-1 truncate text-xs wedding-muted">
+                                    {headerMeta.subtitle}
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
+                    <button
+                        type="button"
+                        className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
+                            location.pathname === "/settings"
+                                ? "bg-pink-500/12 text-pink-500"
+                                : "text-[color:var(--wedding-text-soft)] hover:bg-white/70"
+                        }`}
+                        onClick={() => navigate("/settings")}
+                        aria-label="打开设置"
+                    >
+                        <i className="icon-[mdi--cog-outline] size-5" />
+                    </button>
+                </div>
+            </div>
+        </header>
+    );
+}
 
 export default function Navigation() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const currentTab = useMemo(() => {
-        const paths = ["/stat", "/tasks", "/tools", "/", "/search"];
-        return paths.find(
-            (x) => location.pathname.startsWith(x) || location.pathname === x,
-        );
+    const items = useMemo(() => {
+        return mobileTabItems.map((item) => ({
+            ...item,
+            active:
+                item.path === "/"
+                    ? location.pathname === item.path
+                    : location.pathname === item.path ||
+                      location.pathname.startsWith(`${item.path}/`),
+        }));
     }, [location.pathname]);
 
-    const switchTab = (
-        value: "/" | "/stat" | "/tasks" | "/tools" | "/search",
-    ) => {
-        navigate(`${value}`);
-    };
-
-    // 工具子页面隐藏tab栏
-    const isToolSubPage =
-        location.pathname.startsWith("/tools/") &&
-        location.pathname !== "/tools";
-    if (isToolSubPage) {
-        return null;
-    }
+    const sidebarItems = [
+        { path: "/", label: "首页", icon: "icon-[mdi--home-outline]" },
+        {
+            path: "/tasks",
+            label: "任务",
+            icon: "icon-[mdi--format-list-checkbox]",
+        },
+        { path: "/tools", label: "工具", icon: "icon-[mdi--toolbox-outline]" },
+        {
+            path: "/search",
+            label: "搜索",
+            icon: "icon-[mdi--text-box-search-outline]",
+        },
+        { path: "/stat", label: "统计", icon: "icon-[mdi--chart-donut]" },
+    ];
 
     return createPortal(
-        <div
-            className="floating-tab fixed w-screen h-18 flex items-center justify-around sm:h-screen
-         sm:w-18 sm:flex-col sm:justify-start z-[0]
-         bottom-[calc(.25rem+env(safe-area-inset-bottom))]
-         sm:top-[env(safe-area-inset-top)] sm:left-[calc(.25rem+env(safe-area-inset-left))]
-         backdrop-blur-xl bg-background/90 dark:bg-background/90 rounded-xl shadow-lg border border-border/50"
-        >
-            {/* 任务 */}
-            <button
-                type="button"
-                className={`w-14 h-14 sm:w-10 sm:h-10 cursor-pointer flex items-center justify-center rounded-xl m-2 transition-all hover:bg-primary/10 ${
-                    currentTab === "/tasks" ? "bg-primary/20" : ""
-                }`}
-                onClick={() => switchTab("/tasks")}
-                title="任务"
-            >
-                <i
-                    className={`icon-[mdi--format-list-bulleted] size-5 ${
-                        currentTab === "/tasks"
-                            ? "text-primary"
-                            : "text-muted-foreground"
-                    }`}
-                ></i>
-            </button>
+        <>
+            <nav className="fixed inset-x-0 bottom-[max(0.5rem,env(safe-area-inset-bottom))] z-20 px-3 sm:hidden">
+                <div className="mx-auto flex h-[var(--mobile-bottombar-height)] max-w-[430px] items-center justify-between rounded-[32px] border border-white/70 bg-[color:var(--wedding-surface)]/92 px-3 shadow-[0_24px_40px_-24px_rgba(15,23,42,0.38)] backdrop-blur-2xl">
+                    <div className="flex flex-1 items-end justify-between pr-4">
+                        {items.slice(0, 2).map((item) => (
+                            <button
+                                key={item.path}
+                                type="button"
+                                className={`flex min-w-[62px] flex-col items-center gap-1 rounded-[20px] px-2 py-2 text-xs transition-all ${
+                                    item.active
+                                        ? "bg-gradient-to-b from-pink-500/16 to-fuchsia-500/8"
+                                        : ""
+                                }`}
+                                onClick={() => navigate(item.path)}
+                            >
+                                <i
+                                    className={`${item.icon} size-5 ${
+                                        item.active
+                                            ? "text-pink-500"
+                                            : "text-[color:var(--wedding-text-mute)]"
+                                    }`}
+                                ></i>
+                                <span
+                                    className={
+                                        item.active
+                                            ? "text-pink-500"
+                                            : "text-[color:var(--wedding-text-mute)]"
+                                    }
+                                >
+                                    {item.label}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
 
-            {/* 工具 */}
-            <button
-                type="button"
-                className={`w-14 h-14 sm:w-10 sm:h-10 cursor-pointer flex items-center justify-center rounded-xl m-2 transition-all hover:bg-primary/10 ${
-                    currentTab === "/tools" ? "bg-primary/20" : ""
-                }`}
-                onClick={() => switchTab("/tools")}
-                title="工具箱"
-            >
-                <i
-                    className={`icon-[mdi--toolbox-outline] size-5 ${
-                        currentTab === "/tools"
-                            ? "text-primary"
-                            : "text-muted-foreground"
-                    }`}
-                ></i>
-            </button>
+                    <div className="relative -mt-7 flex h-[72px] w-[72px] items-center justify-center">
+                        <div className="absolute inset-0 rounded-full bg-[color:var(--wedding-app-bg)]/94 shadow-[0_-8px_24px_-18px_rgba(15,23,42,0.55)]"></div>
+                        <div className="absolute inset-[7px] rounded-full bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 wedding-fab-shadow"></div>
+                        <ComplexAddButton
+                            className="relative z-[1] !m-0 !h-14 !w-14 !rounded-full !bg-transparent [&_i]:!text-white"
+                            onClick={() => {
+                                goAddBill();
+                                afterAddBillPromotion();
+                            }}
+                        />
+                    </div>
 
-            {/* middle group */}
-            <div className="flex items-center rounded-xl p-1 w-56 h-14 m-2 sm:flex-col sm:w-10 sm:h-50 sm:-order-1">
+                    <div className="flex flex-1 items-end justify-between pl-4">
+                        {items.slice(2).map((item) => (
+                            <button
+                                key={item.path}
+                                type="button"
+                                className={`flex min-w-[62px] flex-col items-center gap-1 rounded-[20px] px-2 py-2 text-xs transition-all ${
+                                    item.active
+                                        ? "bg-gradient-to-b from-pink-500/16 to-fuchsia-500/8"
+                                        : ""
+                                }`}
+                                onClick={() => navigate(item.path)}
+                            >
+                                <i
+                                    className={`${item.icon} size-5 ${
+                                        item.active
+                                            ? "text-pink-500"
+                                            : "text-[color:var(--wedding-text-mute)]"
+                                    }`}
+                                ></i>
+                                <span
+                                    className={
+                                        item.active
+                                            ? "text-pink-500"
+                                            : "text-[color:var(--wedding-text-mute)]"
+                                    }
+                                >
+                                    {item.label}
+                                </span>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            </nav>
+
+            <aside className="fixed bottom-4 left-4 top-4 z-20 hidden w-[92px] flex-col rounded-[28px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)]/94 p-3 shadow-[var(--wedding-shadow-soft)] backdrop-blur-xl sm:flex">
                 <button
                     type="button"
-                    className={`flex-1 h-full w-full transition rounded-xl flex items-center justify-center cursor-pointer hover:bg-primary/10 ${
-                        currentTab === "/" ? "bg-primary/20" : ""
-                    }`}
-                    onClick={() => switchTab("/")}
-                    title="首页"
-                >
-                    <i
-                        className={`icon-[mdi--format-align-center] size-5 ${
-                            currentTab === "/"
-                                ? "text-primary"
-                                : "text-muted-foreground"
-                        }`}
-                    ></i>
-                </button>
-
-                <ComplexAddButton
+                    className="mb-4 flex h-14 items-center justify-center rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 text-white wedding-fab-shadow"
                     onClick={() => {
                         goAddBill();
                         afterAddBillPromotion();
                     }}
-                />
-
+                    title="新增记录"
+                >
+                    <i className="icon-[mdi--plus] size-6" />
+                </button>
+                {sidebarItems.map((item) => {
+                    const path = item.path;
+                    const active =
+                        path === "/"
+                            ? location.pathname === "/"
+                            : location.pathname.startsWith(path);
+                    return (
+                        <button
+                            key={path}
+                            type="button"
+                            className={`mb-2 flex h-16 flex-col items-center justify-center gap-1 rounded-2xl transition-all ${
+                                active
+                                    ? "bg-gradient-to-br from-pink-500/16 to-violet-500/16 text-pink-500"
+                                    : "text-[color:var(--wedding-text-soft)] hover:bg-white/60 dark:hover:bg-white/6"
+                            }`}
+                            onClick={() => navigate(path)}
+                        >
+                            <i className={`${item.icon} size-5`} />
+                            <span className="text-xs">{item.label}</span>
+                        </button>
+                    );
+                })}
                 <button
                     type="button"
-                    className={`flex-1 h-full w-full transition-all rounded-xl flex items-center justify-center cursor-pointer hover:bg-primary/10 ${
-                        currentTab === "/stat" ? "bg-primary/20" : ""
+                    className={`mt-auto flex h-16 flex-col items-center justify-center gap-1 rounded-2xl transition-all ${
+                        location.pathname === "/settings"
+                            ? "bg-gradient-to-br from-pink-500/16 to-violet-500/16 text-pink-500"
+                            : "text-[color:var(--wedding-text-soft)] hover:bg-white/60 dark:hover:bg-white/6"
                     }`}
-                    onClick={() => switchTab("/stat")}
-                    title="统计"
+                    onClick={() => navigate("/settings")}
                 >
-                    <i
-                        className={`icon-[mdi--chart-box-outline] size-5 ${
-                            currentTab === "/stat"
-                                ? "text-primary"
-                                : "text-muted-foreground"
-                        }`}
-                    ></i>
+                    <i className="icon-[mdi--cog-outline] size-5" />
+                    <span className="text-xs">设置</span>
                 </button>
-            </div>
-
-            {/* 搜索 */}
-            <button
-                type="button"
-                className={`w-14 h-14 sm:w-10 sm:h-10 cursor-pointer flex items-center justify-center rounded-xl m-2 transition-all hover:bg-primary/10 ${
-                    currentTab === "/search" ? "bg-primary/20" : ""
-                }`}
-                onClick={() => switchTab("/search")}
-                title="搜索"
-            >
-                <i
-                    className={`icon-[mdi--search] size-5 ${
-                        currentTab === "/search"
-                            ? "text-primary"
-                            : "text-muted-foreground"
-                    }`}
-                ></i>
-            </button>
-
-            {/* settings */}
-            <button
-                type="button"
-                className="w-14 h-14 sm:w-10 sm:h-10 cursor-pointer flex items-center justify-center rounded-xl m-2 transition-all hover:bg-primary/10"
-                onClick={() => {
-                    showSettings();
-                }}
-                title="设置"
-            >
-                <i className="icon-[mdi--more-horiz] size-5 text-muted-foreground"></i>
-            </button>
-        </div>,
+            </aside>
+        </>,
         document.body,
     );
 }

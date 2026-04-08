@@ -3,9 +3,12 @@
  */
 
 import { useState } from "react";
+import {
+    WeddingPageShell,
+    WeddingTopBar,
+} from "@/components/wedding-ui";
 import { useWeddingStore } from "@/store/wedding";
 import type { WeddingTask } from "@/wedding/type";
-import { getCategoryIcon } from "@/wedding/utils";
 
 export default function TaskCalendar() {
     const { weddingData } = useWeddingStore();
@@ -58,115 +61,103 @@ export default function TaskCalendar() {
     };
 
     return (
-        <div className="flex flex-col h-full bg-background">
-            {/* 月份导航 */}
-            <div className="bg-card rounded-xl border border-border p-4 m-2 shadow-sm flex justify-between items-center">
+        <WeddingPageShell>
+            <WeddingTopBar title="任务日历" subtitle="按日期查看婚礼待办" backTo="/tasks" />
+
+            <section className="wedding-surface-card flex items-center justify-between p-4">
                 <button
+                    type="button"
                     onClick={prevMonth}
-                    className="p-2 rounded-full hover:bg-primary/10 transition-colors"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-[color:var(--wedding-text)] dark:bg-white/6"
                 >
-                    <i className="icon-[mdi--chevron-left] text-foreground" />
+                    <i className="icon-[mdi--chevron-left]" />
                 </button>
-                <span className="font-medium text-foreground">
-                    {currentMonth.getFullYear()}年{currentMonth.getMonth() + 1}
-                    月
+                <span className="text-lg font-semibold text-[color:var(--wedding-text)]">
+                    {currentMonth.getFullYear()}年{currentMonth.getMonth() + 1}月
                 </span>
                 <button
+                    type="button"
                     onClick={nextMonth}
-                    className="p-2 rounded-full hover:bg-primary/10 transition-colors"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white/80 text-[color:var(--wedding-text)] dark:bg-white/6"
                 >
-                    <i className="icon-[mdi--chevron-right] text-foreground" />
+                    <i className="icon-[mdi--chevron-right]" />
                 </button>
-            </div>
+            </section>
 
-            {/* 日历网格 */}
-            <div className="flex-1 overflow-y-auto">
-                <div className="bg-card rounded-xl border border-border p-4 m-2 shadow-sm">
-                    {/* 星期标题 */}
-                    <div className="grid grid-cols-7 gap-1 mb-2 text-center text-sm">
-                        {["日", "一", "二", "三", "四", "五", "六"].map(
-                            (day) => (
+            <section className="wedding-surface-card p-4">
+                <div className="mb-3 grid grid-cols-7 gap-2 text-center text-sm">
+                    {["日", "一", "二", "三", "四", "五", "六"].map((day) => (
+                        <div key={day} className="py-2 font-medium wedding-muted">
+                            {day}
+                        </div>
+                    ))}
+                </div>
+
+                <div className="grid grid-cols-7 gap-2">
+                    {Array.from({ length: firstDayOfWeek }, (_, i) => i).map((offset) => (
+                        <div
+                            key={`empty-${offset + 1}`}
+                            className="min-h-[88px] rounded-2xl bg-black/3 dark:bg-white/5"
+                        />
+                    ))}
+
+                    {Array.from({ length: daysInMonth }).map((_, i) => {
+                        const day = i + 1;
+                        const date = new Date(
+                            currentMonth.getFullYear(),
+                            currentMonth.getMonth(),
+                            day,
+                        );
+                        const dateKey = date.toLocaleDateString();
+                        const dayTasks = tasksByDate[dateKey] || [];
+                        const isToday =
+                            date.toDateString() === new Date().toDateString();
+
+                        return (
+                            <div
+                                key={day}
+                                className={`min-h-[88px] rounded-2xl border p-2 transition-all ${
+                                    isToday
+                                        ? "border-pink-300 bg-pink-50 dark:border-pink-500/30 dark:bg-pink-500/10"
+                                        : "border-[color:var(--wedding-line)] bg-white/60 dark:bg-white/3"
+                                }`}
+                            >
                                 <div
-                                    key={day}
-                                    className="py-2 text-muted-foreground font-medium border-b border-border"
+                                    className={`text-sm ${
+                                        isToday
+                                            ? "font-bold text-pink-500"
+                                            : "text-[color:var(--wedding-text)]"
+                                    }`}
                                 >
                                     {day}
                                 </div>
-                            ),
-                        )}
-                    </div>
-
-                    {/* 日期格子 */}
-                    <div className="grid grid-cols-7 gap-1">
-                        {/* 填充第一天前的空白 */}
-                        {Array.from({ length: firstDayOfWeek }).map((_, i) => (
-                            <div
-                                key={`empty-${i}`}
-                                className="min-h-[80px] bg-muted/50 rounded-lg"
-                            />
-                        ))}
-
-                        {/* 日期格子 */}
-                        {Array.from({ length: daysInMonth }).map((_, i) => {
-                            const day = i + 1;
-                            const date = new Date(
-                                currentMonth.getFullYear(),
-                                currentMonth.getMonth(),
-                                day,
-                            );
-                            const dateKey = date.toLocaleDateString();
-                            const dayTasks = tasksByDate[dateKey] || [];
-                            const isToday =
-                                date.toDateString() ===
-                                new Date().toDateString();
-
-                            return (
-                                <div
-                                    key={day}
-                                    className={`min-h-[80px] p-1.5 rounded-lg border transition-all duration-200 cursor-pointer hover:shadow-md ${
-                                        isToday
-                                            ? "bg-primary/20 border-primary hover:bg-primary/30"
-                                            : "border-border bg-card hover:bg-accent"
-                                    }`}
-                                >
-                                    <div
-                                        className={`text-sm mb-1 ${
-                                            isToday
-                                                ? "text-primary font-bold"
-                                                : "text-foreground"
-                                        }`}
-                                    >
-                                        {day}
-                                    </div>
-                                    <div className="mt-1 space-y-0.5">
-                                        {dayTasks.slice(0, 3).map((task) => (
-                                            <div
-                                                key={task.id}
-                                                className={`text-xs px-1.5 py-0.5 rounded truncate ${
-                                                    task.status === "completed"
-                                                        ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
-                                                        : task.status ===
-                                                            "in_progress"
-                                                          ? "bg-primary/20 text-primary"
-                                                          : "bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400"
-                                                }`}
-                                                title={task.title}
-                                            >
-                                                {task.title}
-                                            </div>
-                                        ))}
-                                        {dayTasks.length > 3 && (
-                                            <div className="text-xs text-muted-foreground">
-                                                +{dayTasks.length - 3}项
-                                            </div>
-                                        )}
-                                    </div>
+                                <div className="mt-2 space-y-1">
+                                    {dayTasks.slice(0, 3).map((task) => (
+                                        <div
+                                            key={task.id}
+                                            className={`truncate rounded-md px-1.5 py-0.5 text-[10px] ${
+                                                task.status === "completed"
+                                                    ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10"
+                                                    : task.status === "in_progress"
+                                                      ? "bg-pink-100 text-pink-500 dark:bg-pink-500/10"
+                                                      : "bg-violet-100 text-violet-500 dark:bg-violet-500/10"
+                                            }`}
+                                            title={task.title}
+                                        >
+                                            {task.title}
+                                        </div>
+                                    ))}
+                                    {dayTasks.length > 3 ? (
+                                        <div className="text-[10px] wedding-muted">
+                                            +{dayTasks.length - 3}项
+                                        </div>
+                                    ) : null}
                                 </div>
-                            );
-                        })}
-                    </div>
+                            </div>
+                        );
+                    })}
                 </div>
-            </div>
-        </div>
+            </section>
+        </WeddingPageShell>
     );
 }

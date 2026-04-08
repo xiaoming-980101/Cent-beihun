@@ -3,7 +3,7 @@
  */
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router";
 import {
     Dialog,
     DialogContent,
@@ -12,6 +12,12 @@ import {
     DialogPortal,
     DialogTitle,
 } from "@/components/ui/dialog";
+import {
+    WeddingActionButton,
+    WeddingEmptyState,
+    WeddingPageShell,
+    WeddingTopBar,
+} from "@/components/wedding-ui";
 import { useWeddingStore } from "@/store/wedding";
 import { TaskForm } from "@/wedding/components";
 import {
@@ -19,22 +25,18 @@ import {
     TASK_PRIORITIES,
     TASK_STATUSES,
 } from "@/wedding/constants";
-import type {
-    TaskCategory,
-    TaskPriority,
-    TaskStatus,
-    WeddingTask,
-} from "@/wedding/type";
-import { getCategoryIcon, getCategoryName } from "@/wedding/utils";
+import type { TaskStatus, WeddingTask } from "@/wedding/type";
+import { getCategoryIcon } from "@/wedding/utils";
 
 export default function Tasks() {
-    const { weddingData, addTask, updateTask, deleteTask } = useWeddingStore();
+    const navigate = useNavigate();
+    const { weddingData, updateTask, deleteTask } = useWeddingStore();
     const tasks = weddingData?.tasks || [];
 
     const [filterCategory, setFilterCategory] = useState<string>("all");
     const [filterStatus, setFilterStatus] = useState<string>("all");
     const [showForm, setShowForm] = useState(false);
-    const [editingTask, setEditingTask] = useState<any>(null);
+    const [editingTask, setEditingTask] = useState<WeddingTask | null>(null);
 
     const filteredTasks = tasks.filter((task) => {
         if (filterCategory !== "all" && task.category !== filterCategory)
@@ -50,31 +52,39 @@ export default function Tasks() {
         totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
     return (
-        <div className="flex flex-col h-full bg-background">
-            {/* 进度条 */}
-            <div className="bg-card rounded-xl border border-border p-4 m-2 shadow-sm">
-                <div className="flex justify-between text-sm mb-2">
-                    <span>
-                        进度: {completedCount}/{totalCount} 完成
+        <WeddingPageShell>
+            <WeddingTopBar title="Cent" subtitle="婚礼任务进度" />
+
+            <section className="wedding-surface-card p-4">
+                <div className="flex items-center justify-between text-sm">
+                    <span className="text-[color:var(--wedding-text)]">婚礼任务进度</span>
+                    <span className="font-semibold text-pink-500">
+                        {completedCount}/{totalCount} ({progress}%)
                     </span>
-                    <span>{progress}%</span>
                 </div>
-                <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+                <div className="mt-4 h-3 rounded-full bg-pink-100 dark:bg-white/8">
                     <div
-                        className="h-full bg-gradient-to-r from-primary to-purple-400 rounded-full transition-all"
+                        className="h-full rounded-full bg-gradient-to-r from-pink-400 to-violet-500 transition-all"
                         style={{ width: `${progress}%` }}
                     />
                 </div>
-            </div>
+            </section>
 
-            {/* 筛选器 */}
-            <div className="bg-card rounded-xl border border-border p-4 m-2 shadow-sm flex gap-2 flex-wrap">
+            <section className="wedding-surface-card flex flex-wrap gap-2 p-4">
+                <WeddingActionButton
+                    className="h-11 rounded-2xl px-5 text-sm"
+                    onClick={() => navigate("/tasks/calendar")}
+                >
+                    <i className="icon-[mdi--calendar-month-outline] mr-1 size-4" />
+                    日历视图
+                </WeddingActionButton>
+
                 <select
-                    className="bg-background rounded-lg border border-border px-3 py-2 text-sm"
+                    className="rounded-2xl border border-[color:var(--wedding-line)] bg-white/80 px-4 py-2.5 text-sm text-[color:var(--wedding-text)] outline-none dark:bg-white/6"
                     value={filterCategory}
                     onChange={(e) => setFilterCategory(e.target.value)}
                 >
-                    <option value="all">全部分类</option>
+                    <option value="all">所有分类</option>
                     {TASK_CATEGORIES.map((cat) => (
                         <option key={cat.id} value={cat.id}>
                             {cat.name}
@@ -83,11 +93,11 @@ export default function Tasks() {
                 </select>
 
                 <select
-                    className="bg-background rounded-lg border border-border px-3 py-2 text-sm"
+                    className="rounded-2xl border border-[color:var(--wedding-line)] bg-white/80 px-4 py-2.5 text-sm text-[color:var(--wedding-text)] outline-none dark:bg-white/6"
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
                 >
-                    <option value="all">全部状态</option>
+                    <option value="all">状态</option>
                     {TASK_STATUSES.map((status) => (
                         <option key={status.id} value={status.id}>
                             {status.name}
@@ -95,56 +105,54 @@ export default function Tasks() {
                     ))}
                 </select>
 
-                <Button
-                    size="sm"
-                    className="bg-gradient-to-r from-primary to-purple-400 text-white rounded-lg shadow-md"
+                <WeddingActionButton
+                    className="ml-auto h-11 rounded-2xl px-5 text-sm"
                     onClick={() => {
                         setEditingTask(null);
                         setShowForm(true);
                     }}
                 >
-                    <i className="icon-[mdi--plus] mr-1" />
+                    <i className="icon-[mdi--plus] mr-1 size-4" />
                     添加任务
-                </Button>
-            </div>
+                </WeddingActionButton>
+            </section>
 
-            {/* 任务列表 */}
-            <div className="flex-1 overflow-y-auto p-4">
+            <section className="space-y-3">
                 {filteredTasks.length === 0 ? (
-                    <div className="bg-card rounded-xl border border-border p-4 m-2 shadow-sm text-center text-muted-foreground py-8">
-                        暂无任务
-                    </div>
+                    <WeddingEmptyState
+                        icon="icon-[mdi--party-popper]"
+                        title="开始筹备您的婚礼"
+                        description="每一个小任务的完成，都是通往完美婚礼的一大步。"
+                    />
                 ) : (
-                    <div className="space-y-2">
-                        {filteredTasks.map((task) => (
-                            <TaskItem
-                                key={task.id}
-                                task={task}
-                                onToggleStatus={() => {
-                                    const newStatus: TaskStatus =
-                                        task.status === "pending"
-                                            ? "in_progress"
-                                            : task.status === "in_progress"
-                                              ? "completed"
-                                              : "pending";
-                                    updateTask(task.id, { status: newStatus });
-                                }}
-                                onEdit={() => {
-                                    setEditingTask(task);
-                                    setShowForm(true);
-                                }}
-                                onDelete={() => deleteTask(task.id)}
-                            />
-                        ))}
-                    </div>
+                    filteredTasks.map((task) => (
+                        <TaskItem
+                            key={task.id}
+                            task={task}
+                            onToggleStatus={() => {
+                                const newStatus: TaskStatus =
+                                    task.status === "pending"
+                                        ? "in_progress"
+                                        : task.status === "in_progress"
+                                          ? "completed"
+                                          : "pending";
+                                updateTask(task.id, { status: newStatus });
+                            }}
+                            onEdit={() => {
+                                setEditingTask(task);
+                                setShowForm(true);
+                            }}
+                            onDelete={() => deleteTask(task.id)}
+                        />
+                    ))
                 )}
-            </div>
+            </section>
 
             {/* 表单弹窗 */}
             <Dialog open={showForm} onOpenChange={setShowForm}>
                 <DialogPortal>
                     <DialogOverlay className="fixed inset-0 bg-black/50" />
-                    <div className="fixed top-0 left-0 w-full h-full flex justify-center items-center pointer-events-none">
+                    <div className="fixed top-0 left-0 z-[61] flex h-full w-full items-center justify-center pointer-events-none">
                         <DialogContent
                             className="pointer-events-auto bg-background w-[90vw] max-w-[500px] rounded-md overflow-y-auto max-h-[80vh]"
                             onInteractOutside={() => setShowForm(false)}
@@ -156,13 +164,13 @@ export default function Tasks() {
                             </DialogHeader>
                             <TaskForm
                                 onClose={() => setShowForm(false)}
-                                editTask={editingTask}
+                                editTask={editingTask ?? undefined}
                             />
                         </DialogContent>
                     </div>
                 </DialogPortal>
             </Dialog>
-        </div>
+        </WeddingPageShell>
     );
 }
 
@@ -188,14 +196,26 @@ function TaskItem({
 
     return (
         <div
-            className="bg-card rounded-xl border border-border p-3 shadow-sm hover:shadow-md transition-shadow"
+            className="wedding-surface-card p-4 transition-shadow hover:shadow-[var(--wedding-shadow-soft)]"
+            role="button"
+            tabIndex={0}
             onClick={onEdit}
+            onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onEdit();
+                }
+            }}
         >
             <div className="flex items-start gap-3">
                 {/* 状态切换 */}
                 <button
-                    onClick={onToggleStatus}
-                    className={`mt-1 w-5 h-5 rounded-full border-2 flex items-center justify-center ${getStatusColor(task.status)}`}
+                    type="button"
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        onToggleStatus();
+                    }}
+                    className={`mt-1 flex h-6 w-6 items-center justify-center rounded-full border-2 ${getStatusColor(task.status)}`}
                 >
                     {task.status === "completed" && (
                         <i className="icon-[mdi--check] text-white text-sm" />
@@ -206,18 +226,22 @@ function TaskItem({
                 <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                         <i
-                            className={`${getCategoryIcon(task.category)} text-lg`}
+                            className={`${getCategoryIcon(task.category)} text-lg text-pink-400`}
                         />
                         <span
-                            className={`font-medium ${task.status === "completed" ? "line-through text-muted-foreground" : ""}`}
+                            className={`text-lg font-semibold text-[color:var(--wedding-text)] ${
+                                task.status === "completed"
+                                    ? "line-through text-[color:var(--wedding-text-mute)]"
+                                    : ""
+                            }`}
                         >
                             {task.title}
                         </span>
                     </div>
 
-                    <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
+                    <div className="mt-2 flex items-center gap-2 text-xs wedding-muted">
                         <span
-                            className={`px-1.5 py-0.5 rounded ${priorityInfo?.bgColor || ""} ${priorityInfo?.color || ""}`}
+                            className="rounded-full bg-white/80 px-2 py-1 dark:bg-white/8"
                         >
                             {priorityInfo?.name || task.priority}
                         </span>
@@ -235,8 +259,12 @@ function TaskItem({
 
                 {/* 删除按钮 */}
                 <button
-                    onClick={onDelete}
-                    className="text-muted-foreground hover:text-destructive"
+                    type="button"
+                    onClick={(event) => {
+                        event.stopPropagation();
+                        onDelete();
+                    }}
+                    className="text-[color:var(--wedding-text-mute)] hover:text-destructive"
                 >
                     <i className="icon-[mdi--delete-outline]" />
                 </button>
