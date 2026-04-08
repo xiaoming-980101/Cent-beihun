@@ -27,3 +27,7 @@ src-tauri/target
 
 src-tauri/gen
 src-tauri/binaries
+
+# Screenshot debugging
+screenshots/screenshots/
+screenshots/config.cjs

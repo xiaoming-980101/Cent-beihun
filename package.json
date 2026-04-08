@@ -10,7 +10,8 @@
 		"lint": "tsc -b && biome check --diagnostic-level error",
 		"preview": "vite preview --host --port 5173",
 		"check": "biome check --write",
-		"pre-commit": "pnpm run lint"
+		"pre-commit": "pnpm run lint",
+		"screenshot": "node screenshots/capture.cjs"
 	},
 	"dependencies": {
 		"@aws-sdk/client-s3": "^3.972.0",
@@ -89,6 +90,7 @@
 		"eslint-plugin-react-refresh": "^0.4.20",
 		"globals": "^16.3.0",
 		"husky": "^9.1.7",
+		"playwright": "^1.59.1",
 		"sass-embedded": "^1.93.3",
 		"tailwindcss": "^4.1.12",
 		"tw-animate-css": "^1.3.8",
