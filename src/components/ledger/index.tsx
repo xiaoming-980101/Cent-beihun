@@ -1,5 +1,5 @@
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: ledger rows use div-based virtualized interactions */
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: ledger rows use div-based virtualized interactions */
 
 import { useVirtualizer } from "@tanstack/react-virtual";
 import dayjs, { type Dayjs } from "dayjs";
@@ -38,7 +38,7 @@ function Divider({
     );
 }
 
-type LedgerRef = {
+export type LedgerRef = {
     scrollToIndex: (index: number) => void;
 };
 
@@ -156,7 +156,7 @@ const Ledger = forwardRef<LedgerRef, LedgerProps>(
                 {enableDivideAsOrdered && stickyDate && (
                     <div
                         key={stickyDate.format("YYYY-MM-DD")}
-                        className="sticky top-0 z-10 pl-12 pr-4 py-1 text-sm ledger-divider bg-background/80 backdrop-blur-sm cursor-pointer"
+                        className="sticky top-0 z-[1] pl-12 pr-4 py-1 text-sm ledger-divider bg-background/80 backdrop-blur-sm cursor-pointer"
                         onClick={() => onDateClick?.(stickyDate)}
                     >
                         {denseDate(stickyDate)}

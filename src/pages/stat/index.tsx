@@ -5,7 +5,6 @@ import { useNavigate, useParams } from "react-router";
 import { useShallow } from "zustand/shallow";
 import { StorageDeferredAPI } from "@/api/storage";
 import type { AnalysisResult } from "@/api/storage/analysis";
-import { Assistant } from "@/components/assistant";
 import {
     BillFilterViewProvider,
     showBillFilterView,
@@ -42,8 +41,15 @@ import { cn } from "@/utils";
 export default function Page() {
     const t = useIntl();
     const { id } = useParams();
+    const currentBookName = useBookStore(
+        useShallow((state) => {
+            const { currentBookId, books } = state;
+            return books.find((book) => book.id === currentBookId)?.name;
+        }),
+    );
 
     const { bills } = useLedgerStore();
+    const bookLabel = currentBookName || "当前账本";
     const endTime = useMemo(() => Date.now(), []); //bills[0]?.time ?? dayjs();
     const startTime = bills[bills.length - 1]?.time ?? dayjs();
 
@@ -263,69 +269,64 @@ export default function Page() {
 
     const { allCurrencies, baseCurrency } = useCurrency();
 
-    const envArg = useMemo(
-        () => ({
-            filterView: selectedFilterView,
-            focusType,
-            viewType,
-            range: realRange,
-        }),
-        [selectedFilterView, focusType, viewType, realRange],
-    );
     return (
         <WeddingPageShell className="page-show" contentClassName="desktop-grid">
-            <WeddingTopBar title="统计分析" subtitle="婚礼支出与收入结构总览" />
-            <div className="w-full flex flex-col gap-4 lg:grid lg:grid-cols-[0.9fr_1.1fr]">
+            <WeddingTopBar
+                title="统计分析"
+                subtitle={`${bookLabel}支出与收入结构总览`}
+            />
+            <div className="w-full flex flex-col gap-4">
                 <div className="space-y-3">
-                    <div className="w-full flex flex-col gap-2">
-                        <div className="wedding-surface-card w-full flex p-2">
-                            <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hidden">
-                                {allFilterViews.map((filter) => {
-                                    const displayCurrency =
-                                        filter.displayCurrency === baseCurrency.id
-                                            ? undefined
-                                            : allCurrencies.find(
-                                                  (v) =>
-                                                      v.id ===
-                                                      filter.displayCurrency,
-                                              );
-                                    return (
-                                        <Button
-                                            key={filter.id}
-                                            size={"sm"}
-                                            className={cn(
-                                                filterViewId !== filter.id
-                                                    ? "text-[color:var(--wedding-text-soft)]"
-                                                    : "text-pink-500 relative after:absolute after:bottom-[2px] after:left-3 after:w-[calc(100%-24px)] after:h-[2px] after:rounded-full after:bg-pink-500",
-                                            )}
-                                            variant="ghost"
-                                            onClick={() => {
-                                                setSliceId(undefined);
-                                                setFilterViewId(filter.id);
-                                            }}
-                                        >
-                                            {displayCurrency?.symbol}
-                                            {filter.name}
-                                        </Button>
-                                    );
-                                })}
-                            </div>
-                            <div>
-                                <Button
-                                    variant="ghost"
-                                    onClick={toAddFilter}
-                                    size="sm"
-                                >
-                                    <i className="icon-[mdi--plus] size-4"></i>
-                                </Button>
-                                <Button
-                                    variant="ghost"
-                                    onClick={toReOrder}
-                                    size="sm"
-                                >
-                                    <i className="icon-[mdi--menu] size-4"></i>
-                                </Button>
-                            </div>
+                    <div className="wedding-surface-card flex p-2">
+                        <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hidden">
+                            {allFilterViews.map((filter) => {
+                                const displayCurrency =
+                                    filter.displayCurrency === baseCurrency.id
+                                        ? undefined
+                                        : allCurrencies.find(
+                                              (v) =>
+                                                  v.id ===
+                                                  filter.displayCurrency,
+                                          );
+                                return (
+                                    <Button
+                                        key={filter.id}
+                                        size={"sm"}
+                                        className={cn(
+                                            "rounded-[12px]",
+                                            filterViewId !== filter.id
+                                                ? "text-[color:var(--wedding-text-soft)]"
+                                                : "bg-pink-500/12 text-pink-500",
+                                        )}
+                                        variant="ghost"
+                                        onClick={() => {
+                                            setSliceId(undefined);
+                                            setFilterViewId(filter.id);
+                                        }}
+                                    >
+                                        {displayCurrency?.symbol}
+                                        {filter.name}
+                                    </Button>
+                                );
+                            })}
+                        </div>
+                        <div className="flex gap-1">
+                            <Button
+                                variant="ghost"
+                                className="rounded-[12px]"
+                                onClick={toAddFilter}
+                                size="sm"
+                            >
+                                <i className="icon-[mdi--plus] size-4"></i>
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                className="rounded-[12px]"
+                                onClick={toReOrder}
+                                size="sm"
+                            >
+                                <i className="icon-[mdi--menu] size-4"></i>
+                            </Button>
                         </div>
                     </div>
                     <DateSliced
@@ -353,18 +354,31 @@ export default function Page() {
                         </div>
                     </DateSliced>
                 </div>
+                <FocusTypeSelector
+                    value={focusType}
+                    onValueChange={(v) => {
+                        setFocusType(v);
+                        setSelectedCategoryId(undefined);
+                    }}
+                    money={totalMoneys}
+                />
+                <div className="grid gap-3 md:grid-cols-2">
+                    <div className="wedding-surface-card p-5">
+                        <div className="text-xs wedding-muted">总支出</div>
+                        <div className="mt-2 text-[40px] font-black tracking-tight text-rose-500">
+                            ¥ {totalMoneys[1].toLocaleString()}
+                        </div>
+                    </div>
+                    <div className="wedding-surface-card p-5">
+                        <div className="text-xs wedding-muted">总收入</div>
+                        <div className="mt-2 text-[40px] font-black tracking-tight text-emerald-500">
+                            ¥ {totalMoneys[0].toLocaleString()}
+                        </div>
+                    </div>
+                </div>
             </div>
-            <FocusTypeSelector
-                value={focusType}
-                onValueChange={(v) => {
-                    setFocusType(v);
-                    setSelectedCategoryId(undefined);
-                }}
-                money={totalMoneys}
-            />
             <div className="w-full flex-1 overflow-y-auto px-1">
                 <div className="relative flex w-full flex-col items-center gap-4">
-                    <Assistant env={envArg} />
                     {Part}
                     {tagStructure.length > 0 && (
                         <div className="wedding-surface-card w-full p-4 flex flex-col">
@@ -441,7 +455,8 @@ export default function Page() {
                                     showTime
                                     onClick={() =>
                                         showBillInfo(
-                                            dataSources.highestExpenseBill!,
+                                            dataSources.highestExpenseBill ??
+                                                undefined,
                                         )
                                     }
                                 />
@@ -456,7 +471,8 @@ export default function Page() {
                                     showTime
                                     onClick={() =>
                                         showBillInfo(
-                                            dataSources.highestIncomeBill!,
+                                            dataSources.highestIncomeBill ??
+                                                undefined,
                                         )
                                     }
                                 />

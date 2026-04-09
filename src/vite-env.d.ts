@@ -48,3 +48,19 @@ declare module "node-forge/lib/md" {
     };
     export default md;
 }
+
+declare module "lunar-javascript" {
+    export class Lunar {
+        getFestivals(): string[];
+        getOtherFestivals(): string[];
+        getJieQi(): string;
+        getDayInChinese(): string;
+        getMonthInChinese(): string;
+    }
+
+    export class Solar {
+        static fromDate(date: Date): Solar;
+        getFestivals(): string[];
+        getLunar(): Lunar;
+    }
+}

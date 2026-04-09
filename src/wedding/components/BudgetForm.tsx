@@ -2,11 +2,13 @@
  * 预算表单组件
  */
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useWeddingStore } from "@/store/wedding";
+import { cn } from "@/utils";
 import { BUDGET_STATUSES } from "@/wedding/constants";
+import type { BudgetStatus } from "@/wedding/type";
 import { formatAmount } from "@/wedding/utils";
 
 interface BudgetFormProps {
@@ -28,6 +30,16 @@ interface BudgetFormProps {
 
 export function BudgetForm({ onClose, editBudget }: BudgetFormProps) {
     const { addBudget, updateBudget } = useWeddingStore();
+    const categoryInputId = useId();
+    const totalInputId = useId();
+    const spentInputId = useId();
+    const statusSelectId = useId();
+    const depositInputId = useId();
+    const balanceInputId = useId();
+    const vendorInputId = useId();
+    const phoneInputId = useId();
+    const dueDateInputId = useId();
+    const notesInputId = useId();
 
     const [category, setCategory] = useState(editBudget?.category || "");
     const [budget, setBudget] = useState(editBudget?.budget?.toString() || "");
@@ -50,6 +62,9 @@ export function BudgetForm({ onClose, editBudget }: BudgetFormProps) {
     );
     const [notes, setNotes] = useState(editBudget?.notes || "");
 
+    const baseFieldClassName =
+        "w-full rounded-[18px] border border-[color:var(--wedding-line)] bg-white/85 px-4 py-3 text-sm text-[color:var(--wedding-text)] outline-none transition focus:border-pink-300 focus:ring-2 focus:ring-pink-200/70 dark:bg-white/6 dark:focus:border-pink-400/60 dark:focus:ring-pink-500/15";
+
     const handleSubmit = async () => {
         const budgetNum = parseFloat(budget);
         if (!category.trim()) {
@@ -69,7 +84,7 @@ export function BudgetForm({ onClose, editBudget }: BudgetFormProps) {
             balance: balance ? parseFloat(balance) : undefined,
             vendor: vendor.trim() || undefined,
             vendorPhone: vendorPhone.trim() || undefined,
-            status: status as any,
+            status: status as BudgetStatus,
             dueDate: dueDate ? new Date(dueDate).getTime() : undefined,
             notes: notes.trim() || undefined,
         };
@@ -83,160 +98,220 @@ export function BudgetForm({ onClose, editBudget }: BudgetFormProps) {
                 toast.success("添加成功");
             }
             onClose?.();
-        } catch (err) {
+        } catch (_err) {
             toast.error("操作失败");
         }
     };
 
     return (
-        <div className="p-4 space-y-4">
-            {/* 分类名称 */}
-            <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                    分类名称 *
-                </label>
-                <input
-                    type="text"
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="如：婚纱摄影、婚宴场地"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                />
+        <div className="space-y-5 px-1 pb-1">
+            <div className="wedding-soft-card space-y-5 p-4">
+                <div>
+                    <label
+                        htmlFor={categoryInputId}
+                        className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
+                    >
+                        分类名称
+                    </label>
+                    <input
+                        id={categoryInputId}
+                        type="text"
+                        className={baseFieldClassName}
+                        placeholder="如：婚纱摄影、婚宴场地"
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value)}
+                    />
+                </div>
+
+                <div>
+                    <label
+                        htmlFor={totalInputId}
+                        className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
+                    >
+                        预算金额
+                    </label>
+                    <input
+                        id={totalInputId}
+                        type="number"
+                        className={baseFieldClassName}
+                        placeholder="请输入预算金额"
+                        value={budget}
+                        onChange={(e) => setBudget(e.target.value)}
+                    />
+                    {budget ? (
+                        <div className="mt-2 text-xs wedding-muted">
+                            预算总额：{formatAmount(parseFloat(budget))}
+                        </div>
+                    ) : null}
+                </div>
             </div>
 
-            {/* 预算金额 */}
-            <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                    预算金额 *
-                </label>
-                <input
-                    type="number"
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="请输入预算金额"
-                    value={budget}
-                    onChange={(e) => setBudget(e.target.value)}
-                />
-                {budget && (
-                    <div className="text-xs text-gray-500 mt-1">
-                        {formatAmount(parseFloat(budget))}
+            <div className="wedding-soft-card space-y-4 p-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label
+                            htmlFor={spentInputId}
+                            className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
+                        >
+                            已花费
+                        </label>
+                        <input
+                            id={spentInputId}
+                            type="number"
+                            className={baseFieldClassName}
+                            placeholder="已花费金额"
+                            value={spent}
+                            onChange={(e) => setSpent(e.target.value)}
+                        />
                     </div>
-                )}
+                    <div>
+                        <label
+                            htmlFor={statusSelectId}
+                            className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
+                        >
+                            状态
+                        </label>
+                        <select
+                            id={statusSelectId}
+                            className={baseFieldClassName}
+                            value={status}
+                            onChange={(e) => setStatus(e.target.value)}
+                        >
+                            {BUDGET_STATUSES.map((s) => (
+                                <option key={s.id} value={s.id}>
+                                    {s.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label
+                            htmlFor={depositInputId}
+                            className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
+                        >
+                            定金
+                        </label>
+                        <input
+                            id={depositInputId}
+                            type="number"
+                            className={baseFieldClassName}
+                            placeholder="定金金额"
+                            value={deposit}
+                            onChange={(e) => setDeposit(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label
+                            htmlFor={balanceInputId}
+                            className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
+                        >
+                            尾款
+                        </label>
+                        <input
+                            id={balanceInputId}
+                            type="number"
+                            className={baseFieldClassName}
+                            placeholder="待付尾款"
+                            value={balance}
+                            onChange={(e) => setBalance(e.target.value)}
+                        />
+                    </div>
+                </div>
             </div>
 
-            {/* 已花费 */}
-            <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                    已花费
-                </label>
-                <input
-                    type="number"
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="已花费金额"
-                    value={spent}
-                    onChange={(e) => setSpent(e.target.value)}
-                />
+            <div className="wedding-soft-card space-y-4 p-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label
+                            htmlFor={vendorInputId}
+                            className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
+                        >
+                            供应商
+                        </label>
+                        <input
+                            id={vendorInputId}
+                            type="text"
+                            className={baseFieldClassName}
+                            placeholder="供应商名称"
+                            value={vendor}
+                            onChange={(e) => setVendor(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label
+                            htmlFor={phoneInputId}
+                            className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
+                        >
+                            联系电话
+                        </label>
+                        <input
+                            id={phoneInputId}
+                            type="tel"
+                            className={baseFieldClassName}
+                            placeholder="供应商电话"
+                            value={vendorPhone}
+                            onChange={(e) => setVendorPhone(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        htmlFor={dueDateInputId}
+                        className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
+                    >
+                        截止日期
+                    </label>
+                    <input
+                        id={dueDateInputId}
+                        type="date"
+                        className={baseFieldClassName}
+                        value={dueDate}
+                        onChange={(e) => setDueDate(e.target.value)}
+                    />
+                </div>
             </div>
 
-            {/* 定金 */}
-            <div>
-                <label className="text-sm text-gray-600 mb-1 block">定金</label>
-                <input
-                    type="number"
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="定金金额（可选）"
-                    value={deposit}
-                    onChange={(e) => setDeposit(e.target.value)}
-                />
+            <div className="wedding-soft-card space-y-4 p-4">
+                <div>
+                    <label
+                        htmlFor={notesInputId}
+                        className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
+                    >
+                        备注
+                    </label>
+                    <textarea
+                        id={notesInputId}
+                        className={cn(
+                            baseFieldClassName,
+                            "min-h-[112px] resize-none",
+                        )}
+                        placeholder="补充记录付款节点、对接人或注意事项"
+                        rows={3}
+                        value={notes}
+                        onChange={(e) => setNotes(e.target.value)}
+                    />
+                </div>
             </div>
 
-            {/* 尾款 */}
-            <div>
-                <label className="text-sm text-gray-600 mb-1 block">尾款</label>
-                <input
-                    type="number"
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="待付尾款（可选）"
-                    value={balance}
-                    onChange={(e) => setBalance(e.target.value)}
-                />
-            </div>
-
-            {/* 供应商 */}
-            <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                    供应商
-                </label>
-                <input
-                    type="text"
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="供应商名称"
-                    value={vendor}
-                    onChange={(e) => setVendor(e.target.value)}
-                />
-            </div>
-
-            {/* 供应商电话 */}
-            <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                    供应商电话
-                </label>
-                <input
-                    type="tel"
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="供应商电话"
-                    value={vendorPhone}
-                    onChange={(e) => setVendorPhone(e.target.value)}
-                />
-            </div>
-
-            {/* 状态 */}
-            <div>
-                <label className="text-sm text-gray-600 mb-1 block">状态</label>
-                <select
-                    className="w-full border rounded-lg px-3 py-2"
-                    value={status}
-                    onChange={(e) => setStatus(e.target.value)}
+            <div className="flex gap-3 pt-1">
+                <Button
+                    type="button"
+                    variant="outline"
+                    className="h-12 flex-1 rounded-[18px] border-[color:var(--wedding-line)] bg-white/80 text-[color:var(--wedding-text)] hover:bg-white dark:bg-white/6 dark:hover:bg-white/10"
+                    onClick={onClose}
                 >
-                    {BUDGET_STATUSES.map((s) => (
-                        <option key={s.id} value={s.id}>
-                            {s.name}
-                        </option>
-                    ))}
-                </select>
-            </div>
-
-            {/* 付款截止日期 */}
-            <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                    付款截止日期
-                </label>
-                <input
-                    type="date"
-                    className="w-full border rounded-lg px-3 py-2"
-                    value={dueDate}
-                    onChange={(e) => setDueDate(e.target.value)}
-                />
-            </div>
-
-            {/* 备注 */}
-            <div>
-                <label className="text-sm text-gray-600 mb-1 block">备注</label>
-                <textarea
-                    className="w-full border rounded-lg px-3 py-2 resize-none"
-                    placeholder="备注信息"
-                    rows={2}
-                    value={notes}
-                    onChange={(e) => setNotes(e.target.value)}
-                />
-            </div>
-
-            {/* 操作按钮 */}
-            <div className="flex gap-2 pt-2">
-                <Button variant="outline" className="flex-1" onClick={onClose}>
                     取消
                 </Button>
-                <Button className="flex-1" onClick={handleSubmit}>
-                    {editBudget ? "更新" : "添加"}
+                <Button
+                    type="button"
+                    className="h-12 flex-1 rounded-[18px] bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 text-white shadow-[0_18px_30px_-18px_rgba(217,70,150,0.9)] hover:opacity-95"
+                    onClick={handleSubmit}
+                >
+                    {editBudget ? "保存更新" : "创建预算"}
                 </Button>
             </div>
         </div>

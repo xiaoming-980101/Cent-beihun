@@ -17,7 +17,7 @@ export function WeddingPageShell({
     return (
         <div
             className={cn(
-                "wedding-app-shell min-h-full overflow-y-auto",
+                "wedding-app-shell h-full min-h-0 overflow-y-auto",
                 className,
             )}
         >
@@ -36,6 +36,18 @@ type HeaderProps = {
     className?: string;
 };
 
+export function goBackOrNavigate(
+    navigate: ReturnType<typeof useNavigate>,
+    fallback: string,
+) {
+    const historyState = window.history.state as { idx?: number } | null;
+    if ((historyState?.idx ?? 0) > 0) {
+        navigate(-1);
+        return;
+    }
+    navigate(fallback, { replace: true });
+}
+
 export function WeddingTopBar({
     title = "Cent",
     subtitle,
@@ -48,8 +60,8 @@ export function WeddingTopBar({
     return (
         <div
             className={cn(
-                "hidden wedding-surface-card items-center justify-between rounded-[22px] px-4 py-3 sm:flex",
-                "bg-[color:var(--wedding-surface)]/95 supports-[backdrop-filter]:bg-[color:var(--wedding-surface)]/82",
+                "hidden items-center justify-between rounded-[18px] border border-[color:var(--wedding-line)] px-4 py-3 sm:flex",
+                "bg-[color:var(--wedding-surface)]",
                 className,
             )}
         >
@@ -58,13 +70,13 @@ export function WeddingTopBar({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-10 w-10 rounded-full text-[color:var(--wedding-text)] hover:bg-white/60 dark:hover:bg-white/6"
-                        onClick={() => navigate(backTo)}
+                        className="h-10 w-10 rounded-full text-[color:var(--wedding-text)] hover:bg-[color:var(--wedding-surface-muted)]"
+                        onClick={() => goBackOrNavigate(navigate, backTo)}
                     >
                         <i className="icon-[mdi--chevron-left] size-5" />
                     </Button>
                 ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-gradient-to-br from-slate-700 to-slate-900 text-sm font-bold text-white shadow-sm">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] text-sm font-bold text-pink-500 shadow-sm">
                         <i className="icon-[mdi--account] size-4" />
                     </div>
                 )}
@@ -91,7 +103,7 @@ export function WeddingTopBar({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-10 w-10 rounded-full text-[color:var(--wedding-text-soft)] hover:bg-white/60 dark:hover:bg-white/6"
+                        className="h-10 w-10 rounded-full text-[color:var(--wedding-text-soft)] hover:bg-[color:var(--wedding-surface-muted)]"
                     >
                         <i className="icon-[mdi--bell-outline] size-5" />
                     </Button>
@@ -166,7 +178,7 @@ export function WeddingEmptyState({
 }) {
     return (
         <div className="wedding-soft-card flex flex-col items-center justify-center gap-4 px-6 py-10 text-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/70 text-3xl text-pink-400 dark:bg-white/6">
+            <div className="flex h-18 w-18 items-center justify-center rounded-full border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] text-3xl text-pink-400">
                 <i className={icon} />
             </div>
             <div className="space-y-2">
@@ -189,7 +201,7 @@ export function WeddingActionButton({
     return (
         <Button
             className={cn(
-                "rounded-2xl bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 text-white wedding-fab-shadow hover:opacity-95",
+                "rounded-[14px] bg-gradient-to-r from-[#f05cab] to-[#d64dc8] text-white shadow-[0_12px_24px_-14px_rgba(240,92,171,0.9)] hover:opacity-95",
                 className,
             )}
             {...props}

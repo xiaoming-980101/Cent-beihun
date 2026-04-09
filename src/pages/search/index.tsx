@@ -15,12 +15,12 @@ import {
 } from "@/components/ledger/batch-edit";
 import modal from "@/components/modal";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
     WeddingEmptyState,
     WeddingPageShell,
     WeddingTopBar,
 } from "@/components/wedding-ui";
-import { Checkbox } from "@/components/ui/checkbox";
 import useCategory from "@/hooks/use-category";
 import { useCurrency } from "@/hooks/use-currency";
 import { useCustomFilters } from "@/hooks/use-custom-filters";
@@ -210,7 +210,10 @@ export default function Page() {
                     } else if (isTypeChanged) {
                         const firstCategoryId = categories.find(
                             (c) => c.type === edit.type,
-                        )!.id;
+                        )?.id;
+                        if (!firstCategoryId) {
+                            return undefined;
+                        }
                         bill.categoryId = firstCategoryId;
                     }
                 }
@@ -228,11 +231,15 @@ export default function Page() {
     };
     return (
         <WeddingPageShell className="page-show">
-            <WeddingTopBar title="搜索记录" subtitle="按备注、分类、金额和标签筛选账单" />
+            <WeddingTopBar
+                title="搜索记录"
+                subtitle="按备注、分类、金额和标签筛选账单"
+            />
             <div className="flex w-full flex-1 flex-col gap-4 lg:grid lg:grid-cols-[0.92fr_1.08fr]">
                 <div className="space-y-4">
                     <div className="wedding-surface-card w-full p-4">
-                        <div className="flex h-12 items-center rounded-2xl border border-[color:var(--wedding-line)] bg-white/70 px-4 shadow-sm focus-within:ring-2 focus-within:ring-pink-300/40 dark:bg-white/6">
+                        <div className="flex h-12 items-center gap-3 rounded-[14px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-4">
+                            <i className="icon-[mdi--magnify] size-5 text-[color:var(--wedding-text-mute)]" />
                             <div className="flex-1">
                                 <Clearable
                                     visible={Boolean(form.comment?.length)}
@@ -246,7 +253,6 @@ export default function Page() {
                                     <input
                                         value={form.comment ?? ""}
                                         type="text"
-                                        maxLength={50}
                                         className="w-full bg-transparent text-sm outline-none placeholder:text-[color:var(--wedding-text-mute)]"
                                         placeholder="搜索备注、分类、金额和标签..."
                                         onChange={(e) => {
@@ -258,9 +264,9 @@ export default function Page() {
                                     />
                                 </Clearable>
                             </div>
-                            <Button
-                                variant="ghost"
-                                className="h-10 rounded-xl px-4 text-pink-500 hover:bg-pink-500/10 transition-colors"
+                            <button
+                                type="button"
+                                className="flex h-9 min-w-[68px] items-center justify-center rounded-[10px] bg-gradient-to-r from-[#f05cab] to-[#d64dc8] px-4 text-sm text-white"
                                 onClick={() => {
                                     toSearch();
                                     setTimeout(() => {
@@ -268,8 +274,8 @@ export default function Page() {
                                     }, 1000);
                                 }}
                             >
-                                <i className="icon-[mdi--search]"></i>
-                            </Button>
+                                搜索
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -321,7 +327,7 @@ export default function Page() {
                 </Collapsible.Root>
                 <div
                     className={cn(
-                        "wedding-surface-card mx-1 flex items-center justify-between px-4 py-2 text-xs text-[color:var(--wedding-text)]",
+                        "mx-1 flex items-center justify-between px-1 py-1 text-xs text-[color:var(--wedding-text)]",
                         enableSelect && "pl-2",
                     )}
                 >
@@ -330,7 +336,7 @@ export default function Page() {
                             <>
                                 {sorted.length > 0 && (
                                     <Button
-                                        className="h-fit rounded-lg p-1 text-pink-500 hover:bg-pink-500/10 transition-colors"
+                                        className="h-fit rounded-lg p-1 text-[#7c86ff] hover:bg-[#7c86ff]/10 transition-colors"
                                         variant={"ghost"}
                                         size="sm"
                                         onClick={() => {
@@ -407,7 +413,7 @@ export default function Page() {
                         <Button
                             size="sm"
                             variant="ghost"
-                            className="rounded-lg text-pink-500 hover:bg-pink-500/10 transition-colors"
+                            className="rounded-lg text-[color:var(--wedding-text-soft)] hover:bg-pink-500/10 transition-colors"
                             onClick={() => {
                                 setSortIndex((v) => {
                                     if (v === SORTS.length - 1) {
@@ -422,7 +428,7 @@ export default function Page() {
                         </Button>
                     </div>
                 </div>
-                <div className="wedding-surface-card min-h-[320px] overflow-hidden p-1">
+                <div className="min-h-[320px] overflow-hidden">
                     {sorted.length > 0 ? (
                         <Ledger
                             bills={sorted}

@@ -14,7 +14,8 @@ body {
 	height: 100vh;
 	min-width: 200px;
 	min-height: 200px;
-	touch-action: none;
+	overflow: hidden;
+	touch-action: manipulation;
 }
 
 #root {
@@ -99,8 +100,8 @@ button {
 }
 
 :root {
-	--mobile-topbar-height: 76px;
-	--mobile-bottombar-height: 88px;
+	--mobile-topbar-height: 72px;
+	--mobile-bottombar-height: 82px;
 	--radius: 0.75rem;
 	--background: oklch(0.976 0 0);
 	--foreground: oklch(0.332 0.032 264.695);
@@ -297,21 +298,21 @@ button {
 	--glass-border: rgba(255, 255, 255, 0.2);
 
 	/* 页面语义色 */
-	--wedding-app-bg: #f7f4f5;
-	--wedding-surface: rgba(255, 255, 255, 0.94);
-	--wedding-surface-soft: #fff8fb;
-	--wedding-surface-muted: #f5eef4;
-	--wedding-line: rgba(236, 72, 153, 0.12);
-	--wedding-line-strong: rgba(236, 72, 153, 0.22);
-	--wedding-text: #544249;
-	--wedding-text-soft: #7b7280;
-	--wedding-text-mute: #aaa1ad;
+	--wedding-app-bg: #f8f7f8;
+	--wedding-surface: #ffffff;
+	--wedding-surface-soft: #fff9fc;
+	--wedding-surface-muted: #f5f2f5;
+	--wedding-line: rgba(228, 209, 219, 0.85);
+	--wedding-line-strong: rgba(224, 113, 176, 0.28);
+	--wedding-text: #413941;
+	--wedding-text-soft: #7f7682;
+	--wedding-text-mute: #b2a9b4;
 	--wedding-success: #22c55e;
 	--wedding-warning: #f59e0b;
 	--wedding-danger: #ef4444;
 	--wedding-info: #60a5fa;
-	--wedding-shadow: 0 22px 40px -28px rgba(236, 72, 153, 0.55);
-	--wedding-shadow-soft: 0 10px 24px -18px rgba(31, 41, 55, 0.18);
+	--wedding-shadow: 0 24px 42px -28px rgba(236, 72, 153, 0.34);
+	--wedding-shadow-soft: 0 12px 30px -24px rgba(31, 41, 55, 0.16);
 	--wedding-font-display:
 		"WenQuanYi Zen Hei", "PingFang SC", "Microsoft YaHei", sans-serif;
 	--wedding-font-body:
@@ -343,15 +344,15 @@ button {
 	--glass-border: rgba(255, 255, 255, 0.1);
 
 	/* 页面语义色 */
-	--wedding-app-bg: #0e0d10;
-	--wedding-surface: rgba(25, 24, 29, 0.96);
-	--wedding-surface-soft: #16151a;
-	--wedding-surface-muted: #1f1d24;
-	--wedding-line: rgba(255, 255, 255, 0.08);
-	--wedding-line-strong: rgba(255, 255, 255, 0.14);
-	--wedding-text: #f5f1f4;
-	--wedding-text-soft: #ada5b1;
-	--wedding-text-mute: #74707b;
+	--wedding-app-bg: #0c0c0f;
+	--wedding-surface: #18181b;
+	--wedding-surface-soft: #1f1f23;
+	--wedding-surface-muted: #232329;
+	--wedding-line: rgba(255, 255, 255, 0.075);
+	--wedding-line-strong: rgba(255, 255, 255, 0.16);
+	--wedding-text: #f7f4f8;
+	--wedding-text-soft: #ada7b2;
+	--wedding-text-mute: #726d77;
 	--wedding-success: #4ade80;
 	--wedding-warning: #fbbf24;
 	--wedding-danger: #fb7185;
@@ -403,29 +404,31 @@ button {
 }
 
 .wedding-app-shell {
-	background:
-		radial-gradient(
-			circle at top,
-			color-mix(in srgb, var(--wedding-pink) 12%, transparent) 0,
-			transparent 30%
-		), linear-gradient(180deg, var(--wedding-app-bg) 0%, var(--background) 100%);
+	height: 100%;
+	min-height: 0;
+	background: var(--wedding-app-bg);
 	color: var(--wedding-text);
 	overflow-y: auto;
 	-webkit-overflow-scrolling: touch;
 	overscroll-behavior-y: contain;
 	touch-action: pan-y;
+	scroll-padding-top: 16px;
 }
 
 .wedding-page {
 	width: 100%;
-	max-width: 880px;
+	max-width: 430px;
 	min-height: 100%;
 	margin: 0 auto;
-	padding: 16px;
+	padding: 10px 12px 16px;
 	display: flex;
 	flex-direction: column;
-	gap: 16px;
+	gap: 12px;
 	touch-action: pan-y;
+}
+
+.wedding-home-page {
+	overflow-anchor: none;
 }
 
 .wedding-page.desktop-grid {
@@ -435,17 +438,15 @@ button {
 .wedding-surface-card {
 	background: var(--wedding-surface);
 	border: 1px solid var(--wedding-line);
-	border-radius: 24px;
+	border-radius: 18px;
 	box-shadow: var(--wedding-shadow-soft);
-	backdrop-filter: blur(16px);
-	-webkit-backdrop-filter: blur(16px);
 }
 
 .wedding-soft-card {
 	background: var(--wedding-surface-soft);
 	border: 1px solid color-mix(in srgb, var(--wedding-line) 90%, transparent);
-	border-radius: 20px;
-	box-shadow: var(--wedding-shadow-soft);
+	border-radius: 18px;
+	box-shadow: 0 10px 28px -26px rgba(31, 41, 55, 0.18);
 }
 
 .wedding-dashed-card {
@@ -457,7 +458,7 @@ button {
 .wedding-hero {
 	position: relative;
 	overflow: hidden;
-	border-radius: 28px;
+	border-radius: 24px;
 	background: linear-gradient(135deg, #f472b6 0%, #cf67dc 48%, #9a57ff 100%);
 	box-shadow: var(--wedding-shadow);
 	color: white;
@@ -473,12 +474,12 @@ button {
 	justify-content: center;
 	border-radius: 9999px;
 	border: 1px solid var(--wedding-line);
-	background: color-mix(in srgb, var(--wedding-surface) 96%, transparent);
+	background: color-mix(in srgb, var(--wedding-surface) 98%, transparent);
 	color: var(--wedding-text-soft);
 }
 
 .wedding-pill[data-active="true"] {
-	background: linear-gradient(135deg, #d94696 0%, #a855f7 100%);
+	background: linear-gradient(135deg, #ef5bb0 0%, #ba3ed8 100%);
 	color: white;
 	border-color: transparent;
 	box-shadow: 0 12px 20px -16px rgba(217, 70, 150, 0.9);
@@ -509,6 +510,8 @@ button {
 
 @media (min-width: 768px) {
 	.wedding-page {
+		max-width: 1180px;
 		padding: 24px 24px 32px;
+		gap: 16px;
 	}
 }

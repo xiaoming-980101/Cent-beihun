@@ -21,6 +21,8 @@ import type { ViewType } from "./date-slice";
 import type { FocusType } from "./focus-type";
 import { StaticItem } from "./static-item";
 
+type CalendarDataset = React.ComponentProps<typeof CalendarDetail>["dataset"];
+
 export function useChartPart({
     viewType,
     seeDetails,
@@ -69,7 +71,10 @@ export function useChartPart({
                         }
                         const parent = categories.find(
                             (c) => c.id === cate.parent,
-                        )!;
+                        ) ?? {
+                            id: cate.parent,
+                            name: cate.parent,
+                        };
                         return { ...cate, parent };
                     },
                     getUserInfo: (id) => {
@@ -201,16 +206,24 @@ export function useChartPart({
             filtered.length,
         ],
     );
+    const trendTitle = useMemo(() => {
+        const title = charts[0]?.title;
+        if (Array.isArray(title)) {
+            return title[0]?.text ?? "";
+        }
+        return title?.text ?? "";
+    }, [charts]);
     const Part = (
         <>
-            <div className="flex-shrink-0 w-full min-h-[300px] border rounded-md relative">
+            <div className="wedding-surface-card relative min-h-[300px] w-full flex-shrink-0 overflow-hidden p-3">
                 <div className="absolute top-4 left-4 z-2">
                     {viewType !== "custom" && (
                         <button
                             type="button"
                             className={cn(
-                                "inline-flex justify-center items-center p-1 rounded-full",
-                                asCalendar && "bg-foreground text-background",
+                                "inline-flex justify-center items-center p-2 rounded-full bg-[color:var(--wedding-surface-muted)]",
+                                asCalendar &&
+                                    "bg-[color:var(--wedding-text)] text-white",
                             )}
                             onClick={() => {
                                 setAsCalendar((v) => !v);
@@ -226,13 +239,13 @@ export function useChartPart({
                 </div>
                 {asCalendar && viewType !== "custom" ? (
                     <div className="w-full">
-                        <div className="pt-4 pb-2 flex justify-center font-semibold text-lg">
-                            {(charts[0]?.title as any)?.text}
+                        <div className="pb-2 pt-4 flex justify-center text-lg font-semibold text-[color:var(--wedding-text)]">
+                            {trendTitle}
                         </div>
                         <CalendarDetail
                             viewType={viewType}
                             focusType={focusType}
-                            dataset={charts[0].dataset as any}
+                            dataset={charts[0].dataset as CalendarDataset}
                             dimension={dimension}
                             range={calendarRange}
                         />
@@ -247,14 +260,15 @@ export function useChartPart({
                 )}
             </div>
             {focusType !== "balance" && (
-                <div className="flex-shrink-0 w-full border rounded-md relative">
+                <div className="wedding-surface-card relative w-full flex-shrink-0 overflow-hidden p-3">
                     <div className="absolute top-4 left-4 z-2">
                         {
                             <button
                                 type="button"
                                 className={cn(
-                                    "inline-flex justify-center items-center p-1 rounded-full",
-                                    asList && "bg-foreground text-background",
+                                    "inline-flex justify-center items-center p-2 rounded-full bg-[color:var(--wedding-surface-muted)]",
+                                    asList &&
+                                        "bg-[color:var(--wedding-text)] text-white",
                                 )}
                                 onClick={() => {
                                     setAsList((v) => !v);
@@ -270,7 +284,7 @@ export function useChartPart({
                     </div>
                     {asList ? (
                         <div className="w-full">
-                            <div className="py-4 flex justify-center font-semibold text-lg">
+                            <div className="py-4 flex justify-center text-lg font-semibold text-[color:var(--wedding-text)]">
                                 {focusType === "income"
                                     ? t("income-details")
                                     : t("expense-details")}
@@ -327,7 +341,7 @@ export function useChartPart({
                             <Chart
                                 key={dimension}
                                 option={charts[1]}
-                                className="w-full h-[300px] "
+                                className="h-[300px] w-full"
                                 onClick={onStructureChartClick}
                             />
                             <div className="flex justify-end p-1">
@@ -351,11 +365,11 @@ export function useChartPart({
                 </div>
             )}
             {!asList && selectedCategoryChart && (
-                <div className="flex-shrink-0 w-full border rounded-md">
+                <div className="wedding-surface-card w-full flex-shrink-0 overflow-hidden p-3">
                     <div className="w-full h-[300px]">
                         <Chart
                             option={selectedCategoryChart}
-                            className="w-full h-full "
+                            className="h-full w-full"
                         />
                     </div>
                     <div className="flex justify-end p-1">

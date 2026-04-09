@@ -122,13 +122,15 @@ export function DateSliced({
     return (
         <div className="w-full flex flex-col gap-2">
             <div className="w-full flex">
-                <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hidden">
+                <div className="wedding-surface-card flex-1 flex gap-2 overflow-x-auto scrollbar-hidden p-2">
                     {StaticViews.map((view) => (
                         <Button
                             key={view.id}
                             size={"sm"}
                             className={cn(
-                                selectedViewId !== view.id && "text-primary/50",
+                                "rounded-[12px]",
+                                selectedViewId !== view.id &&
+                                    "text-[color:var(--wedding-text-soft)]",
                             )}
                             variant={
                                 selectedViewId === view.id ? "default" : "ghost"
@@ -148,15 +150,19 @@ export function DateSliced({
                     ))}
                 </div>
 
-                <div className="h-9">
+                <div className="ml-2 h-9">
                     {onClickSettings && (
-                        <Button variant="ghost" onClick={onClickSettings}>
+                        <Button
+                            variant="ghost"
+                            className="wedding-surface-card h-9 rounded-[12px]"
+                            onClick={onClickSettings}
+                        >
                             <i className="icon-[mdi--mixer-settings] size-4"></i>
                         </Button>
                     )}
                 </div>
             </div>
-            <div className="flex gap-2 items-center h-9">
+            <div className="wedding-surface-card flex h-11 items-center gap-2 p-2">
                 {slices && slices.length > 0 ? (
                     <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hidden">
                         {slices.map((slice) => (
@@ -165,9 +171,9 @@ export function DateSliced({
                                 variant="ghost"
                                 size="sm"
                                 className={cn(
-                                    "text-primary/40 px-2",
+                                    "rounded-[12px] px-3 text-[color:var(--wedding-text-soft)]",
                                     selectedSlice === slice.label &&
-                                        "text-primary",
+                                        "bg-[color:var(--wedding-surface-muted)] text-[color:var(--wedding-text)]",
                                 )}
                                 onClick={() => {
                                     onValueChange?.(

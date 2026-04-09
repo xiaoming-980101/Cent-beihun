@@ -16,6 +16,11 @@ type UseSnapResult = {
     isHorizontal: boolean | undefined;
 };
 
+type SnapContainerElement = HTMLDivElement & {
+    onscrollend?: ((this: GlobalEventHandlers, ev: Event) => void) | null;
+    __useSnap_onScroll?: EventListener;
+};
+
 /**
  * useSnap
  * - containerRef: 支持 scroll-snap 的容器 ref
@@ -105,7 +110,8 @@ export function useSnap(
     const scrollTo = useCallback(
         (i: number, behavior: ScrollBehavior = "smooth") => {
             const children = getChildren();
-            if (children.length === 0 || !containerRef.current) return;
+            const container = containerRef.current;
+            if (children.length === 0 || !container) return;
             const clamped = Math.max(
                 0,
                 Math.min(children.length - 1, Math.floor(i)),
@@ -113,33 +119,59 @@ export function useSnap(
             const target = children[clamped];
             if (!target) return;
 
-            try {
-                target.scrollIntoView({
-                    behavior,
-                    block: "nearest",
-                    inline: "nearest",
-                });
-            } catch {
-                const container = containerRef.current!;
-                container.scrollTo({
-                    left: target.offsetLeft,
-                    top: target.offsetTop,
-                    behavior,
-                });
-            }
+            const horizontal = detectOrientation();
+            const left = Math.max(
+                0,
+                target.offsetLeft -
+                    Math.max(
+                        0,
+                        (container.clientWidth - target.clientWidth) / 2,
+                    ),
+            );
+            const top = Math.max(
+                0,
+                target.offsetTop -
+                    Math.max(
+                        0,
+                        (container.clientHeight - target.clientHeight) / 2,
+                    ),
+            );
 
-            // 如果是立即滚动（non-smooth），立刻更新 index；否则等待 scrollend/debounce
+            container.scrollTo({
+                left: horizontal ? left : container.scrollLeft,
+                top: horizontal ? container.scrollTop : top,
+                behavior,
+            });
+        },
+        [containerRef, detectOrientation, getChildren],
+    );
+
+    const syncIndexImmediately = useCallback((clamped: number) => {
+        latestIndexRef.current = clamped;
+        setIndex(clamped);
+    }, []);
+
+    const scrollToIndex = useCallback(
+        (i: number, behavior: ScrollBehavior = "smooth") => {
+            const children = getChildren();
+            if (children.length === 0) return;
+            const clamped = Math.max(
+                0,
+                Math.min(children.length - 1, Math.floor(i)),
+            );
+            scrollTo(clamped, behavior);
+
             if (behavior === "auto") {
-                latestIndexRef.current = clamped;
-                setIndex(clamped);
+                syncIndexImmediately(clamped);
             }
         },
-        [containerRef, getChildren],
+        [getChildren, scrollTo, syncIndexImmediately],
     );
 
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
+        const snapEl = el as SnapContainerElement;
 
         // 初始 count & orientation
         detectOrientation();
@@ -166,9 +198,7 @@ export function useSnap(
             );
             // 在下一帧确保布局稳定后滚动（使用 auto 确保准确）
             requestAnimationFrame(() => {
-                scrollTo(clampedInitial, "auto");
-                latestIndexRef.current = clampedInitial;
-                setIndex(clampedInitial);
+                scrollToIndex(clampedInitial, "auto");
                 initialScrollDoneRef.current = true;
             });
         };
@@ -209,7 +239,7 @@ export function useSnap(
         // ---- 滚动结束计算 index：优先 scrollend，否则 debounce onscroll ----
         let supportsScrollEnd = false;
         try {
-            supportsScrollEnd = typeof (el as any).onscrollend !== "undefined";
+            supportsScrollEnd = typeof snapEl.onscrollend !== "undefined";
         } catch {
             supportsScrollEnd = false;
         }
@@ -239,7 +269,7 @@ export function useSnap(
                 }, debounceMs);
             };
             el.addEventListener("scroll", onScroll, { passive: true });
-            (el as any).__useSnap_onScroll = onScroll;
+            snapEl.__useSnap_onScroll = onScroll;
         }
 
         // cleanup
@@ -259,7 +289,7 @@ export function useSnap(
 
             if (supportsScrollEnd) {
                 try {
-                    (el as any).removeEventListener(
+                    snapEl.removeEventListener(
                         "scrollend",
                         handleScrollEnd as EventListener,
                     );
@@ -267,10 +297,10 @@ export function useSnap(
                     /* noop */
                 }
             } else {
-                const stored = (el as any).__useSnap_onScroll;
+                const stored = snapEl.__useSnap_onScroll;
                 if (stored) {
                     el.removeEventListener("scroll", stored);
-                    delete (el as any).__useSnap_onScroll;
+                    delete snapEl.__useSnap_onScroll;
                 }
             }
         };
@@ -278,7 +308,7 @@ export function useSnap(
     }, [
         containerRef,
         initialIndex,
-        scrollTo,
+        scrollToIndex,
         detectOrientation,
         getChildren,
         debounceMs,
@@ -295,7 +325,7 @@ export function useSnap(
     return {
         count,
         index,
-        scrollTo,
+        scrollTo: scrollToIndex,
         isHorizontal: isHorizontalRef.current,
     };
 }

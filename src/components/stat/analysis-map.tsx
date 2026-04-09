@@ -37,8 +37,8 @@ export default function AnalysisMap({
     const hasLocationData = bills?.some((bill) => bill.location);
 
     return (
-        <div className="rounded-md border p-2 w-full flex flex-col relative">
-            <h2 className="font-medium text-lg my-3 text-center">
+        <div className="wedding-surface-card relative flex w-full flex-col p-4">
+            <h2 className="my-3 text-center text-lg font-medium text-[color:var(--wedding-text)]">
                 {t("ledger-footprint")}
             </h2>
             {!hasLocationData ? (

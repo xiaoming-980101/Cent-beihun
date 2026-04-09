@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Outlet } from "react-router";
+import { Outlet, useLocation } from "react-router";
 import { BillEditorProvider } from "@/components/bill-editor";
 import { BillInfoProvider } from "@/components/bill-info";
 import { TagListProvider } from "@/components/bill-tag";
@@ -10,7 +10,10 @@ import { BudgetDetailProvider } from "@/components/budget/detail";
 import { CategoryListProvider } from "@/components/category";
 import { CurrencyListProvider } from "@/components/currency";
 import { ModalProvider } from "@/components/modal";
-import Navigation, { MobileTopBar } from "@/components/navigation";
+import Navigation, {
+    isMobileTabPage,
+    MobileTopBar,
+} from "@/components/navigation";
 import {
     ScheduledEditProvider,
     ScheduledProvider,
@@ -33,6 +36,7 @@ import { usePreferenceStore } from "@/store/preference";
 import { startBackgroundPredict } from "@/utils/predict";
 
 export default function MainLayout() {
+    const location = useLocation();
     useQuickGoAdd();
     useQuickEntryByClipboard();
     useQuickEntryByRelayr();
@@ -54,14 +58,23 @@ export default function MainLayout() {
     }, []);
 
     useInitPreset();
+    const showMobileBottomNav = isMobileTabPage(location.pathname);
 
     return (
         <ThemeProvider>
             <TooltipProvider>
                 <div className="flex h-full w-full flex-col overflow-hidden sm:pl-[116px]">
                     <MobileTopBar />
-                    <div className="min-h-0 flex-1 overflow-hidden pb-[calc(var(--mobile-bottombar-height)+env(safe-area-inset-bottom))] sm:pb-0">
-                        <Outlet />
+                    <div
+                        className={`min-h-0 flex-1 overflow-hidden sm:pb-0 ${
+                            showMobileBottomNav
+                                ? "pb-[calc(var(--mobile-bottombar-height)+env(safe-area-inset-bottom))]"
+                                : "pb-0"
+                        }`}
+                    >
+                        <div className="h-full min-h-0">
+                            <Outlet />
+                        </div>
                     </div>
                 </div>
                 <Navigation />

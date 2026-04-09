@@ -14,8 +14,18 @@ import { lazyWithReload } from "./utils/lazy";
 const Rooot = lazyWithReload(() => import("./route"));
 
 const lang = usePreferenceStore.getState().locale;
+
+if ("scrollRestoration" in window.history) {
+    window.history.scrollRestoration = "manual";
+}
+
 initIntl(lang).then(() => {
-    createRoot(document.getElementById("root")!).render(
+    const rootElement = document.getElementById("root");
+    if (!rootElement) {
+        throw new Error("Root element not found");
+    }
+
+    createRoot(rootElement).render(
         <StrictMode>
             <LocaleProvider>
                 <Suspense>

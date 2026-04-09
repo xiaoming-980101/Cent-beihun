@@ -1,5 +1,5 @@
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
+/** biome-ignore-all lint/a11y/noStaticElementInteractions: Table-row layout is used to preserve aligned columns while keeping the whole row clickable. */
+/** biome-ignore-all lint/a11y/useKeyWithClickEvents: Table-row layout is used to preserve aligned columns while keeping the whole row clickable. */
 
 import type { ReactNode } from "react";
 import { cn } from "@/utils";
@@ -28,22 +28,22 @@ export function StaticItem({
     return (
         <div
             className={cn(
-                "w-full items-center cursor-pointer table-row h-10 rounded transition-all hover:bg-accent hover:text-accent-foreground",
+                "table-row h-14 w-full cursor-pointer rounded-[14px] transition-all hover:bg-[color:var(--wedding-surface-muted)]",
                 className,
             )}
             onClick={onClick}
         >
-            <div className="text-sm truncate text-left table-cell w-[1px] align-middle pl-2">
+            <div className="table-cell w-[1px] truncate pl-2 text-left align-middle text-sm text-[color:var(--wedding-text)]">
                 {children}
             </div>
             <div className="table-cell w-auto px-2 align-middle">
                 <Progress
                     value={percent * 100}
-                    className="h-3 [&_[data-state=indeterminate]]:hidden min-w-[1px]"
+                    className="h-2.5 min-w-[1px] [&_[data-state=indeterminate]]:hidden"
                 >
                     <div
                         className={cn(
-                            "absolute top-0 text-[8px] px-2 rounded-full min-w-min h-full flex items-center justify-end text-white",
+                            "absolute top-0 flex h-full min-w-min items-center justify-end rounded-full px-2 text-[8px] text-white",
                             type === "expense"
                                 ? "bg-semantic-expense"
                                 : type === "income"
@@ -57,8 +57,8 @@ export function StaticItem({
                 </Progress>
             </div>
             <div
-                className="w-[1px] truncate text-right table-cell align-middle pr-2"
-                onClick={(e) => {
+                className="table-cell w-[1px] truncate pr-2 text-right align-middle text-[color:var(--wedding-text)]"
+                onClick={() => {
                     onMoneyClick?.();
                 }}
             >

@@ -1,13 +1,15 @@
 /**
- * 工具页入口 - 婚礼主题 Bento Grid 设计
+ * 工具页入口 - 通用主题 Bento Grid 设计
  */
 
 import { useNavigate } from "react-router";
+import { useShallow } from "zustand/shallow";
 import {
     WeddingPageShell,
     WeddingSectionTitle,
     WeddingTopBar,
 } from "@/components/wedding-ui";
+import { useBookStore } from "@/store/book";
 
 const TOOLS = [
     {
@@ -30,7 +32,7 @@ const TOOLS = [
     },
     {
         id: "wedding-budget",
-        name: "婚礼预算",
+        name: "预算管理",
         icon: "icon-[mdi--calculator-variant]",
         path: "/tools/wedding-budget",
         description: "全程跟踪定金、尾款及预算执行情况",
@@ -59,46 +61,47 @@ const FEATURE_LINKS = [
 
 export default function Tools() {
     const navigate = useNavigate();
-
-    const handleKeyDown = (path: string) => (e: React.KeyboardEvent) => {
-        if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            navigate(path);
-        }
-    };
+    const currentBookName = useBookStore(
+        useShallow((state) => {
+            const { currentBookId, books } = state;
+            return books.find((book) => book.id === currentBookId)?.name;
+        }),
+    );
+    const bookLabel = currentBookName || "当前账本";
 
     return (
         <WeddingPageShell>
-            <WeddingTopBar title="Cent" subtitle="高效备婚，从这里开始" />
+            <WeddingTopBar title="Cent" subtitle={`${bookLabel}常用工具`} />
 
             <section>
                 <div className="px-1 pb-2 pt-2">
                     <h1 className="wedding-topbar-title text-[32px] text-[color:var(--wedding-text)]">
-                        婚礼工具箱
+                        {bookLabel}工具箱
                     </h1>
-                    <p className="mt-2 text-sm wedding-muted">高效备婚，从这里开始</p>
+                    <p className="mt-2 text-sm wedding-muted">
+                        围绕当前账本整理常用功能和辅助工具
+                    </p>
                 </div>
             </section>
 
             <section className="grid gap-4">
                 {TOOLS.map((tool, index) => (
-                    <div
+                    <button
                         key={tool.id}
+                        type="button"
                         className={`wedding-surface-card cursor-pointer p-5 transition-transform hover:scale-[1.01] ${
                             index === 0 ? "min-h-[208px]" : "min-h-[186px]"
                         }`}
-                        /* biome-ignore lint/a11y/useSemanticElements: card layout keeps flexible inner content */
-                        role="button"
-                        tabIndex={0}
                         onClick={() => navigate(tool.path)}
-                        onKeyDown={handleKeyDown(tool.path)}
                     >
                         <div className="flex h-full flex-col">
                             <div className="flex items-start justify-between">
                                 <div
                                     className={`flex h-12 w-12 items-center justify-center rounded-2xl ${tool.gradient}`}
                                 >
-                                    <i className={`${tool.icon} text-2xl text-white`} />
+                                    <i
+                                        className={`${tool.icon} text-2xl text-white`}
+                                    />
                                 </div>
                                 {index === 0 ? (
                                     <span className="rounded-full bg-fuchsia-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-fuchsia-500 dark:bg-fuchsia-500/10">
@@ -119,7 +122,7 @@ export default function Tools() {
                                 <i className="icon-[mdi--arrow-right-thin] ml-1 inline-block size-4 align-[-2px]" />
                             </div>
                         </div>
-                    </div>
+                    </button>
                 ))}
             </section>
 
@@ -148,12 +151,17 @@ export default function Tools() {
                     {[
                         ["座次表", "icon-[mdi--seat-outline]"],
                         ["电子请柬", "icon-[mdi--email-outline]"],
-                        ["婚礼行程", "icon-[mdi--calendar-blank-outline]"],
+                        ["行程安排", "icon-[mdi--calendar-blank-outline]"],
                         ["合同保险箱", "icon-[mdi--file-document-outline]"],
                     ].map(([name, icon]) => (
-                        <div key={name} className="wedding-dashed-card flex min-h-[110px] flex-col items-center justify-center gap-3 p-4 opacity-80">
+                        <div
+                            key={name}
+                            className="wedding-dashed-card flex min-h-[110px] flex-col items-center justify-center gap-3 p-4 opacity-80"
+                        >
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm dark:bg-white/8">
-                                <i className={`${icon} text-xl text-[color:var(--wedding-text-soft)]`} />
+                                <i
+                                    className={`${icon} text-xl text-[color:var(--wedding-text-soft)]`}
+                                />
                             </div>
                             <div className="text-sm wedding-muted">{name}</div>
                         </div>
