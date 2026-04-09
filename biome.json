@@ -14,7 +14,10 @@
 			"!**/src-tauri",
 			"!**/public",
 			"!src/locale/lang/**/*.json",
-			"!**/*.config.js"
+			"!**/*.config.js",
+			"!**/.omc/**",
+			"!**/screenshots/**",
+			"!**/.claude/**"
 		]
 	},
 	"formatter": {

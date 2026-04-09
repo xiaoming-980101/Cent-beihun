@@ -68,10 +68,14 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
         <div className="p-4 space-y-4">
             {/* 姓名 */}
             <div>
-                <label className="text-sm text-gray-600 mb-1 block">
+                <label
+                    htmlFor="guest-name"
+                    className="text-sm text-gray-600 mb-1 block"
+                >
                     姓名 *
                 </label>
                 <input
+                    id="guest-name"
                     type="text"
                     className="w-full border rounded-lg px-3 py-2"
                     placeholder="请输入姓名"
@@ -82,8 +86,14 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
 
             {/* 电话 */}
             <div>
-                <label className="text-sm text-gray-600 mb-1 block">电话</label>
+                <label
+                    htmlFor="guest-phone"
+                    className="text-sm text-gray-600 mb-1 block"
+                >
+                    电话
+                </label>
                 <input
+                    id="guest-phone"
                     type="tel"
                     className="w-full border rounded-lg px-3 py-2"
                     placeholder="请输入电话号码"
@@ -94,11 +104,12 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
 
             {/* 关系分组 */}
             <div>
-                <label className="text-sm text-gray-600 mb-1 block">关系</label>
+                <span className="text-sm text-gray-600 mb-1 block">关系</span>
                 <div className="flex gap-1 overflow-x-auto">
                     {RELATION_GROUPS.map((g) => (
                         <button
                             key={g.id}
+                            type="button"
                             className={`px-3 py-1.5 text-sm rounded-lg whitespace-nowrap ${
                                 relation === g.id
                                     ? "bg-pink-500 text-white"
@@ -114,11 +125,10 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
 
             {/* 所属方 */}
             <div>
-                <label className="text-sm text-gray-600 mb-1 block">
-                    所属方
-                </label>
+                <span className="text-sm text-gray-600 mb-1 block">所属方</span>
                 <div className="flex gap-2">
                     <button
+                        type="button"
                         className={`px-4 py-1.5 text-sm rounded-lg ${
                             group === undefined ? "bg-gray-200" : "bg-gray-100"
                         }`}
@@ -127,6 +137,7 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
                         不指定
                     </button>
                     <button
+                        type="button"
                         className={`px-4 py-1.5 text-sm rounded-lg ${
                             group === "groom"
                                 ? "bg-blue-500 text-white"
@@ -137,6 +148,7 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
                         男方
                     </button>
                     <button
+                        type="button"
                         className={`px-4 py-1.5 text-sm rounded-lg ${
                             group === "bride"
                                 ? "bg-pink-500 text-white"
@@ -151,10 +163,14 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
 
             {/* 邀请状态 */}
             <div>
-                <label className="text-sm text-gray-600 mb-1 block">
+                <label
+                    htmlFor="guest-invite-status"
+                    className="text-sm text-gray-600 mb-1 block"
+                >
                     邀请状态
                 </label>
                 <select
+                    id="guest-invite-status"
                     className="w-full border rounded-lg px-3 py-2"
                     value={inviteStatus}
                     onChange={(e) => setInviteStatus(e.target.value)}
@@ -169,8 +185,14 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
 
             {/* 备注 */}
             <div>
-                <label className="text-sm text-gray-600 mb-1 block">备注</label>
+                <label
+                    htmlFor="guest-note"
+                    className="text-sm text-gray-600 mb-1 block"
+                >
+                    备注
+                </label>
                 <textarea
+                    id="guest-note"
                     className="w-full border rounded-lg px-3 py-2 resize-none"
                     placeholder="备注信息"
                     rows={2}

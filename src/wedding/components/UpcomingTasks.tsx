@@ -21,6 +21,7 @@ export function UpcomingTasks() {
                         近期待办
                     </span>
                     <button
+                        type="button"
                         className="text-xs text-primary"
                         onClick={() => navigate("/tasks")}
                     >
@@ -39,6 +40,7 @@ export function UpcomingTasks() {
             <div className="flex justify-between items-center mb-3">
                 <span className="text-sm text-muted-foreground">近期待办</span>
                 <button
+                    type="button"
                     className="text-xs text-primary"
                     onClick={() => navigate("/tasks")}
                 >
@@ -59,9 +61,10 @@ export function UpcomingTasks() {
                         : null;
 
                     return (
-                        <div
+                        <button
+                            type="button"
                             key={task.id}
-                            className="flex items-center gap-2 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer"
+                            className="flex items-center gap-2 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer w-full text-left"
                             onClick={() => navigate("/tasks")}
                         >
                             <i
@@ -92,7 +95,7 @@ export function UpcomingTasks() {
                                           : `${daysLeft}天后`}
                                 </span>
                             )}
-                        </div>
+                        </button>
                     );
                 })}
             </div>
