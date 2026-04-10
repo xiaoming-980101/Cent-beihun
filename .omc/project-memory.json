@@ -232,6 +232,12 @@
       "type": "file"
     },
     {
+      "path": "package.json",
+      "accessCount": 3,
+      "lastAccessed": 1775790349890,
+      "type": "file"
+    },
+    {
       "path": "截图\\设计稿\\浅色\\礼金簿.png",
       "accessCount": 2,
       "lastAccessed": 1775630948222,
@@ -265,12 +271,6 @@
       "path": "src\\pages\\tools\\GuestManagement.tsx",
       "accessCount": 2,
       "lastAccessed": 1775631496953,
-      "type": "file"
-    },
-    {
-      "path": "package.json",
-      "accessCount": 2,
-      "lastAccessed": 1775632258889,
       "type": "file"
     },
     {
