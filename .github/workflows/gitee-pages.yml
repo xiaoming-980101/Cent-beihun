@@ -9,7 +9,7 @@ on:
   workflow_dispatch:  # 支持手动触发
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-and-deploy:
@@ -40,15 +40,21 @@ jobs:
         run: |
           # 创建 .nojekyll 文件，防止 Gitee 忽略 _开头的文件
           touch dist/.nojekyll
-          # 复制 CNAME 配置（如果有自定义域名）
-          # cp CNAME dist/CNAME 2>/dev/null || true
+          # 创建 CNAME 文件（如果有自定义域名可以取消注释）
+          # echo "your-domain.com" > dist/CNAME
 
-      - name: Push to Gitee Pages branch
-        uses: peaceiris/actions-gh-pages@v4
-        with:
-          personal_token: ${{ secrets.GITEE_TOKEN }}
-          external_repository: ${{ secrets.GITEE_REPO }}
-          publish_branch: gh-pages
-          publish_dir: ./dist
-          force_orphan: true
-          commit_message: 'Deploy from GitHub Actions'
+      - name: Deploy to Gitee Pages
+        run: |
+          cd dist
+          git init
+          git config user.name "GitHub Actions"
+          git config user.email "actions@github.com"
+          git add -A
+          git commit -m "Deploy from GitHub Actions - $(date '+%Y-%m-%d %H:%M:%S')"
+
+          # 使用 GITEE_TOKEN 推送到 Gitee
+          git remote add origin https://oauth2:${{ secrets.GITEE_TOKEN }}@gitee.com/${{ secrets.GITEE_REPO }}.git
+          git branch -M gh-pages
+          git push -f origin gh-pages
+
+          echo "✅ 部署成功！访问地址：https://${{ secrets.GITEE_REPO }}.gitee.io"
