@@ -31,3 +31,14 @@ src-tauri/binaries
 # Screenshot debugging
 screenshots/screenshots/
 screenshots/config.cjs
+
+# OMC internal files
+.omc/
+
+# Deploy scripts (临时文件)
+deploy*.cjs
+check-oss.cjs
+fix-oss-acl.cjs
+reupload-oss.cjs
+s.yaml
+dist.zip

@@ -53,7 +53,11 @@ export default function GuestManagement() {
 
     return (
         <WeddingPageShell>
-            <WeddingTopBar title="亲友管理" subtitle="管理宾客名单与邀请状态" backTo="/tools" />
+            <WeddingTopBar
+                title="亲友管理"
+                subtitle="管理宾客名单与邀请状态"
+                backTo="/tools"
+            />
 
             <section className="wedding-hero p-5">
                 <div className="grid grid-cols-2 gap-3">
@@ -61,7 +65,9 @@ export default function GuestManagement() {
                         <div className="text-xs uppercase tracking-[0.16em] text-white/75">
                             总人数
                         </div>
-                        <div className="mt-2 text-3xl font-black text-white">{totalCount}</div>
+                        <div className="mt-2 text-3xl font-black text-white">
+                            {totalCount}
+                        </div>
                     </div>
                     <div className="rounded-[20px] bg-white/12 p-4 backdrop-blur">
                         <div className="text-xs uppercase tracking-[0.16em] text-white/75">
@@ -139,17 +145,24 @@ export default function GuestManagement() {
                                                     {guest.name}
                                                     {guest.group ? (
                                                         <span className="rounded-full bg-pink-100 px-2 py-0.5 text-xs text-pink-500 dark:bg-pink-500/10">
-                                                            {guest.group === "groom" ? "男方" : "女方"}
+                                                            {guest.group ===
+                                                            "groom"
+                                                                ? "男方"
+                                                                : "女方"}
                                                         </span>
                                                     ) : null}
                                                 </div>
                                                 <div className="mt-1 text-sm wedding-muted">
-                                                    {relationInfo?.name || guest.relation}
-                                                    {guest.phone ? ` · ${guest.phone}` : ""}
+                                                    {relationInfo?.name ||
+                                                        guest.relation}
+                                                    {guest.phone
+                                                        ? ` · ${guest.phone}`
+                                                        : ""}
                                                 </div>
                                             </div>
                                             <span className="rounded-full bg-white/80 px-3 py-1 text-xs text-[color:var(--wedding-text-soft)] dark:bg-white/8">
-                                                {statusInfo?.name || guest.inviteStatus}
+                                                {statusInfo?.name ||
+                                                    guest.inviteStatus}
                                             </span>
                                         </div>
                                         {guest.note ? (

@@ -45,7 +45,11 @@ export default function GiftBook() {
 
     return (
         <WeddingPageShell>
-            <WeddingTopBar title="礼金簿" subtitle="记录收礼送礼与人情往来" backTo="/tools" />
+            <WeddingTopBar
+                title="礼金簿"
+                subtitle="记录收礼送礼与人情往来"
+                backTo="/tools"
+            />
 
             <section className="wedding-hero p-5">
                 <div className="text-sm text-white/80">礼金往来概览</div>
@@ -53,9 +57,18 @@ export default function GiftBook() {
                     {formatAmount(stats.netIncome)}
                 </div>
                 <div className="mt-4 grid grid-cols-3 gap-3">
-                    <WeddingStat label="收礼总额" value={formatAmount(stats.receivedTotal)} />
-                    <WeddingStat label="送礼总额" value={formatAmount(stats.sentTotal)} />
-                    <WeddingStat label="净收入" value={formatAmount(stats.netIncome)} />
+                    <WeddingStat
+                        label="收礼总额"
+                        value={formatAmount(stats.receivedTotal)}
+                    />
+                    <WeddingStat
+                        label="送礼总额"
+                        value={formatAmount(stats.sentTotal)}
+                    />
+                    <WeddingStat
+                        label="净收入"
+                        value={formatAmount(stats.netIncome)}
+                    />
                 </div>
             </section>
 
@@ -67,7 +80,11 @@ export default function GiftBook() {
                             active={filterType === type}
                             onClick={() => setFilterType(type)}
                         >
-                            {type === "all" ? "全部" : type === "received" ? "收礼" : "送礼"}
+                            {type === "all"
+                                ? "全部"
+                                : type === "received"
+                                  ? "收礼"
+                                  : "送礼"}
                         </WeddingFilterChip>
                     ))}
                 </div>
@@ -85,7 +102,8 @@ export default function GiftBook() {
                         const guest = record.guestId
                             ? guests.find((g) => g.id === record.guestId)
                             : null;
-                        const guestName = guest?.name || record.guestName || "未知";
+                        const guestName =
+                            guest?.name || record.guestName || "未知";
 
                         return (
                             <div
@@ -113,7 +131,9 @@ export default function GiftBook() {
                                                     {guestName}
                                                 </div>
                                                 <div className="mt-1 text-xs wedding-muted">
-                                                    {new Date(record.date).toLocaleDateString()}
+                                                    {new Date(
+                                                        record.date,
+                                                    ).toLocaleDateString()}
                                                     {record.method
                                                         ? ` · ${PAYMENT_METHODS.find((m) => m.id === record.method)?.name || ""}`
                                                         : ""}
@@ -126,7 +146,9 @@ export default function GiftBook() {
                                                         : "text-rose-500"
                                                 }`}
                                             >
-                                                {record.type === "received" ? "+" : "-"}
+                                                {record.type === "received"
+                                                    ? "+"
+                                                    : "-"}
                                                 {formatAmount(record.amount)}
                                             </div>
                                         </div>
