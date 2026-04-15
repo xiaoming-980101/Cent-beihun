@@ -43,6 +43,7 @@ import {
     ProgressOverview,
     UpcomingTasks,
 } from "@/wedding/components";
+import { formatAmount } from "@/wedding/utils";
 
 let ledgerAnimationShows = false;
 
@@ -170,6 +171,70 @@ export default function Page() {
 
     const showWeddingSection =
         weddingData && (weddingData.engagementDate || weddingData.weddingDate);
+    const weddingTaskCount = weddingData?.tasks.length || 0;
+    const weddingGuestCount = weddingData?.guests.length || 0;
+    const weddingGiftCount = weddingData?.giftRecords.length || 0;
+    const completedWeddingTaskCount =
+        weddingData?.tasks.filter((item) => item.status === "completed")
+            .length || 0;
+    const homeActivities = useMemo(() => {
+        const taskActivities = (weddingData?.tasks || [])
+            .slice()
+            .sort((a, b) => (b.completedAt || b.createdAt) - (a.completedAt || a.createdAt))
+            .slice(0, 2)
+            .map((task) => ({
+                key: `task-${task.id}`,
+                icon: "icon-[mdi--clipboard-check-outline]",
+                color: "#A855F7",
+                text: `${task.title} ${task.status === "completed" ? "已完成" : "进行中"}`,
+                sub: task.completedAt
+                    ? dayjs(task.completedAt).format("MM-DD HH:mm")
+                    : dayjs(task.createdAt).format("MM-DD HH:mm"),
+                path: "/tasks",
+            }));
+        const giftActivities = (weddingData?.giftRecords || [])
+            .slice()
+            .sort((a, b) => b.date - a.date)
+            .slice(0, 1)
+            .map((record) => ({
+                key: `gift-${record.id}`,
+                icon: "icon-[mdi--gift-outline]",
+                color: "#F472B6",
+                text: `${record.guestName || "礼金记录"} ${record.type === "received" ? "收礼" : "送礼"} ${formatAmount(record.amount)}`,
+                sub: dayjs(record.date).format("MM-DD HH:mm"),
+                path: "/tools/gift-book",
+            }));
+        const guestActivities = (weddingData?.guests || [])
+            .filter((guest) => guest.inviteStatus === "confirmed")
+            .slice(0, 1)
+            .map((guest) => ({
+                key: `guest-${guest.id}`,
+                icon: "icon-[mdi--account-group-outline]",
+                color: "#22C55E",
+                text: `${guest.name} 已确认出席`,
+                sub: guest.phone || "宾客状态更新",
+                path: "/tools/guests",
+            }));
+
+        return [...taskActivities, ...giftActivities, ...guestActivities].slice(
+            0,
+            4,
+        );
+    }, [weddingData?.giftRecords, weddingData?.guests, weddingData?.tasks]);
+    const giftSummary = useMemo(() => {
+        const records = weddingData?.giftRecords || [];
+        const received = records
+            .filter((item) => item.type === "received")
+            .reduce((sum, item) => sum + item.amount, 0);
+        const sent = records
+            .filter((item) => item.type === "sent")
+            .reduce((sum, item) => sum + item.amount, 0);
+        return {
+            count: records.length,
+            received,
+            sent,
+        };
+    }, [weddingData?.giftRecords]);
     const shortcutItems = [
         {
             title: "任务",
@@ -201,17 +266,70 @@ export default function Page() {
         <WeddingPageShell contentClassName="wedding-home-page">
             <WeddingTopBar subtitle={`${bookLabel}账本与工具中心`} />
 
-            <section className="wedding-hero p-5">
+            <section className="wedding-hero overflow-hidden rounded-[28px] p-5 shadow-[0_22px_44px_-30px_rgba(236,72,153,0.38)]">
                 <div className="absolute inset-y-0 right-[-20%] w-1/2 rounded-full bg-white/10 blur-3xl" />
+                <div className="absolute -bottom-10 -right-4 h-28 w-28 rounded-full bg-white/10 blur-2xl" />
                 <div className="relative space-y-3">
-                    <div>
-                        <p className="text-sm text-white/80">
-                            {denseDate(currentDate)}
-                        </p>
-                        <AnimatedNumber
-                            value={currentDateAmount}
-                            className="mt-2 text-[46px] font-black tracking-tight text-white"
-                        />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                            <i className="icon-[mdi--heart] size-3.5 text-white/90" />
+                            <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-white/85">
+                                YueWed
+                            </span>
+                        </div>
+                        <button
+                            type="button"
+                            className="flex h-9 w-9 items-center justify-center rounded-full bg-white/18 text-white/90 backdrop-blur"
+                            onClick={() => navigate("/settings")}
+                            aria-label="打开设置"
+                        >
+                            <i className="icon-[mdi--bell-outline] size-4.5" />
+                        </button>
+                    </div>
+                    <div className="flex items-start justify-between gap-3">
+                        <div>
+                            <p className="text-xs font-medium text-white/75">
+                                你好，欢迎回来
+                            </p>
+                            <p className="mt-1 text-sm text-white/80">
+                                {denseDate(currentDate)}
+                            </p>
+                            <AnimatedNumber
+                                value={currentDateAmount}
+                                className="mt-2 text-[46px] font-black tracking-[-0.04em] text-white"
+                            />
+                        </div>
+                        <div className="rounded-full bg-white/20 px-3 py-1.5 text-[11px] font-semibold text-white/90 backdrop-blur">
+                            {weddingData?.weddingDate
+                                ? `${dayjs(weddingData.weddingDate).format("YYYY.MM.DD")}`
+                                : "设置婚期"}
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2.5">
+                        {[
+                            ["任务完成", `${completedWeddingTaskCount}/${weddingTaskCount || 0}`, "已完成", "#F3E8FF", "#A855F7"],
+                            ["宾客人数", `${weddingGuestCount}`, "已登记", "#EFF6FF", "#3B82F6"],
+                            ["礼金记录", `${weddingGiftCount}`, "当前记录", "#FDE7F3", "#EC4899"],
+                        ].map(([label, value, sub, bg, color]) => (
+                            <div
+                                key={label}
+                                className="rounded-2xl px-3 py-2.5 text-center"
+                                style={{ background: bg }}
+                            >
+                                <div className="text-[10px] text-[#7C2D5A]/70">
+                                    {label}
+                                </div>
+                                <div
+                                    className="mt-1 text-lg font-bold leading-none"
+                                    style={{ color }}
+                                >
+                                    {value}
+                                </div>
+                                <div className="mt-1 text-[10px] text-[#7C2D5A]/55">
+                                    {sub}
+                                </div>
+                            </div>
+                        ))}
                     </div>
                     <div className="flex flex-wrap items-center gap-3">
                         {currentBook ? (
@@ -233,36 +351,33 @@ export default function Page() {
                 </div>
             </section>
 
+            <section>
+                <div className="mb-3 text-[13px] font-semibold text-[color:var(--wedding-text)]">
+                    快捷入口
+                </div>
+                <div className="grid grid-cols-4 gap-2">
+                    {shortcutItems.map((item) => (
+                        <button
+                            key={item.path}
+                            type="button"
+                            className="rounded-[20px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-3 text-center shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]"
+                            onClick={() => navigate(item.path)}
+                        >
+                            <div
+                                className={`mx-auto flex h-10 w-10 items-center justify-center rounded-2xl ${item.tone}`}
+                            >
+                                <i className={`${item.icon} text-xl`} />
+                            </div>
+                            <div className="mt-2 text-[10px] font-medium text-[color:var(--wedding-text)]">
+                                {item.title}
+                            </div>
+                        </button>
+                    ))}
+                </div>
+            </section>
+
             {showWeddingSection ? (
                 <section className="grid gap-3">
-                    <div className="grid grid-cols-2 gap-3">
-                        {shortcutItems.map((item) => (
-                            <button
-                                key={item.path}
-                                type="button"
-                                className="wedding-surface-card min-h-[108px] p-4 text-left"
-                                onClick={() => navigate(item.path)}
-                            >
-                                <div
-                                    className={`flex h-10 w-10 items-center justify-center rounded-2xl ${item.tone}`}
-                                >
-                                    <i className={`${item.icon} text-xl`} />
-                                </div>
-                                <div className="mt-4 text-lg font-semibold text-[color:var(--wedding-text)]">
-                                    {item.title}
-                                </div>
-                                <div className="mt-1 text-xs wedding-muted">
-                                    {item.title === "预算管理"
-                                        ? "婚礼花费控制"
-                                        : item.title === "礼金簿"
-                                          ? "收礼送礼明细"
-                                          : item.title === "亲友"
-                                            ? "宾客名单与状态"
-                                            : "待办事项进度"}
-                                </div>
-                            </button>
-                        ))}
-                    </div>
                     <CountdownCard />
                     <ProgressOverview />
                     <UpcomingTasks />
@@ -308,29 +423,103 @@ export default function Page() {
                         <p className="mt-3 text-sm leading-7 wedding-muted">
                             这里保留了原项目的账本能力，并把任务、礼金与预算工具整合到同一套视觉系统里。
                         </p>
-                        <div className="mt-4 grid grid-cols-2 gap-3">
-                            {shortcutItems.map((item) => (
-                                <button
-                                    key={item.path}
-                                    type="button"
-                                    className={`rounded-[20px] border border-white/30 bg-gradient-to-br ${item.tone} p-4 text-left shadow-sm`}
-                                    onClick={() => navigate(item.path)}
-                                >
-                                    <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/80 text-xl text-pink-500 dark:bg-white/8">
-                                        <i className={item.icon}></i>
-                                    </div>
-                                    <div className="mt-3 text-sm font-semibold text-[color:var(--wedding-text)]">
-                                        {item.title}
-                                    </div>
-                                </button>
-                            ))}
-                        </div>
+                        {shortcutItems.map((item) => (
+                            <button
+                                key={item.path}
+                                type="button"
+                                className={`rounded-[20px] border border-white/30 bg-gradient-to-br ${item.tone} p-4 text-left shadow-sm`}
+                                onClick={() => navigate(item.path)}
+                            >
+                                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/80 text-xl text-pink-500 dark:bg-white/8">
+                                    <i className={item.icon}></i>
+                                </div>
+                                <div className="mt-3 text-sm font-semibold text-[color:var(--wedding-text)]">
+                                    {item.title}
+                                </div>
+                            </button>
+                        ))}
                     </div>
                     <Promotion />
                 </section>
             )}
 
             <section className="wedding-surface-card p-4">
+                <div className="mb-4">
+                    <div className="mb-3 flex items-center justify-between">
+                        <div className="text-[13px] font-semibold text-[color:var(--wedding-text)]">
+                            最近动态
+                        </div>
+                        <button
+                            type="button"
+                            className="text-[11px] text-pink-500"
+                            onClick={() => navigate("/tasks")}
+                        >
+                            全部
+                        </button>
+                    </div>
+                    <div className="space-y-2">
+                        {homeActivities.length > 0 ? (
+                            homeActivities.map((item) => (
+                                <button
+                                    key={item.key}
+                                    type="button"
+                                    onClick={() => navigate(item.path)}
+                                    className="flex w-full items-center gap-3 rounded-[18px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] px-3 py-3 text-left transition-transform hover:-translate-y-0.5"
+                                >
+                                    <div
+                                        className="flex h-8 w-8 items-center justify-center rounded-xl"
+                                        style={{ background: `${item.color}18` }}
+                                    >
+                                        <i
+                                            className={`${item.icon} size-4`}
+                                            style={{ color: item.color }}
+                                        />
+                                    </div>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="truncate text-xs font-medium text-[color:var(--wedding-text)]">
+                                            {item.text}
+                                        </div>
+                                        <div className="mt-1 text-[10px] text-[color:var(--wedding-text-mute)]">
+                                            {item.sub}
+                                        </div>
+                                    </div>
+                                    <i className="icon-[mdi--chevron-right] size-4 text-[color:var(--wedding-text-mute)]" />
+                                </button>
+                            ))
+                        ) : (
+                            <div className="rounded-[18px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] px-3 py-4 text-center text-xs wedding-muted">
+                                还没有婚礼动态，添加任务或礼金后这里会自动更新。
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                <div className="mb-4 rounded-[20px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-pink-50 text-pink-500 dark:bg-pink-500/12">
+                                <i className="icon-[mdi--gift-outline] size-5" />
+                            </div>
+                            <div>
+                                <div className="text-[12px] font-medium text-[color:var(--wedding-text)]">
+                                    礼金收支
+                                </div>
+                                <div className="text-[10px] text-[color:var(--wedding-text-mute)]">
+                                    共 {giftSummary.count} 笔记录
+                                </div>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <div className="text-sm font-semibold text-pink-500">
+                                {formatAmount(giftSummary.received)}
+                            </div>
+                            <div className="text-[10px] text-[color:var(--wedding-text-mute)]">
+                                支出 {formatAmount(giftSummary.sent)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div className="flex items-center justify-between gap-3">
                     <WeddingSectionTitle title="预算与同步" />
                     <button
@@ -351,6 +540,62 @@ export default function Page() {
                 </div>
                 <div className="mt-4 grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
                     <div className="space-y-3">
+                        <div className="rounded-[20px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <div className="text-[13px] font-semibold text-[color:var(--wedding-text)]">
+                                        预算概览
+                                    </div>
+                                    <div className="mt-1 text-[11px] text-[color:var(--wedding-text-mute)]">
+                                        当前账本的预算与支付进度
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    className="text-[11px] text-pink-500"
+                                    onClick={() => navigate("/tools/wedding-budget")}
+                                >
+                                    详情
+                                </button>
+                            </div>
+                            <div className="mt-4 grid grid-cols-3 gap-2">
+                                {[
+                                    [
+                                        "总预算",
+                                        formatAmount(
+                                            budgets.reduce(
+                                                (sum, item) =>
+                                                    sum + item.budget,
+                                                0,
+                                            ),
+                                        ),
+                                    ],
+                                    [
+                                        "已支付",
+                                        formatAmount(
+                                            budgets.reduce(
+                                                (sum, item) =>
+                                                    sum + item.spent,
+                                                0,
+                                            ),
+                                        ),
+                                    ],
+                                    ["项目数", `${budgets.length} 项`],
+                                ].map(([label, value]) => (
+                                    <div
+                                        key={label}
+                                        className="rounded-2xl bg-[color:var(--wedding-surface-muted)] px-3 py-3 text-center"
+                                    >
+                                        <div className="text-[10px] text-[color:var(--wedding-text-mute)]">
+                                            {label}
+                                        </div>
+                                        <div className="mt-1 text-[13px] font-semibold text-[color:var(--wedding-text)]">
+                                            {value}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
                         <div className="grid grid-cols-2 gap-3">
                             <WeddingStat
                                 label="进行中预算"

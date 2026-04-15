@@ -215,7 +215,7 @@ export function useChartPart({
     }, [charts]);
     const Part = (
         <>
-            <div className="wedding-surface-card relative min-h-[300px] w-full flex-shrink-0 overflow-hidden p-3">
+            <div className="wedding-surface-card relative min-h-[300px] w-full flex-shrink-0 overflow-hidden rounded-[26px] p-3 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)]">
                 <div className="absolute top-4 left-4 z-2">
                     {viewType !== "custom" && (
                         <button
@@ -239,7 +239,7 @@ export function useChartPart({
                 </div>
                 {asCalendar && viewType !== "custom" ? (
                     <div className="w-full">
-                        <div className="pb-2 pt-4 flex justify-center text-lg font-semibold text-[color:var(--wedding-text)]">
+                        <div className="flex justify-center pb-2 pt-4 text-lg font-semibold text-[color:var(--wedding-text)]">
                             {trendTitle}
                         </div>
                         <CalendarDetail
@@ -260,7 +260,7 @@ export function useChartPart({
                 )}
             </div>
             {focusType !== "balance" && (
-                <div className="wedding-surface-card relative w-full flex-shrink-0 overflow-hidden p-3">
+                <div className="wedding-surface-card relative w-full flex-shrink-0 overflow-hidden rounded-[26px] p-3 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)]">
                     <div className="absolute top-4 left-4 z-2">
                         {
                             <button
@@ -284,7 +284,7 @@ export function useChartPart({
                     </div>
                     {asList ? (
                         <div className="w-full">
-                            <div className="py-4 flex justify-center text-lg font-semibold text-[color:var(--wedding-text)]">
+                            <div className="flex justify-center py-4 text-lg font-semibold text-[color:var(--wedding-text)]">
                                 {focusType === "income"
                                     ? t("income-details")
                                     : t("expense-details")}
@@ -365,7 +365,7 @@ export function useChartPart({
                 </div>
             )}
             {!asList && selectedCategoryChart && (
-                <div className="wedding-surface-card w-full flex-shrink-0 overflow-hidden p-3">
+                <div className="wedding-surface-card w-full flex-shrink-0 overflow-hidden rounded-[26px] p-3 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)]">
                     <div className="w-full h-[300px]">
                         <Chart
                             option={selectedCategoryChart}

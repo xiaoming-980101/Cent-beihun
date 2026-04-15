@@ -239,14 +239,23 @@ export default function MapSettingsItem() {
                     showMapConfig();
                 }}
                 variant="ghost"
-                className="w-full py-4 rounded-none h-auto hover:bg-pink-50 dark:hover:bg-pink-900/10"
+                className="h-auto w-full rounded-none px-1 py-1"
             >
-                <div className="w-full px-4 flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                        <i className="icon-[mdi--map-outline] size-5"></i>
-                        {t("map-settings")}
+                <div className="wedding-settings-item rounded-[18px]">
+                    <div className="flex min-w-0 items-center gap-3">
+                        <div className="wedding-settings-item__icon bg-emerald-50 text-emerald-500 dark:bg-emerald-500/12">
+                            <i className="icon-[mdi--map-outline] size-5"></i>
+                        </div>
+                        <div className="min-w-0">
+                            <div className="wedding-settings-item__title">
+                                {t("map-settings")}
+                            </div>
+                            <div className="wedding-settings-item__desc">
+                                配置地图密钥，用于婚礼地点与导航能力
+                            </div>
+                        </div>
                     </div>
-                    <i className="icon-[mdi--chevron-right] size-5"></i>
+                    <i className="icon-[mdi--chevron-right] size-5 text-[color:var(--wedding-text-muted)]"></i>
                 </div>
             </Button>
             <MapConfigFormProvider />

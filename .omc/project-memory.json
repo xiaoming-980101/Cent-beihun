@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1775630874804,
-  "projectRoot": "D:\\ai\\dinghun\\Cent-beihun",
+  "lastScanned": 1776260647786,
+  "projectRoot": "/Users/baobeizhenkeai/Documents/beihun",
   "techStack": {
     "languages": [
       {
@@ -58,7 +58,7 @@
     "devCommand": "pnpm dev",
     "scripts": {
       "dev": "vite --host",
-      "build": "pnpm run lint && vite build",
+      "build": "vite build",
       "analyze": "ANALYZE=true vite build",
       "lint": "tsc -b && biome check --diagnostic-level error",
       "preview": "vite preview --host --port 5173",
@@ -92,48 +92,42 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 7,
-      "lastAccessed": 1775630874765,
+      "lastAccessed": 1776260647637,
       "keyFiles": [
+        "__headers",
         "favicon.ico",
         "icon.png",
         "index.html",
-        "manifest.webmanifest",
-        "registerSW.js"
+        "manifest.webmanifest"
       ]
     },
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
-      "fileCount": 0,
-      "lastAccessed": 1775630874766,
-      "keyFiles": []
-    },
-    "outputs": {
-      "path": "outputs",
-      "purpose": null,
-      "fileCount": 0,
-      "lastAccessed": 1775630874783,
-      "keyFiles": []
+      "fileCount": 1,
+      "lastAccessed": 1776260647637,
+      "keyFiles": [
+        "gitee-pages-deploy.md"
+      ]
     },
     "public": {
       "path": "public",
       "purpose": "Public files",
       "fileCount": 3,
-      "lastAccessed": 1775630874784,
+      "lastAccessed": 1776260647731,
       "keyFiles": [
+        "__headers",
         "favicon.ico",
-        "icon.png",
-        "__headers"
+        "icon.png"
       ]
     },
     "screenshots": {
       "path": "screenshots",
       "purpose": null,
-      "fileCount": 3,
-      "lastAccessed": 1775630874785,
+      "fileCount": 2,
+      "lastAccessed": 1776260647732,
       "keyFiles": [
         "capture.cjs",
-        "config.cjs",
         "config.example.cjs"
       ]
     },
@@ -141,7 +135,7 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 5,
-      "lastAccessed": 1775630874785,
+      "lastAccessed": 1776260647733,
       "keyFiles": [
         "index.css",
         "main.tsx",
@@ -154,39 +148,39 @@
       "path": "截图",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1775630874785,
+      "lastAccessed": 1776260647734,
       "keyFiles": []
     },
-    "dist\\assets": {
-      "path": "dist\\assets",
+    "dist/assets": {
+      "path": "dist/assets",
       "purpose": "Static assets",
       "fileCount": 25,
-      "lastAccessed": 1775630874786,
+      "lastAccessed": 1776260647738,
       "keyFiles": [
-        "en-CR9-uxYy.js",
-        "GiftBook-jqiGW_p3.js",
-        "GuestManagement-C63HhLsd.js"
+        "GiftBook-BlMkq034.js",
+        "GuestManagement-ZW7pJmD8.js",
+        "TaskCalendar-ldrTc9ud.js"
       ]
     },
-    "src\\api": {
-      "path": "src\\api",
+    "src/api": {
+      "path": "src/api",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1775630874788,
+      "lastAccessed": 1776260647782,
       "keyFiles": []
     },
-    "src\\assets": {
-      "path": "src\\assets",
+    "src/assets": {
+      "path": "src/assets",
       "purpose": "Static assets",
       "fileCount": 0,
-      "lastAccessed": 1775630874788,
+      "lastAccessed": 1776260647783,
       "keyFiles": []
     },
-    "src\\components": {
-      "path": "src\\components",
+    "src/components": {
+      "path": "src/components",
       "purpose": "UI components",
-      "fileCount": 13,
-      "lastAccessed": 1775630874789,
+      "fileCount": 14,
+      "lastAccessed": 1776260647784,
       "keyFiles": [
         "animated-number.tsx",
         "clearable.tsx",
@@ -194,307 +188,6 @@
       ]
     }
   },
-  "hotPaths": [
-    {
-      "path": "src",
-      "accessCount": 6,
-      "lastAccessed": 1775632624033,
-      "type": "directory"
-    },
-    {
-      "path": "screenshots\\capture.cjs",
-      "accessCount": 4,
-      "lastAccessed": 1775632610392,
-      "type": "file"
-    },
-    {
-      "path": "src\\pages\\home\\index.tsx",
-      "accessCount": 4,
-      "lastAccessed": 1775632622500,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\config.cjs",
-      "accessCount": 4,
-      "lastAccessed": 1775632648460,
-      "type": "file"
-    },
-    {
-      "path": "src\\pages\\tools\\Tools.tsx",
-      "accessCount": 3,
-      "lastAccessed": 1775632346718,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\navigation.tsx",
-      "accessCount": 3,
-      "lastAccessed": 1775632622464,
-      "type": "file"
-    },
-    {
-      "path": "package.json",
-      "accessCount": 3,
-      "lastAccessed": 1775790349890,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\浅色\\礼金簿.png",
-      "accessCount": 2,
-      "lastAccessed": 1775630948222,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\深色\\主页.png",
-      "accessCount": 2,
-      "lastAccessed": 1775630948754,
-      "type": "file"
-    },
-    {
-      "path": "src\\pages\\tools\\GiftBook.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1775631488869,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿",
-      "accessCount": 2,
-      "lastAccessed": 1775631489095,
-      "type": "directory"
-    },
-    {
-      "path": "src\\pages\\tools\\WeddingBudget.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1775631496827,
-      "type": "file"
-    },
-    {
-      "path": "src\\pages\\tools\\GuestManagement.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1775631496953,
-      "type": "file"
-    },
-    {
-      "path": "src\\main.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1775632335257,
-      "type": "file"
-    },
-    {
-      "path": "src\\route.tsx",
-      "accessCount": 2,
-      "lastAccessed": 1775632354148,
-      "type": "file"
-    },
-    {
-      "path": "screenshots",
-      "accessCount": 1,
-      "lastAccessed": 1775630931034,
-      "type": "directory"
-    },
-    {
-      "path": "截图\\设计稿\\浅色\\主页.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630931125,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\浅色\\亲友管理.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630948096,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\浅色\\任务列表.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630948159,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\浅色\\婚礼预算.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630948312,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\浅色\\统计分析.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630963341,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\浅色\\搜索筛选.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630963437,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\浅色\\任务日历.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630963497,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\浅色\\工具箱.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630963567,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\light-主页.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630975553,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\dark-主页.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630975799,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\深色\\任务列表.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630976134,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\深色\\礼金簿.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630976611,
-      "type": "file"
-    },
-    {
-      "path": "src\\pages\\tasks\\Tasks.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1775630998761,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\dark-礼金簿.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630998933,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\light-礼金簿.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630999098,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\深色\\统计分析.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630999382,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\深色\\工具箱.png",
-      "accessCount": 1,
-      "lastAccessed": 1775630999659,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\dark-任务列表.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631020003,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\light-工具箱.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631020088,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\light-任务列表.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631020173,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\dark-工具箱.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631020376,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\深色\\亲友管理.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631020452,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\light-统计.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631085547,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\dark-统计.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631085588,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\深色\\任务日历.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631085986,
-      "type": "file"
-    },
-    {
-      "path": "截图\\设计稿\\深色\\搜索筛选.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631086039,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\light-搜索.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631110871,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\dark-任务日历.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631111066,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\light-婚礼预算.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631111111,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\dark-亲友管理.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631111160,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\dark-婚礼预算.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631111207,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\dark-搜索.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631111242,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\light-任务日历.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631111273,
-      "type": "file"
-    },
-    {
-      "path": "screenshots\\screenshots\\light-亲友管理.png",
-      "accessCount": 1,
-      "lastAccessed": 1775631111338,
-      "type": "file"
-    }
-  ],
+  "hotPaths": [],
   "userDirectives": []
 }

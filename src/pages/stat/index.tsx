@@ -276,6 +276,43 @@ export default function Page() {
                 subtitle={`${bookLabel}支出与收入结构总览`}
             />
             <div className="w-full flex flex-col gap-4">
+                <div className="rounded-[28px] bg-[linear-gradient(135deg,#fbbcdf,#ddb6f7)] p-4 text-[#3b0d29] shadow-[0_18px_36px_-28px_rgba(244,114,182,0.45)] dark:bg-[linear-gradient(135deg,#3d1030,#1e0d30)] dark:text-white">
+                    <div className="flex items-center justify-between gap-3">
+                        <div>
+                            <div className="text-sm font-medium opacity-80">
+                                统计分析
+                            </div>
+                            <div className="mt-1 text-[28px] font-bold leading-none">
+                                {filtered.length}
+                            </div>
+                            <div className="mt-1 text-xs opacity-75">
+                                当前筛选范围内账单数
+                            </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2 text-center">
+                            <div className="rounded-2xl bg-white/40 px-3 py-2 dark:bg-white/10">
+                                <div className="text-[10px] opacity-75">
+                                    维度
+                                </div>
+                                <div className="text-sm font-semibold">
+                                    {dimension === "category" ? "分类" : "成员"}
+                                </div>
+                            </div>
+                            <div className="rounded-2xl bg-white/40 px-3 py-2 dark:bg-white/10">
+                                <div className="text-[10px] opacity-75">
+                                    焦点
+                                </div>
+                                <div className="text-sm font-semibold">
+                                    {focusType === "expense"
+                                        ? "支出"
+                                        : focusType === "income"
+                                          ? "收入"
+                                          : "结余"}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <div className="space-y-3">
                     <div className="wedding-surface-card flex p-2">
                         <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hidden">
@@ -362,26 +399,34 @@ export default function Page() {
                     }}
                     money={totalMoneys}
                 />
-                <div className="grid gap-3 md:grid-cols-2">
-                    <div className="wedding-surface-card p-5">
-                        <div className="text-xs wedding-muted">总支出</div>
-                        <div className="mt-2 text-[40px] font-black tracking-tight text-rose-500">
-                            ¥ {totalMoneys[1].toLocaleString()}
+                <div className="grid gap-3 md:grid-cols-3">
+                    {[
+                        ["总支出", totalMoneys[1], "text-rose-500"],
+                        ["总收入", totalMoneys[0], "text-emerald-500"],
+                        ["当前结余", totalMoneys[2], "text-violet-500"],
+                    ].map(([label, value, tone]) => (
+                        <div
+                            key={label}
+                            className="wedding-surface-card rounded-[24px] p-5 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)]"
+                        >
+                            <div className="text-xs wedding-muted">{label}</div>
+                            <div
+                                className={cn(
+                                    "mt-2 text-[34px] font-black tracking-tight",
+                                    tone,
+                                )}
+                            >
+                                ¥ {Number(value).toLocaleString()}
+                            </div>
                         </div>
-                    </div>
-                    <div className="wedding-surface-card p-5">
-                        <div className="text-xs wedding-muted">总收入</div>
-                        <div className="mt-2 text-[40px] font-black tracking-tight text-emerald-500">
-                            ¥ {totalMoneys[0].toLocaleString()}
-                        </div>
-                    </div>
+                    ))}
                 </div>
             </div>
             <div className="w-full flex-1 overflow-y-auto px-1">
                 <div className="relative flex w-full flex-col items-center gap-4">
                     {Part}
                     {tagStructure.length > 0 && (
-                        <div className="wedding-surface-card w-full p-4 flex flex-col">
+                        <div className="wedding-surface-card w-full rounded-[24px] p-4 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)] flex flex-col">
                             <h2 className="my-3 text-center text-lg font-medium text-pink-500">
                                 {t("tag-details")}
                             </h2>
@@ -434,7 +479,7 @@ export default function Page() {
                         }
                     />
                     {analysis && (
-                        <div className="wedding-surface-card w-full p-4 flex flex-col">
+                        <div className="wedding-surface-card w-full rounded-[24px] p-4 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)] flex flex-col">
                             <h2 className="my-3 text-center text-lg font-medium text-pink-500">
                                 {t("analysis")}
                             </h2>
@@ -447,8 +492,10 @@ export default function Page() {
                     )}
                     <div className="w-full flex flex-col gap-4">
                         {dataSources.highestExpenseBill && (
-                            <div className="wedding-surface-card p-4">
-                                {t("highest-expense")}:
+                            <div className="wedding-surface-card rounded-[24px] p-4 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)]">
+                                <div className="mb-3 text-sm font-semibold text-rose-500">
+                                    {t("highest-expense")}
+                                </div>
                                 <BillItem
                                     className="w-full"
                                     bill={dataSources.highestExpenseBill}
@@ -463,8 +510,10 @@ export default function Page() {
                             </div>
                         )}
                         {dataSources.highestIncomeBill && (
-                            <div className="wedding-surface-card p-4">
-                                {t("highest-income")}:
+                            <div className="wedding-surface-card rounded-[24px] p-4 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)]">
+                                <div className="mb-3 text-sm font-semibold text-emerald-500">
+                                    {t("highest-income")}
+                                </div>
                                 <BillItem
                                     className="w-full"
                                     bill={dataSources.highestIncomeBill}

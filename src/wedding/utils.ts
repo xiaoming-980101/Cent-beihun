@@ -5,8 +5,14 @@
 import dayjs from "dayjs";
 import { SCHEDULE_RULES } from "./constants";
 import type {
+    GuestRelation,
+    InviteStatus,
     GiftRecord,
+    GiftType,
+    PaymentMethod,
     TaskCategory,
+    TaskPriority,
+    TaskStatus,
     WeddingBudget,
     WeddingTask,
 } from "./type";
@@ -244,4 +250,80 @@ export function getCategoryIcon(categoryId: string): string {
         dining: "icon-[mdi--food]",
     };
     return iconMap[categoryId] || "icon-[mdi--checkbox-marked]";
+}
+
+export function getCategoryEmoji(categoryId: string): string {
+    const emojiMap: Record<string, string> = {
+        venue: "🏛️",
+        photo: "📷",
+        dress: "👗",
+        planning: "🎉",
+        dining: "🍽️",
+    };
+    return emojiMap[categoryId] || "📋";
+}
+
+export function getTaskStatusLabel(status: TaskStatus): string {
+    const map: Record<TaskStatus, string> = {
+        pending: "待办",
+        in_progress: "进行中",
+        completed: "已完成",
+    };
+    return map[status];
+}
+
+export function getTaskPriorityLabel(priority: TaskPriority): string {
+    const map: Record<TaskPriority, string> = {
+        high: "高",
+        medium: "中",
+        low: "低",
+    };
+    return map[priority];
+}
+
+export function getGuestRelationLabel(relation: GuestRelation): string {
+    const map: Record<GuestRelation, string> = {
+        relative: "亲戚",
+        friend: "朋友",
+        colleague: "同事",
+        classmate: "同学",
+        other: "其他",
+    };
+    return map[relation];
+}
+
+export function getInviteStatusLabel(status: InviteStatus): string {
+    const map: Record<InviteStatus, string> = {
+        pending: "待回复",
+        invited: "已邀请",
+        confirmed: "已确认",
+        declined: "已婉拒",
+    };
+    return map[status];
+}
+
+export function getGroupLabel(group?: "groom" | "bride"): string {
+    if (group === "groom") return "男方";
+    if (group === "bride") return "女方";
+    return "共同";
+}
+
+export function getGiftTypeLabel(type: GiftType): string {
+    return type === "received" ? "收礼" : "送礼";
+}
+
+export function getPaymentMethodLabel(method?: PaymentMethod): string {
+    if (!method) return "其他";
+    const map: Record<PaymentMethod, string> = {
+        wechat: "微信",
+        alipay: "支付宝",
+        cash: "现金",
+        other: "其他",
+    };
+    return map[method];
+}
+
+export function formatShortDate(timestamp?: number): string {
+    if (!timestamp) return "未设置";
+    return dayjs(timestamp).format("MM-DD");
 }

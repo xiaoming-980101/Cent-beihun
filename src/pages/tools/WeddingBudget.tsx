@@ -1,9 +1,4 @@
-/**
- * 预算管理页面
- */
-
-import { useState } from "react";
-import { useShallow } from "zustand/shallow";
+import { useMemo, useState } from "react";
 import {
     Dialog,
     DialogContent,
@@ -12,272 +7,226 @@ import {
     DialogPortal,
     DialogTitle,
 } from "@/components/ui/dialog";
-import {
-    WeddingBadge,
-    WeddingEmptyState,
-    WeddingFilterChip,
-    WeddingFloatingActionButton,
-    WeddingPageShell,
-    WeddingStat,
-    WeddingTopBar,
-} from "@/components/wedding-ui";
-import { useBookStore } from "@/store/book";
+import { WeddingPageShell, WeddingTopBar } from "@/components/wedding-ui";
 import { useWeddingStore } from "@/store/wedding";
 import { BudgetForm } from "@/wedding/components";
 import { BUDGET_STATUSES } from "@/wedding/constants";
-import { checkBudgetStatus, formatAmount } from "@/wedding/utils";
+import { checkBudgetStatus, formatAmount, formatShortDate } from "@/wedding/utils";
 
-const BUDGET_ICONS: Record<string, string> = {
-    婚宴酒店: "icon-[mdi--silverware-fork-knife]",
-    婚纱摄影: "icon-[mdi--camera-outline]",
-    婚礼策划: "icon-[mdi--diamond-stone]",
-    礼服婚纱: "icon-[mdi--hanger]",
-};
-
-const BUDGET_ICON_TONES: Record<string, string> = {
-    婚宴酒店: "bg-pink-500/14 text-pink-500",
-    婚纱摄影: "bg-violet-500/14 text-violet-500",
-    婚礼策划: "bg-amber-500/14 text-amber-500",
-    礼服婚纱: "bg-blue-500/14 text-blue-500",
-};
+const STATUS_STYLE = {
+    planned: { color: "#F97316", bg: "rgba(249,115,22,0.12)" },
+    deposit_paid: { color: "#3B82F6", bg: "rgba(59,130,246,0.12)" },
+    completed: { color: "#22C55E", bg: "rgba(34,197,94,0.12)" },
+} as const;
 
 export default function WeddingBudget() {
     const { weddingData } = useWeddingStore();
-    const currentBookName = useBookStore(
-        useShallow((state) => {
-            const { currentBookId, books } = state;
-            return books.find((book) => book.id === currentBookId)?.name;
-        }),
-    );
     const budgets = weddingData?.weddingBudgets || [];
-    const bookLabel = currentBookName || "当前账本";
-
     const [filterStatus, setFilterStatus] = useState<string>("all");
     const [showForm, setShowForm] = useState(false);
     const [editingBudget, setEditingBudget] = useState<
         undefined | (typeof budgets)[number]
     >(undefined);
 
-    const filteredBudgets =
-        filterStatus === "all"
-            ? budgets
-            : budgets.filter((b) => b.status === filterStatus);
+    const filtered = useMemo(() => {
+        if (filterStatus === "all") return budgets;
+        return budgets.filter((item) => item.status === filterStatus);
+    }, [budgets, filterStatus]);
 
-    // 统计
-    const totalBudget = budgets.reduce((sum, b) => sum + b.budget, 0);
-    const totalPaid = budgets.reduce((sum, b) => sum + b.spent, 0);
-    const totalDeposit = budgets.reduce((sum, b) => sum + (b.deposit || 0), 0);
-    const remaining = totalBudget - totalPaid;
-    const overBudgetCount = budgets.filter(
-        (item) => item.spent > item.budget,
-    ).length;
-    const dueSoonCount = budgets.filter((item) => {
-        if (!item.dueDate || item.status === "completed") {
-            return false;
-        }
-        const diff = item.dueDate - Date.now();
-        return diff >= 0 && diff <= 1000 * 60 * 60 * 24 * 14;
-    }).length;
+    const totalBudget = budgets.reduce((sum, item) => sum + item.budget, 0);
+    const totalPaid = budgets.reduce((sum, item) => sum + item.spent, 0);
+    const totalBalance = budgets.reduce(
+        (sum, item) =>
+            sum + (item.balance ?? Math.max(item.budget - item.spent, 0)),
+        0,
+    );
+    const paidPct =
+        totalBudget > 0 ? Math.round((totalPaid / totalBudget) * 100) : 0;
 
     return (
         <WeddingPageShell>
             <WeddingTopBar
-                title="预算管理"
-                subtitle={`跟踪${bookLabel}预算与执行情况`}
+                title="婚礼预算"
+                subtitle="供应商与付款管理"
                 backTo="/tools"
             />
 
-            <section className="wedding-hero p-5">
-                <div className="text-sm text-white/75">预算总额</div>
-                <div className="mt-2 text-[44px] font-black tracking-tight text-white">
-                    {formatAmount(totalBudget)}
-                </div>
-                <div className="mt-5 grid grid-cols-3 gap-2.5">
-                    <div className="wedding-metric-panel p-3">
-                        <div className="text-[11px] text-white/72">已支付</div>
-                        <div className="mt-2 text-lg font-bold text-white">
-                            {formatAmount(totalPaid)}
+            <section className="rounded-[28px] border border-purple-200 bg-[linear-gradient(135deg,#f5f0ff,#e9d5ff)] p-5 shadow-[0_18px_36px_-28px_rgba(168,85,247,0.45)] dark:border-purple-900/70 dark:bg-[linear-gradient(135deg,#2d1a45,#1a0d30)]">
+                <div className="flex items-start justify-between gap-3">
+                    <div>
+                        <div className="text-[11px] font-medium text-purple-900/70 dark:text-purple-200/80">
+                            婚礼总预算
+                        </div>
+                        <div className="mt-1 text-[28px] font-bold leading-none text-purple-950 dark:text-white">
+                            ¥{totalBudget.toLocaleString()}
                         </div>
                     </div>
-                    <div className="wedding-metric-panel p-3">
-                        <div className="text-[11px] text-white/72">定金</div>
-                        <div className="mt-2 text-lg font-bold text-white">
-                            {formatAmount(totalDeposit)}
-                        </div>
-                    </div>
-                    <div className="wedding-metric-panel p-3">
-                        <div className="text-[11px] text-white/72">
-                            待付尾款
-                        </div>
-                        <div className="mt-2 text-lg font-bold text-white">
-                            {formatAmount(remaining)}
-                        </div>
+                    <div className="rounded-full bg-white/60 px-3 py-1.5 text-xs font-semibold text-purple-800 dark:bg-white/10 dark:text-purple-200">
+                        {paidPct}% 已付
                     </div>
                 </div>
-            </section>
 
-            <section className="grid gap-3 sm:grid-cols-3">
-                <WeddingStat
-                    label="超预算项目"
-                    value={`${overBudgetCount} 项`}
-                    hint="超过预算会醒目标记"
-                    tone={overBudgetCount > 0 ? "danger" : "success"}
-                />
-                <WeddingStat
-                    label="两周内待付款"
-                    value={`${dueSoonCount} 项`}
-                    hint="包含计划中与已付定金"
-                    tone={dueSoonCount > 0 ? "warning" : "default"}
-                />
-                <WeddingStat
-                    label="预算执行率"
-                    value={
-                        totalBudget > 0
-                            ? `${Math.min(Math.round((totalPaid / totalBudget) * 100), 999)}%`
-                            : "0%"
-                    }
-                    hint="按已支付金额计算"
-                />
+                <div className="mt-4 grid grid-cols-2 gap-3">
+                    <div className="rounded-2xl bg-white/50 p-3 dark:bg-black/15">
+                        <div className="text-[10px] text-purple-900/70 dark:text-purple-200/70">
+                            已支付
+                        </div>
+                        <div className="mt-1 text-lg font-bold text-green-600 dark:text-green-400">
+                            ¥{totalPaid.toLocaleString()}
+                        </div>
+                    </div>
+                    <div className="rounded-2xl bg-white/50 p-3 dark:bg-black/15">
+                        <div className="text-[10px] text-purple-900/70 dark:text-purple-200/70">
+                            待支付
+                        </div>
+                        <div className="mt-1 text-lg font-bold text-orange-500">
+                            ¥{totalBalance.toLocaleString()}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/50 dark:bg-white/10">
+                    <div
+                        className="h-full rounded-full bg-[#7C3AED]"
+                        style={{ width: `${paidPct}%` }}
+                    />
+                </div>
+                <div className="mt-1 text-[10px] text-purple-900/70 dark:text-purple-200/70">
+                    {budgets.length} 个项目 ·{" "}
+                    {budgets.filter((item) => item.status === "completed").length}{" "}
+                    个已结清
+                </div>
             </section>
 
             <section className="flex gap-2 overflow-x-auto pb-1">
-                {(["all", ...BUDGET_STATUSES.map((s) => s.id)] as const).map(
+                {["all", ...BUDGET_STATUSES.map((item) => item.id)].map(
                     (status) => (
-                        <WeddingFilterChip
+                        <button
                             key={status}
-                            active={filterStatus === status}
+                            type="button"
                             onClick={() => setFilterStatus(status)}
+                            className="shrink-0 rounded-full px-3 py-1.5 text-[11px] font-medium"
+                            style={{
+                                background:
+                                    filterStatus === status
+                                        ? "#A855F7"
+                                        : "var(--wedding-surface-muted)",
+                                color:
+                                    filterStatus === status
+                                        ? "#fff"
+                                        : "#A855F7",
+                            }}
                         >
                             {status === "all"
                                 ? "全部"
-                                : BUDGET_STATUSES.find((s) => s.id === status)
-                                      ?.name || status}
-                        </WeddingFilterChip>
+                                : BUDGET_STATUSES.find((item) => item.id === status)
+                                      ?.name}
+                        </button>
                     ),
                 )}
             </section>
 
             <section className="space-y-3">
-                {filteredBudgets.length === 0 ? (
-                    <WeddingEmptyState
-                        icon="icon-[mdi--wallet-outline]"
-                        title="还没有预算项目"
-                        description="添加婚宴、摄影、策划等预算后，这里会自动计算进度与付款状态。"
-                    />
+                {filtered.length === 0 ? (
+                    <div className="rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] px-5 py-10 text-center">
+                        <div className="text-lg font-semibold text-[color:var(--wedding-text)]">
+                            还没有预算项目
+                        </div>
+                        <div className="mt-2 text-sm wedding-muted">
+                            添加供应商与预算后，这里会自动汇总付款进度。
+                        </div>
+                    </div>
                 ) : (
-                    filteredBudgets.map((budget) => {
-                        const statusInfo = BUDGET_STATUSES.find(
-                            (s) => s.id === budget.status,
-                        );
-                        const budgetStatus = checkBudgetStatus(budget);
+                    filtered.map((budget) => {
                         const progress =
                             budget.budget > 0
-                                ? Math.round(
-                                      (budget.spent / budget.budget) * 100,
-                                  )
+                                ? Math.round((budget.spent / budget.budget) * 100)
                                 : 0;
-                        const icon =
-                            BUDGET_ICONS[budget.category] ||
-                            "icon-[mdi--wallet-outline]";
-                        const iconTone =
-                            BUDGET_ICON_TONES[budget.category] ||
-                            "bg-fuchsia-500/14 text-fuchsia-500";
-                        const statusClassName =
-                            budget.status === "deposit_paid"
-                                ? "bg-blue-500/12 text-blue-500"
-                                : budget.status === "completed"
-                                  ? "bg-emerald-500/12 text-emerald-500"
-                                  : "bg-white/70 text-[color:var(--wedding-text-soft)] dark:bg-white/8";
-                        const progressClassName = budgetStatus.isOverBudget
-                            ? "bg-gradient-to-r from-rose-400 to-red-500"
-                            : budget.status === "completed"
-                              ? "bg-gradient-to-r from-emerald-400 to-green-500"
-                              : "bg-gradient-to-r from-pink-500 to-fuchsia-500";
-
+                        const statusStyle = STATUS_STYLE[budget.status];
+                        const budgetState = checkBudgetStatus(budget);
                         return (
                             <button
                                 key={budget.id}
                                 type="button"
-                                className="wedding-surface-card wedding-card-interactive cursor-pointer p-4 text-left"
                                 onClick={() => {
                                     setEditingBudget(budget);
                                     setShowForm(true);
                                 }}
+                                className="w-full rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4 text-left shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]"
                             >
                                 <div className="flex items-start justify-between gap-3">
-                                    <div className="flex min-w-0 gap-3">
-                                        <div
-                                            className={`flex h-11 w-11 items-center justify-center rounded-2xl ${iconTone}`}
-                                        >
-                                            <i className={`${icon} text-xl`} />
+                                    <div>
+                                        <div className="text-sm font-semibold text-[color:var(--wedding-text)]">
+                                            {budget.category}
                                         </div>
-                                        <div className="min-w-0">
-                                            <div className="text-lg font-semibold text-[color:var(--wedding-text)]">
-                                                {budget.category}
-                                            </div>
-                                            <div className="mt-1 text-xs wedding-muted">
-                                                <span>
-                                                    {budget.dueDate
-                                                        ? new Date(
-                                                              budget.dueDate,
-                                                          )
-                                                              .toISOString()
-                                                              .slice(0, 10)
-                                                        : "未设置日期"}
-                                                </span>
-                                                {budget.vendor ? (
-                                                    <span className="ml-2">
-                                                        {budget.vendor}
-                                                    </span>
-                                                ) : null}
-                                            </div>
+                                        <div className="mt-1 text-[11px] wedding-muted">
+                                            {budget.vendor || "待定供应商"}
                                         </div>
                                     </div>
-                                    <WeddingBadge
-                                        className={statusClassName}
-                                        tone="neutral"
-                                    >
-                                        {statusInfo?.name || budget.status}
-                                    </WeddingBadge>
+                                    <div className="flex flex-col items-end gap-1">
+                                        <span
+                                            className="rounded-full px-2 py-0.5 text-[10px] font-medium"
+                                            style={{
+                                                background: statusStyle.bg,
+                                                color: statusStyle.color,
+                                            }}
+                                        >
+                                            {BUDGET_STATUSES.find(
+                                                (item) => item.id === budget.status,
+                                            )?.name || budget.status}
+                                        </span>
+                                        <div className="text-base font-bold text-[color:var(--wedding-text)]">
+                                            ¥{budget.budget.toLocaleString()}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="mt-4 flex items-center justify-between text-sm">
-                                    <span className="text-[color:var(--wedding-text-soft)]">
-                                        已使用 {progress}%
-                                    </span>
-                                    <span className="font-semibold text-[color:var(--wedding-text)]">
-                                        ¥ {budget.spent.toLocaleString()} / ¥{" "}
-                                        {budget.budget.toLocaleString()}
-                                    </span>
+
+                                <div className="mt-3 grid grid-cols-2 gap-2">
+                                    <div className="rounded-2xl bg-[color:var(--wedding-surface-muted)] p-2.5">
+                                        <div className="text-[9px] text-[color:var(--wedding-text-mute)]">
+                                            定金/已付
+                                        </div>
+                                        <div className="text-[13px] font-semibold text-green-600 dark:text-green-400">
+                                            ¥{budget.spent.toLocaleString()}
+                                        </div>
+                                    </div>
+                                    <div className="rounded-2xl bg-[color:var(--wedding-surface-muted)] p-2.5">
+                                        <div className="text-[9px] text-[color:var(--wedding-text-mute)]">
+                                            尾款/待付
+                                        </div>
+                                        <div className="text-[13px] font-semibold text-orange-500">
+                                            ¥
+                                            {(budget.balance ??
+                                                Math.max(
+                                                    budget.budget - budget.spent,
+                                                    0,
+                                                )).toLocaleString()}
+                                        </div>
+                                    </div>
                                 </div>
-                                <div className="mt-2 h-2 rounded-full bg-black/6 dark:bg-white/8">
+
+                                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-[color:var(--wedding-line)]">
                                     <div
-                                        className={`h-full rounded-full transition-all ${progressClassName}`}
+                                        className={`h-full rounded-full ${
+                                            budgetState.isOverBudget
+                                                ? "bg-rose-500"
+                                                : "bg-green-500"
+                                        }`}
                                         style={{
                                             width: `${Math.min(progress, 100)}%`,
                                         }}
                                     />
                                 </div>
-                                <div className="mt-3 flex flex-wrap gap-3 text-xs wedding-muted">
-                                    {budget.deposit && budget.deposit > 0 ? (
-                                        <span>
-                                            定金: {formatAmount(budget.deposit)}
-                                        </span>
-                                    ) : null}
-                                    {budget.balance && budget.balance > 0 ? (
-                                        <span>
-                                            尾款: {formatAmount(budget.balance)}
-                                        </span>
-                                    ) : null}
-                                    {budget.dueDate ? (
-                                        <span>
-                                            截止:{" "}
-                                            {new Date(
-                                                budget.dueDate,
-                                            ).toLocaleDateString()}
-                                        </span>
-                                    ) : null}
+
+                                <div className="mt-2 flex items-center justify-between text-[10px] text-[color:var(--wedding-text-mute)]">
+                                    <span>
+                                        已用 {Math.min(progress, 999)}% ·{" "}
+                                        {formatAmount(budget.spent)}
+                                    </span>
                                     {budget.vendorPhone ? (
-                                        <span>电话: {budget.vendorPhone}</span>
+                                        <span>{budget.vendorPhone}</span>
+                                    ) : budget.dueDate ? (
+                                        <span>{formatShortDate(budget.dueDate)}</span>
                                     ) : null}
                                 </div>
                             </button>
@@ -286,41 +235,32 @@ export default function WeddingBudget() {
                 )}
             </section>
 
-            <WeddingFloatingActionButton
+            <button
+                type="button"
                 onClick={() => {
                     setEditingBudget(undefined);
                     setShowForm(true);
                 }}
-                aria-label="添加预算项目"
+                className="fixed bottom-[calc(var(--mobile-bottombar-height)+1.25rem+env(safe-area-inset-bottom))] right-6 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-[#A855F7] text-white shadow-[0_16px_28px_-16px_rgba(168,85,247,0.85)] sm:bottom-8"
+                aria-label="新增预算"
             >
                 <i className="icon-[mdi--plus] size-6" />
-            </WeddingFloatingActionButton>
+            </button>
 
-            {/* 表单弹窗 */}
             <Dialog open={showForm} onOpenChange={setShowForm}>
                 <DialogPortal>
                     <DialogOverlay className="fixed inset-0 z-[80] bg-[rgba(15,12,18,0.56)]" />
                     <div className="fixed inset-0 z-[81] flex items-end justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:items-center sm:px-4 sm:py-6">
-                        <DialogContent
-                            fade
-                            className="z-[82] flex max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] w-full max-w-[560px] flex-col overflow-hidden rounded-[30px] border border-[#edd6df] bg-[#fffdfd] shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)] dark:border-[#302631] dark:bg-[#181419] sm:max-h-[min(84vh,760px)]"
-                            onInteractOutside={() => setShowForm(false)}
-                        >
+                        <DialogContent className="z-[82] flex max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] w-full max-w-[560px] flex-col overflow-hidden rounded-[30px] border border-[#edd6df] bg-[#fffdfd] shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)] dark:border-[#302631] dark:bg-[#181419] sm:max-h-[min(84vh,760px)]">
                             <DialogHeader className="border-b border-[color:var(--wedding-line)] px-5 pb-4 pt-5">
-                                <div className="mb-3 flex justify-center sm:hidden">
-                                    <div className="h-1.5 w-12 rounded-full bg-[color:var(--wedding-line-strong)]" />
-                                </div>
                                 <DialogTitle className="wedding-topbar-title pl-1 text-[24px] text-[color:var(--wedding-text)]">
                                     {editingBudget ? "编辑预算" : "添加预算"}
                                 </DialogTitle>
-                                <p className="mt-2 pl-1 text-sm wedding-muted">
-                                    记录预算、已付金额和供应商信息，后续会自动计算进度。
-                                </p>
                             </DialogHeader>
                             <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-4">
                                 <BudgetForm
-                                    onClose={() => setShowForm(false)}
                                     editBudget={editingBudget}
+                                    onClose={() => setShowForm(false)}
                                 />
                             </div>
                         </DialogContent>

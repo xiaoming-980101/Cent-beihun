@@ -25,7 +25,11 @@ import { useBookStore } from "@/store/book";
 import { useWeddingStore } from "@/store/wedding";
 import { cn } from "@/utils";
 import { TaskForm } from "@/wedding/components";
-import { getCategoryIcon } from "@/wedding/utils";
+import {
+    getCategoryEmoji,
+    getCategoryName,
+    getTaskPriorityLabel,
+} from "@/wedding/utils";
 
 type CalendarCell = {
     date: dayjs.Dayjs;
@@ -260,8 +264,8 @@ export default function TaskCalendar() {
                 backTo="/tasks"
             />
 
-            <section className="wedding-surface-card overflow-hidden p-0">
-                <div className="flex items-center justify-between px-4 pb-3 pt-4">
+            <section className="overflow-hidden rounded-[28px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-0 shadow-[0_18px_36px_-30px_rgba(15,23,42,0.2)]">
+                <div className="flex items-center justify-between bg-[linear-gradient(135deg,#fff0f7,#f3e8ff)] px-4 pb-3 pt-4 dark:bg-[linear-gradient(135deg,rgba(61,16,48,0.75),rgba(30,13,48,0.75))]">
                     <button
                         type="button"
                         onClick={() => handleMonthChange(-1)}
@@ -326,7 +330,7 @@ export default function TaskCalendar() {
                                             className={cn(
                                                 "flex min-h-[58px] flex-col items-center justify-center rounded-[18px] px-1 py-2 text-center transition",
                                                 isSelected
-                                                    ? "bg-[#f48370] text-white shadow-[0_18px_28px_-20px_rgba(244,131,112,0.95)]"
+                                                    ? "bg-gradient-to-br from-[#f48370] to-[#ef5cab] text-white shadow-[0_18px_28px_-20px_rgba(244,131,112,0.95)]"
                                                     : "text-[color:var(--wedding-text)] hover:bg-white/70 dark:hover:bg-white/6",
                                                 !cell.isCurrentMonth &&
                                                     !isSelected &&
@@ -393,26 +397,31 @@ export default function TaskCalendar() {
                 </div>
             </section>
 
-            <section className="grid gap-3 sm:grid-cols-3">
-                <WeddingStat
-                    label="本月任务"
-                    value={`${currentMonthTaskCount} 项`}
-                    hint={currentMonth.format("YYYY年M月")}
-                />
-                <WeddingStat
-                    label="选中日期"
-                    value={`${selectedTasks.length} 项`}
-                    hint={selectedDate.format("M月D日")}
-                />
-                <WeddingStat
-                    label="已完成"
-                    value={`${selectedCompletedCount} 项`}
-                    hint="仅统计当前日期"
-                    tone={selectedCompletedCount > 0 ? "success" : "default"}
-                />
+            <section className="grid grid-cols-3 gap-2">
+                {[
+                    ["本月任务", `${currentMonthTaskCount} 项`, currentMonth.format("YYYY年M月"), "#F472B6"],
+                    ["选中日期", `${selectedTasks.length} 项`, selectedDate.format("M月D日"), "#3B82F6"],
+                    ["已完成", `${selectedCompletedCount} 项`, "仅统计当前日期", "#22C55E"],
+                ].map(([label, value, hint, color]) => (
+                    <div
+                        key={label}
+                        className="rounded-[18px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] px-3 py-3 text-center shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]"
+                    >
+                        <div className="text-[10px] wedding-muted">{label}</div>
+                        <div
+                            className="mt-1 text-lg font-bold leading-none"
+                            style={{ color }}
+                        >
+                            {value}
+                        </div>
+                        <div className="mt-1 text-[10px] text-[color:var(--wedding-text-mute)]">
+                            {hint}
+                        </div>
+                    </div>
+                ))}
             </section>
 
-            <section className="wedding-surface-card p-4">
+            <section className="rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4 shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
                 <div className="flex items-start justify-between gap-3">
                     <div>
                         <h2 className="wedding-topbar-title text-[28px] text-[color:var(--wedding-text)]">
@@ -445,15 +454,8 @@ export default function TaskCalendar() {
                                     <div className="flex items-start justify-between gap-3">
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2">
-                                                <i
-                                                    className={cn(
-                                                        getCategoryIcon(
-                                                            task.category,
-                                                        ),
-                                                        "text-lg text-pink-400",
-                                                    )}
-                                                />
                                                 <div className="truncate text-lg font-semibold text-[color:var(--wedding-text)]">
+                                                    {getCategoryEmoji(task.category)}{" "}
                                                     {task.title}
                                                 </div>
                                             </div>
@@ -482,11 +484,11 @@ export default function TaskCalendar() {
                                     </div>
                                     <div className="mt-3 flex flex-wrap gap-2 text-xs">
                                         <span className="rounded-full bg-white px-2.5 py-1 text-[color:var(--wedding-text-soft)] dark:bg-white/8">
-                                            {task.priority === "high"
-                                                ? "高优先级"
-                                                : task.priority === "medium"
-                                                  ? "中优先级"
-                                                  : "低优先级"}
+                                            {getTaskPriorityLabel(task.priority)}
+                                            优先级
+                                        </span>
+                                        <span className="rounded-full bg-white px-2.5 py-1 text-[color:var(--wedding-text-soft)] dark:bg-white/8">
+                                            {getCategoryName(task.category)}
                                         </span>
                                         {task.assignee ? (
                                             <span className="rounded-full bg-white px-2.5 py-1 text-[color:var(--wedding-text-soft)] dark:bg-white/8">

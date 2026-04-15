@@ -1,4 +1,5 @@
 /** biome-ignore-all lint/suspicious/noUnknownAtRules: Tailwind CSS directives */
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 @config "../tailwind.config.mjs";
@@ -299,15 +300,15 @@ button {
 	--glass-border: rgba(255, 255, 255, 0.2);
 
 	/* 页面语义色 */
-	--wedding-app-bg: #f8f7f8;
+	--wedding-app-bg: #fff8fa;
 	--wedding-surface: #ffffff;
-	--wedding-surface-soft: #fff9fc;
-	--wedding-surface-muted: #f5f2f5;
-	--wedding-line: rgba(228, 209, 219, 0.85);
-	--wedding-line-strong: rgba(224, 113, 176, 0.28);
-	--wedding-text: #413941;
-	--wedding-text-soft: #7f7682;
-	--wedding-text-mute: #b2a9b4;
+	--wedding-surface-soft: #fff4f8;
+	--wedding-surface-muted: #f7ebf2;
+	--wedding-line: #f0e4ec;
+	--wedding-line-strong: rgba(244, 114, 182, 0.34);
+	--wedding-text: #1c1015;
+	--wedding-text-soft: #6b5a65;
+	--wedding-text-mute: #a899a3;
 	--wedding-success: #22c55e;
 	--wedding-warning: #f59e0b;
 	--wedding-danger: #ef4444;
@@ -319,12 +320,12 @@ button {
 	--wedding-warning-soft: rgba(245, 158, 11, 0.14);
 	--wedding-danger-soft: rgba(239, 68, 68, 0.14);
 	--wedding-info-soft: rgba(96, 165, 250, 0.14);
-	--wedding-shadow: 0 24px 42px -28px rgba(236, 72, 153, 0.34);
-	--wedding-shadow-soft: 0 12px 30px -24px rgba(31, 41, 55, 0.16);
+	--wedding-shadow: 0 18px 36px -28px rgba(236, 72, 153, 0.45);
+	--wedding-shadow-soft: 0 10px 24px -24px rgba(0, 0, 0, 0.1);
 	--wedding-font-display:
-		"WenQuanYi Zen Hei", "PingFang SC", "Microsoft YaHei", sans-serif;
+		"DM Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
 	--wedding-font-body:
-		Inter, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
+		"DM Sans", "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
 }
 
 /* 婚礼主题深色模式 */
@@ -353,15 +354,15 @@ button {
 	--glass-border: rgba(255, 255, 255, 0.1);
 
 	/* 页面语义色 */
-	--wedding-app-bg: #0c0c0f;
-	--wedding-surface: #18181b;
-	--wedding-surface-soft: #1f1f23;
-	--wedding-surface-muted: #232329;
-	--wedding-line: rgba(255, 255, 255, 0.075);
-	--wedding-line-strong: rgba(255, 255, 255, 0.16);
-	--wedding-text: #f7f4f8;
-	--wedding-text-soft: #ada7b2;
-	--wedding-text-mute: #726d77;
+	--wedding-app-bg: #120a0f;
+	--wedding-surface: #1e1219;
+	--wedding-surface-soft: #271a23;
+	--wedding-surface-muted: #2a1520;
+	--wedding-line: #3a2535;
+	--wedding-line-strong: rgba(244, 114, 182, 0.24);
+	--wedding-text: #f0eaf4;
+	--wedding-text-soft: #b39db8;
+	--wedding-text-mute: #7a6a7d;
 	--wedding-success: #4ade80;
 	--wedding-warning: #fbbf24;
 	--wedding-danger: #fb7185;
@@ -373,8 +374,8 @@ button {
 	--wedding-warning-soft: rgba(251, 191, 36, 0.16);
 	--wedding-danger-soft: rgba(251, 113, 133, 0.16);
 	--wedding-info-soft: rgba(147, 197, 253, 0.16);
-	--wedding-shadow: 0 28px 44px -28px rgba(0, 0, 0, 0.7);
-	--wedding-shadow-soft: 0 16px 28px -22px rgba(0, 0, 0, 0.75);
+	--wedding-shadow: 0 24px 42px -28px rgba(0, 0, 0, 0.58);
+	--wedding-shadow-soft: 0 10px 24px -24px rgba(0, 0, 0, 0.4);
 }
 
 /* 图表分类 / 协作者系列色（ECharts 风格调色板，供 `src/utils/color.ts` 读取） */
@@ -436,10 +437,10 @@ button {
 	max-width: 430px;
 	min-height: 100%;
 	margin: 0 auto;
-	padding: 10px 12px 16px;
+	padding: 12px 16px 20px;
 	display: flex;
 	flex-direction: column;
-	gap: 12px;
+	gap: 14px;
 	touch-action: pan-y;
 }
 
@@ -454,34 +455,34 @@ button {
 .wedding-surface-card {
 	background: var(--wedding-surface);
 	border: 1px solid var(--wedding-line);
-	border-radius: 18px;
+	border-radius: 22px;
 	box-shadow: var(--wedding-shadow-soft);
 }
 
 .wedding-soft-card {
 	background: var(--wedding-surface-soft);
 	border: 1px solid color-mix(in srgb, var(--wedding-line) 90%, transparent);
-	border-radius: 18px;
+	border-radius: 22px;
 	box-shadow: 0 10px 28px -26px rgba(31, 41, 55, 0.18);
 }
 
 .wedding-dashed-card {
 	background: color-mix(in srgb, var(--wedding-surface-soft) 92%, transparent);
 	border: 1px dashed var(--wedding-line-strong);
-	border-radius: 18px;
+	border-radius: 22px;
 }
 
 .wedding-hero {
 	position: relative;
 	overflow: hidden;
-	border-radius: 24px;
-	background: linear-gradient(135deg, #f472b6 0%, #cf67dc 48%, #9a57ff 100%);
+	border-radius: 22px;
+	background: linear-gradient(135deg, #fbbcdf 0%, #ddb6f7 52%, #a5c8ff 100%);
 	box-shadow: var(--wedding-shadow);
 	color: white;
 }
 
 .dark .wedding-hero {
-	background: linear-gradient(135deg, #c5398f 0%, #8c3ad2 48%, #6236d8 100%);
+	background: linear-gradient(135deg, #3d1030 0%, #1e0d30 100%);
 }
 
 .wedding-pill {
@@ -504,12 +505,13 @@ button {
 .wedding-topbar-title {
 	font-family: var(--wedding-font-display);
 	font-weight: 700;
+	letter-spacing: -0.02em;
 }
 
 .wedding-brand {
 	font-family: var(--wedding-font-body);
-	font-weight: 900;
-	letter-spacing: -0.04em;
+	font-weight: 700;
+	letter-spacing: -0.03em;
 	background: linear-gradient(90deg, #ec4899 0%, #a855f7 100%);
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
@@ -702,6 +704,54 @@ button {
 	box-shadow: 0 26px 42px -18px rgba(239, 92, 171, 0.96);
 }
 
+.wedding-settings-item {
+	display: flex;
+	width: 100%;
+	align-items: center;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding: 0.95rem 1rem;
+	text-align: left;
+	transition:
+		background-color 0.18s ease,
+		transform 0.18s ease;
+}
+
+.wedding-settings-item:hover {
+	background: color-mix(in srgb, var(--wedding-surface-soft) 88%, transparent);
+}
+
+.wedding-settings-item__icon {
+	display: flex;
+	height: 2.25rem;
+	width: 2.25rem;
+	align-items: center;
+	justify-content: center;
+	border-radius: 0.9rem;
+	flex-shrink: 0;
+}
+
+.wedding-settings-item__title {
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: var(--wedding-text);
+}
+
+.wedding-settings-item__desc {
+	margin-top: 0.1rem;
+	font-size: 0.6875rem;
+	color: var(--wedding-text-mute);
+}
+
+.wedding-settings-pill {
+	border-radius: 9999px;
+	background: color-mix(in srgb, var(--wedding-surface-muted) 96%, transparent);
+	padding: 0.38rem 0.72rem;
+	font-size: 0.6875rem;
+	font-weight: 600;
+	color: var(--wedding-text-soft);
+}
+
 @keyframes wedding-rise {
 	from {
 		opacity: 0;
@@ -718,7 +768,7 @@ button {
 	.wedding-page {
 		max-width: 1180px;
 		padding: 24px 24px 32px;
-		gap: 16px;
+		gap: 18px;
 	}
 
 	.wedding-fab {

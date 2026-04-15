@@ -581,7 +581,7 @@ function Form({ onCancel }: { onCancel?: () => void }) {
     );
 }
 
-const [AssistantProvider, showAssistant] = createConfirmProvider(Form, {
+export const [AssistantProvider, showAssistant] = createConfirmProvider(Form, {
     dialogTitle: "ai-assistant",
     dialogModalClose: true,
     contentClassName:
@@ -599,16 +599,28 @@ export default function AssistantSettingsItem() {
                     showAssistant();
                 }}
                 variant="ghost"
-                className="w-full py-4 rounded-none h-auto hover:bg-pink-50 dark:hover:bg-pink-900/10"
+                className="h-auto w-full rounded-none px-1 py-1"
             >
-                <div className="w-full px-4 flex justify-between items-center">
-                    <div
-                        className={cn(betaClassName, "flex items-center gap-2")}
-                    >
-                        <i className="icon-[mdi--robot-outline] size-5"></i>
-                        {t("ai-assistant")}
+                <div className="wedding-settings-item rounded-[18px]">
+                    <div className="flex min-w-0 items-center gap-3">
+                        <div className="wedding-settings-item__icon bg-rose-50 text-rose-500 dark:bg-rose-500/12">
+                            <i className="icon-[mdi--robot-outline] size-5"></i>
+                        </div>
+                        <div className="min-w-0">
+                            <div
+                                className={cn(
+                                    "wedding-settings-item__title inline-flex",
+                                    betaClassName,
+                                )}
+                            >
+                                {t("ai-assistant")}
+                            </div>
+                            <div className="wedding-settings-item__desc">
+                                管理 AI 配置、默认模型和服务连接
+                            </div>
+                        </div>
                     </div>
-                    <i className="icon-[mdi--chevron-right] size-5"></i>
+                    <i className="icon-[mdi--chevron-right] size-5 text-[color:var(--wedding-text-muted)]"></i>
                 </div>
             </Button>
             <AssistantProvider />

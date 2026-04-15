@@ -12,11 +12,20 @@ export default function ThemeSettingsItem() {
     const t = useIntl();
     const { theme, setTheme } = useTheme();
     return (
-        <div className="w-full px-4 py-1 text-sm hover:bg-pink-50 dark:hover:bg-pink-900/10 rounded-lg">
-            <div className="w-full px-4 flex justify-between items-center text-sm font-medium">
-                <div className="flex items-center gap-2">
-                    <i className="icon-[mdi--clothes-hanger] size-5"></i>
-                    {t("theme")}
+        <div className="px-1 py-1">
+            <div className="wedding-settings-item rounded-[18px]">
+                <div className="flex min-w-0 items-center gap-3">
+                    <div className="wedding-settings-item__icon bg-violet-50 text-violet-500 dark:bg-violet-500/12">
+                        <i className="icon-[mdi--theme-light-dark] size-5"></i>
+                    </div>
+                    <div className="min-w-0">
+                        <div className="wedding-settings-item__title">
+                            {t("theme")}
+                        </div>
+                        <div className="wedding-settings-item__desc">
+                            跟随系统或切换浅色、深色主题
+                        </div>
+                    </div>
                 </div>
                 <Select
                     value={theme}
@@ -24,7 +33,7 @@ export default function ThemeSettingsItem() {
                         setTheme(v as Theme);
                     }}
                 >
-                    <SelectTrigger className="w-fit text-xs rounded-sm">
+                    <SelectTrigger className="h-9 w-fit rounded-full border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-3 text-xs">
                         <SelectValue></SelectValue>
                     </SelectTrigger>
                     <SelectContent>

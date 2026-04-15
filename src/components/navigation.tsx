@@ -96,13 +96,13 @@ export function MobileTopBar() {
 
     return (
         <header className="shrink-0 sm:hidden">
-            <div className="border-b border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] px-4 pb-3 pt-[calc(env(safe-area-inset-top)+0.5rem)]">
-                <div className="mx-auto flex h-[calc(var(--mobile-topbar-height)-1rem)] max-w-[880px] items-center justify-between gap-3">
+            <div className="bg-[color:var(--wedding-app-bg)] px-4 pb-3 pt-[calc(env(safe-area-inset-top)+0.5rem)]">
+                <div className="mx-auto flex h-[calc(var(--mobile-topbar-height)-1rem)] max-w-[880px] items-center justify-between gap-3 rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] px-4 shadow-[0_12px_30px_-26px_rgba(236,72,153,0.55)]">
                     <div className="flex min-w-0 items-center gap-3">
                         {headerMeta.backTo ? (
                             <button
                                 type="button"
-                                className="flex h-10 w-10 items-center justify-center rounded-full text-[color:var(--wedding-text)] transition-colors hover:bg-[color:var(--wedding-surface-muted)]"
+                                className="flex h-10 w-10 items-center justify-center rounded-full bg-[color:var(--wedding-surface-muted)] text-[color:var(--wedding-text)] transition-colors hover:opacity-90"
                                 onClick={() =>
                                     goBackOrNavigate(
                                         navigate,
@@ -113,8 +113,8 @@ export function MobileTopBar() {
                                 <i className="icon-[mdi--chevron-left] size-5" />
                             </button>
                         ) : (
-                            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] text-pink-500 shadow-sm">
-                                <i className="icon-[mdi--account] size-4" />
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[linear-gradient(135deg,#fde7f3,#f3e8ff)] text-pink-500 shadow-sm dark:bg-[linear-gradient(135deg,rgba(244,114,182,0.18),rgba(168,85,247,0.18))]">
+                                <i className="icon-[mdi--heart] size-4" />
                             </div>
                         )}
                         <div className="min-w-0">
@@ -139,7 +139,7 @@ export function MobileTopBar() {
                         className={`flex h-10 w-10 items-center justify-center rounded-full transition-colors ${
                             location.pathname === "/settings"
                                 ? "bg-pink-500/12 text-pink-500"
-                                : "text-[color:var(--wedding-text-soft)] hover:bg-[color:var(--wedding-surface-muted)]"
+                                : "bg-[color:var(--wedding-surface-muted)] text-[color:var(--wedding-text-soft)] hover:opacity-90"
                         }`}
                         onClick={() => navigate("/settings")}
                         aria-label="打开设置"
@@ -191,13 +191,13 @@ export default function Navigation() {
                     showMobileBottomNav ? "" : "hidden"
                 }`}
             >
-                <div className="mx-auto flex h-[var(--mobile-bottombar-height)] max-w-[430px] items-center justify-between rounded-[22px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] px-3 shadow-[0_18px_32px_-26px_rgba(15,23,42,0.45)]">
+                <div className="mx-auto flex h-[68px] max-w-[430px] items-center justify-between rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] px-2 shadow-[0_22px_40px_-30px_rgba(236,72,153,0.42)]">
                     <div className="flex flex-1 items-end justify-between pr-4">
                         {items.slice(0, 2).map((item) => (
                             <button
                                 key={item.path}
                                 type="button"
-                                className={`flex min-w-[62px] flex-col items-center gap-1 rounded-[16px] px-2 py-2 text-[11px] transition-all ${
+                                className={`flex min-w-[62px] flex-col items-center gap-1 rounded-[16px] px-2 py-2 text-[10px] transition-all ${
                                     item.active ? "text-pink-500" : ""
                                 }`}
                                 onClick={() => navigate(item.path)}
@@ -222,7 +222,7 @@ export default function Navigation() {
                         ))}
                     </div>
 
-                    <div className="relative -mt-8 flex h-[74px] w-[74px] items-center justify-center">
+                    <div className="relative -mt-6 flex h-[74px] w-[74px] items-center justify-center">
                         <div className="absolute inset-0 rounded-full bg-[color:var(--wedding-app-bg)] shadow-[0_-8px_24px_-20px_rgba(15,23,42,0.65)]"></div>
                         <div className="absolute inset-[8px] rounded-full bg-gradient-to-r from-[#ef5cab] to-[#cb4dc8] shadow-[0_16px_28px_-16px_rgba(239,92,171,0.95)]"></div>
                         <ComplexAddButton

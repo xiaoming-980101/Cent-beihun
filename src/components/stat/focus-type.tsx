@@ -16,15 +16,15 @@ export function FocusTypeSelector({
 }) {
     const t = useIntl();
     const btnClass =
-        "min-w-[92px] flex items-center justify-center rounded-[14px] px-3 py-2 cursor-pointer transition-all duration-200";
+        "min-w-[92px] flex items-center justify-center rounded-[16px] px-3 py-2.5 cursor-pointer transition-all duration-200";
     return (
-        <div className="wedding-surface-card flex items-center gap-2 p-2">
+        <div className="flex items-center gap-2 rounded-[22px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-2 shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
             <button
                 type="button"
                 className={cn(
                     btnClass,
                     focusType === "income" &&
-                        "bg-[color:var(--wedding-surface-muted)] text-[color:var(--wedding-text)]",
+                        "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400",
                 )}
                 onClick={() => {
                     setFocusType("income");
@@ -42,7 +42,7 @@ export function FocusTypeSelector({
                 className={cn(
                     btnClass,
                     focusType === "expense" &&
-                        "bg-[color:var(--wedding-surface-muted)] text-[color:var(--wedding-text)]",
+                        "bg-rose-50 text-rose-600 dark:bg-rose-500/10 dark:text-rose-400",
                 )}
                 onClick={() => setFocusType("expense")}
             >
@@ -58,7 +58,7 @@ export function FocusTypeSelector({
                 className={cn(
                     btnClass,
                     focusType === "balance" &&
-                        "bg-[color:var(--wedding-surface-muted)] text-[color:var(--wedding-text)]",
+                        "bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400",
                 )}
                 onClick={() => setFocusType("balance")}
             >

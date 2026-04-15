@@ -122,13 +122,13 @@ export function DateSliced({
     return (
         <div className="w-full flex flex-col gap-2">
             <div className="w-full flex">
-                <div className="wedding-surface-card flex-1 flex gap-2 overflow-x-auto scrollbar-hidden p-2">
+                <div className="flex flex-1 gap-2 overflow-x-auto rounded-[20px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-2 shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)] scrollbar-hidden">
                     {StaticViews.map((view) => (
                         <Button
                             key={view.id}
                             size={"sm"}
                             className={cn(
-                                "rounded-[12px]",
+                                "rounded-[14px]",
                                 selectedViewId !== view.id &&
                                     "text-[color:var(--wedding-text-soft)]",
                             )}
@@ -154,7 +154,7 @@ export function DateSliced({
                     {onClickSettings && (
                         <Button
                             variant="ghost"
-                            className="wedding-surface-card h-9 rounded-[12px]"
+                            className="h-9 rounded-[14px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]"
                             onClick={onClickSettings}
                         >
                             <i className="icon-[mdi--mixer-settings] size-4"></i>
@@ -162,7 +162,7 @@ export function DateSliced({
                     )}
                 </div>
             </div>
-            <div className="wedding-surface-card flex h-11 items-center gap-2 p-2">
+            <div className="flex h-11 items-center gap-2 rounded-[20px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-2 shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
                 {slices && slices.length > 0 ? (
                     <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hidden">
                         {slices.map((slice) => (
@@ -171,7 +171,7 @@ export function DateSliced({
                                 variant="ghost"
                                 size="sm"
                                 className={cn(
-                                    "rounded-[12px] px-3 text-[color:var(--wedding-text-soft)]",
+                                    "rounded-[14px] px-3 text-[color:var(--wedding-text-soft)]",
                                     selectedSlice === slice.label &&
                                         "bg-[color:var(--wedding-surface-muted)] text-[color:var(--wedding-text)]",
                                 )}

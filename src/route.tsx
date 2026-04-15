@@ -27,6 +27,12 @@ const Tasks = lazyWithReload(() => import("@/pages/tasks/Tasks"));
 const TaskCalendar = lazyWithReload(() => import("@/pages/tasks/TaskCalendar"));
 const Tools = lazyWithReload(() => import("@/pages/tools/Tools"));
 const GiftBook = lazyWithReload(() => import("@/pages/tools/GiftBook"));
+const PlannerAssistant = lazyWithReload(
+    () => import("@/pages/tools/PlannerAssistant"),
+);
+const ResourceCenter = lazyWithReload(
+    () => import("@/pages/tools/ResourceCenter"),
+);
 const GuestManagement = lazyWithReload(
     () => import("@/pages/tools/GuestManagement"),
 );
@@ -65,6 +71,16 @@ const cachedRouteEntries: CachedRouteEntry[] = [
         key: "/tools/gift-book",
         match: (pathname) => pathname === "/tools/gift-book",
         render: () => <GiftBook />,
+    },
+    {
+        key: "/tools/planner-assistant",
+        match: (pathname) => pathname === "/tools/planner-assistant",
+        render: () => <PlannerAssistant />,
+    },
+    {
+        key: "/tools/resource-center",
+        match: (pathname) => pathname === "/tools/resource-center",
+        render: () => <ResourceCenter />,
     },
     {
         key: "/tools/guests",

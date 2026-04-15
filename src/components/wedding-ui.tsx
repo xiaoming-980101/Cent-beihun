@@ -60,7 +60,7 @@ export function WeddingTopBar({
     return (
         <div
             className={cn(
-                "hidden items-center justify-between rounded-[18px] border border-[color:var(--wedding-line)] px-4 py-3 sm:flex",
+                "hidden items-center justify-between rounded-[22px] border border-[color:var(--wedding-line)] px-4 py-3 sm:flex",
                 "bg-[color:var(--wedding-surface)]",
                 className,
             )}
@@ -203,7 +203,7 @@ export function WeddingActionButton({
     return (
         <Button
             className={cn(
-                "rounded-[14px] bg-gradient-to-r from-[#f05cab] to-[#d64dc8] text-white shadow-[0_12px_24px_-14px_rgba(240,92,171,0.9)] hover:opacity-95",
+                "rounded-[16px] bg-gradient-to-r from-[#f05cab] to-[#d64dc8] text-white shadow-[0_12px_24px_-14px_rgba(240,92,171,0.9)] hover:opacity-95",
                 className,
             )}
             {...props}

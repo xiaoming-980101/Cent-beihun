@@ -12,11 +12,20 @@ export default function LanguageSettingsItem() {
     const t = useIntl();
     const { locale, setLocale } = useLocale();
     return (
-        <div className="w-full px-4 py-1 text-sm hover:bg-pink-50 dark:hover:bg-pink-900/10 rounded-lg">
-            <div className="w-full px-4 flex justify-between items-center text-sm font-medium">
-                <div className="flex items-center gap-2">
-                    <i className="icon-[mdi--language] size-5"></i>
-                    {t("language")}
+        <div className="px-1 py-1">
+            <div className="wedding-settings-item rounded-[18px]">
+                <div className="flex min-w-0 items-center gap-3">
+                    <div className="wedding-settings-item__icon bg-blue-50 text-blue-500 dark:bg-blue-500/12">
+                        <i className="icon-[mdi--language] size-5"></i>
+                    </div>
+                    <div className="min-w-0">
+                        <div className="wedding-settings-item__title">
+                            {t("language")}
+                        </div>
+                        <div className="wedding-settings-item__desc">
+                            切换界面语言与内容展示习惯
+                        </div>
+                    </div>
                 </div>
                 <Select
                     value={locale}
@@ -27,7 +36,7 @@ export default function LanguageSettingsItem() {
                         }, 10);
                     }}
                 >
-                    <SelectTrigger className="w-fit text-xs rounded-sm">
+                    <SelectTrigger className="h-9 w-fit rounded-full border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-3 text-xs">
                         <SelectValue></SelectValue>
                     </SelectTrigger>
                     <SelectContent>

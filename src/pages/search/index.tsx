@@ -144,6 +144,14 @@ export default function Page() {
 
     const [enableSelect, setEnableSelect] = useState(false);
     const [selectedIds, setSelectedIds] = useState<string[]>([]);
+    const hasActiveFilters = useMemo(() => {
+        return Object.values(form).some((value) => {
+            if (value === undefined || value === null) return false;
+            if (Array.isArray(value)) return value.length > 0;
+            if (typeof value === "string") return value.length > 0;
+            return true;
+        });
+    }, [form]);
     const onSelectChange = (id: string) => {
         setSelectedIds((prev) => {
             if (prev.includes(id)) {
@@ -237,6 +245,47 @@ export default function Page() {
             />
             <div className="flex w-full flex-1 flex-col gap-4 lg:grid lg:grid-cols-[0.92fr_1.08fr]">
                 <div className="space-y-4">
+                    <div className="rounded-[28px] bg-[linear-gradient(135deg,#fbbcdf,#ddb6f7)] p-4 text-[#3b0d29] shadow-[0_18px_36px_-28px_rgba(244,114,182,0.45)] dark:bg-[linear-gradient(135deg,#3d1030,#1e0d30)] dark:text-white">
+                        <div className="flex items-center justify-between gap-3">
+                            <div>
+                                <div className="text-sm font-medium opacity-80">
+                                    搜索筛选
+                                </div>
+                                <div className="mt-1 text-[28px] font-bold leading-none">
+                                    {sorted.length}
+                                </div>
+                                <div className="mt-1 text-xs opacity-75">
+                                    当前结果数 {searched ? "已更新" : "等待筛选"}
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-2 gap-2 text-center">
+                                <div className="rounded-2xl bg-white/40 px-3 py-2 dark:bg-white/10">
+                                    <div className="text-[10px] opacity-75">
+                                        已筛选
+                                    </div>
+                                    <div className="text-sm font-semibold">
+                                        {Object.keys(form).filter(Boolean).length}
+                                    </div>
+                                </div>
+                                <div className="rounded-2xl bg-white/40 px-3 py-2 dark:bg-white/10">
+                                    <div className="text-[10px] opacity-75">
+                                        选中
+                                    </div>
+                                    <div className="text-sm font-semibold">
+                                        {selectedIds.length}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="mt-3 flex items-center gap-2 text-[11px]">
+                            <span className="rounded-full bg-white/40 px-3 py-1 dark:bg-white/10">
+                                {hasActiveFilters ? "已启用筛选" : "未启用筛选"}
+                            </span>
+                            <span className="rounded-full bg-white/40 px-3 py-1 dark:bg-white/10">
+                                排序: {t(SORTS[sortIndex].label)}
+                            </span>
+                        </div>
+                    </div>
                     <div className="wedding-surface-card w-full p-4">
                         <div className="flex h-12 items-center gap-3 rounded-[14px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-4">
                             <i className="icon-[mdi--magnify] size-5 text-[color:var(--wedding-text-mute)]" />
@@ -428,6 +477,22 @@ export default function Page() {
                         </Button>
                     </div>
                 </div>
+                <div className="rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-3 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)]">
+                    <div className="mb-3 flex items-center justify-between px-1">
+                        <div>
+                            <div className="text-sm font-semibold text-[color:var(--wedding-text)]">
+                                {form.comment ? `“${form.comment}” 的搜索结果` : "最近记录"}
+                            </div>
+                            <div className="mt-1 text-[11px] text-[color:var(--wedding-text-mute)]">
+                                共 {sorted.length} 条结果
+                            </div>
+                        </div>
+                        {hasActiveFilters ? (
+                            <span className="rounded-full bg-pink-50 px-3 py-1 text-[10px] font-medium text-pink-500 dark:bg-pink-500/12">
+                                已应用筛选
+                            </span>
+                        ) : null}
+                    </div>
                 <div className="min-h-[320px] overflow-hidden">
                     {sorted.length > 0 ? (
                         <Ledger
@@ -445,6 +510,7 @@ export default function Page() {
                             description="输入关键字或展开筛选面板，账本记录会在这里展示。"
                         />
                     )}
+                </div>
                 </div>
             </div>
             <BatchEditProvider />

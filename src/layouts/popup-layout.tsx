@@ -23,7 +23,7 @@ export default function PopupLayout({
     return (
         <div
             className={cn(
-                "flex-1 flex flex-col overflow-hidden pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]",
+                "flex-1 flex flex-col overflow-hidden bg-[color:var(--wedding-app-bg)] pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]",
                 className,
             )}
         >
@@ -36,7 +36,7 @@ export default function PopupLayout({
                 {!hideBack && onBack && (
                     <button
                         type="button"
-                        className="absolute left-0 flex buttoned rounded-full py-1 pl-1 pr-3 cursor-pointer"
+                        className="absolute left-4 flex cursor-pointer items-center rounded-full bg-[color:var(--wedding-surface-muted)] py-1 pl-1 pr-3 text-[color:var(--wedding-text)] shadow-sm"
                         onClick={(e) => {
                             onBack?.();
                             e.stopPropagation();
@@ -48,8 +48,8 @@ export default function PopupLayout({
                         {t("back")}
                     </button>
                 )}
-                {right && <div className="absolute right-0 pr-1">{right}</div>}
-                <div className="min-h-4 w-full flex justify-center items-center">
+                {right && <div className="absolute right-4 pr-1">{right}</div>}
+                <div className="flex min-h-4 w-full items-center justify-center text-[color:var(--wedding-text)]">
                     {title}
                 </div>
             </div>

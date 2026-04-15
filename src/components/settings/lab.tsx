@@ -191,14 +191,23 @@ export default function LabSettingsItem() {
                     showLabSettings();
                 }}
                 variant="ghost"
-                className="w-full py-4 rounded-none h-auto hover:bg-pink-50 dark:hover:bg-pink-900/10"
+                className="h-auto w-full rounded-none px-1 py-1"
             >
-                <div className="w-full px-4 flex justify-between items-center">
-                    <div className="flex items-center gap-2">
-                        <i className="icon-[mdi--flask] size-5"></i>
-                        {t("more-functions")}
+                <div className="wedding-settings-item rounded-[18px]">
+                    <div className="flex min-w-0 items-center gap-3">
+                        <div className="wedding-settings-item__icon bg-cyan-50 text-cyan-500 dark:bg-cyan-500/12">
+                            <i className="icon-[mdi--flask] size-5"></i>
+                        </div>
+                        <div className="min-w-0">
+                            <div className="wedding-settings-item__title">
+                                {t("more-functions")}
+                            </div>
+                            <div className="wedding-settings-item__desc">
+                                查看实验功能和更多扩展能力
+                            </div>
+                        </div>
                     </div>
-                    <i className="icon-[mdi--chevron-right] size-5"></i>
+                    <i className="icon-[mdi--chevron-right] size-5 text-[color:var(--wedding-text-muted)]"></i>
                 </div>
             </Button>
             <LabSettingsProvider />
