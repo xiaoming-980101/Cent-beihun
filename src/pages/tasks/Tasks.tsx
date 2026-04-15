@@ -14,8 +14,11 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import {
+    WeddingBadge,
     WeddingEmptyState,
+    WeddingFloatingActionButton,
     WeddingPageShell,
+    WeddingStat,
     WeddingTopBar,
 } from "@/components/wedding-ui";
 import { useBookStore } from "@/store/book";
@@ -59,6 +62,16 @@ export default function Tasks() {
     const totalCount = tasks.length;
     const progress =
         totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+    const inProgressCount = tasks.filter(
+        (t) => t.status === "in_progress",
+    ).length;
+    const overdueCount = tasks.filter((task) => {
+        return (
+            task.status !== "completed" &&
+            Boolean(task.deadline) &&
+            (task.deadline || 0) < Date.now()
+        );
+    }).length;
 
     return (
         <WeddingPageShell>
@@ -84,6 +97,26 @@ export default function Tasks() {
                         style={{ width: `${progress}%` }}
                     />
                 </div>
+            </section>
+
+            <section className="grid gap-3 sm:grid-cols-3">
+                <WeddingStat
+                    label="进行中"
+                    value={`${inProgressCount} 项`}
+                    hint="持续跟进中的事项"
+                    tone={inProgressCount > 0 ? "success" : "default"}
+                />
+                <WeddingStat
+                    label="逾期任务"
+                    value={`${overdueCount} 项`}
+                    hint="建议优先处理"
+                    tone={overdueCount > 0 ? "danger" : "success"}
+                />
+                <WeddingStat
+                    label="筛选结果"
+                    value={`${filteredTasks.length} 项`}
+                    hint="分类与状态筛选后"
+                />
             </section>
 
             <section className="flex items-center gap-2">
@@ -125,11 +158,22 @@ export default function Tasks() {
 
             <section className="space-y-3">
                 {filteredTasks.length === 0 ? (
-                    <WeddingEmptyState
-                        icon="icon-[mdi--party-popper]"
-                        title={`开始整理${bookLabel}任务`}
-                        description="每一个小任务的完成，都会让计划更清晰、更接近完成。"
-                    />
+                    totalCount === 0 ? (
+                        <WeddingEmptyState
+                            icon="icon-[mdi--party-popper]"
+                            title={`开始整理${bookLabel}任务`}
+                            description="每一个小任务的完成，都会让计划更清晰、更接近完成。"
+                        />
+                    ) : (
+                        <div className="wedding-soft-card px-5 py-8 text-center">
+                            <div className="text-base font-semibold text-[color:var(--wedding-text)]">
+                                当前筛选下没有任务
+                            </div>
+                            <div className="mt-2 text-sm wedding-muted">
+                                可以切换分类或状态筛选，或者新建一项任务。
+                            </div>
+                        </div>
+                    )
                 ) : (
                     filteredTasks.map((task) => (
                         <TaskItem
@@ -153,9 +197,7 @@ export default function Tasks() {
                 )}
             </section>
 
-            <button
-                type="button"
-                className="fixed bottom-[calc(var(--mobile-bottombar-height)+1.25rem+env(safe-area-inset-bottom))] right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-[#ef5cab] to-[#cb4dc8] text-white shadow-[0_16px_28px_-16px_rgba(239,92,171,0.95)] sm:bottom-8 sm:right-8"
+            <WeddingFloatingActionButton
                 onClick={() => {
                     setEditingTask(null);
                     setShowForm(true);
@@ -163,7 +205,7 @@ export default function Tasks() {
                 aria-label="添加任务"
             >
                 <i className="icon-[mdi--plus] size-6" />
-            </button>
+            </WeddingFloatingActionButton>
 
             {/* 表单弹窗 */}
             <Dialog open={showForm} onOpenChange={setShowForm}>
@@ -215,7 +257,7 @@ function TaskItem({
     return (
         /* biome-ignore lint/a11y/useSemanticElements: card layout keeps flexible inner content */
         <div
-            className="wedding-surface-card border border-[color:var(--wedding-line)] p-4 transition-shadow hover:shadow-[var(--wedding-shadow-soft)]"
+            className="wedding-surface-card wedding-card-interactive border border-[color:var(--wedding-line)] p-4 transition-shadow hover:shadow-[var(--wedding-shadow-soft)]"
             role="button"
             tabIndex={0}
             onClick={onEdit}
@@ -292,9 +334,17 @@ function TaskItem({
                     </div>
 
                     <div className="mt-3 flex items-center gap-2 text-xs wedding-muted">
-                        <span className={cn("font-medium", statusInfo?.color)}>
+                        <WeddingBadge
+                            tone={
+                                task.status === "completed"
+                                    ? "success"
+                                    : task.status === "in_progress"
+                                      ? "info"
+                                      : "warning"
+                            }
+                        >
                             {statusInfo?.name || task.status}
-                        </span>
+                        </WeddingBadge>
                         {task.assignee ? (
                             <span className="rounded-full bg-[color:var(--wedding-surface-muted)] px-2 py-1">
                                 {task.assignee === "groom"

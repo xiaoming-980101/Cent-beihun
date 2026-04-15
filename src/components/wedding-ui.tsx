@@ -126,7 +126,7 @@ export function WeddingSectionTitle({
                 {title}
             </h2>
             {trailing ? (
-                <div className="text-sm font-medium text-pink-500">
+                <div className="wedding-link text-sm font-medium">
                     {trailing}
                 </div>
             ) : null}
@@ -143,7 +143,7 @@ export function WeddingStat({
     label: string;
     value: ReactNode;
     hint?: ReactNode;
-    tone?: "default" | "success" | "danger";
+    tone?: "default" | "success" | "danger" | "warning" | "info";
 }) {
     return (
         <div className="wedding-soft-card flex min-w-0 flex-col gap-1 px-3 py-2.5">
@@ -155,6 +155,8 @@ export function WeddingStat({
                     "truncate text-lg font-semibold",
                     tone === "success" && "text-[color:var(--wedding-success)]",
                     tone === "danger" && "text-[color:var(--wedding-danger)]",
+                    tone === "warning" && "text-[color:var(--wedding-warning)]",
+                    tone === "info" && "text-[color:var(--wedding-info)]",
                     tone === "default" && "text-[color:var(--wedding-text)]",
                 )}
             >
@@ -177,7 +179,7 @@ export function WeddingEmptyState({
     description: string;
 }) {
     return (
-        <div className="wedding-soft-card flex flex-col items-center justify-center gap-4 px-6 py-10 text-center">
+        <div className="wedding-soft-card wedding-section-enter flex flex-col items-center justify-center gap-4 px-6 py-10 text-center">
             <div className="flex h-18 w-18 items-center justify-center rounded-full border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] text-3xl text-pink-400">
                 <i className={icon} />
             </div>
@@ -208,6 +210,41 @@ export function WeddingActionButton({
         >
             {children}
         </Button>
+    );
+}
+
+export function WeddingBadge({
+    children,
+    tone = "neutral",
+    className,
+}: {
+    children: ReactNode;
+    tone?: "neutral" | "accent" | "success" | "warning" | "danger" | "info";
+    className?: string;
+}) {
+    return (
+        <span
+            className={cn("wedding-badge", className)}
+            data-tone={tone === "neutral" ? undefined : tone}
+        >
+            {children}
+        </span>
+    );
+}
+
+export function WeddingFloatingActionButton({
+    children,
+    className,
+    ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+    return (
+        <button
+            className={cn("wedding-fab", className)}
+            type="button"
+            {...props}
+        >
+            {children}
+        </button>
     );
 }
 

@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import {
     WeddingActionButton,
+    WeddingBadge,
     WeddingEmptyState,
     WeddingFilterChip,
     WeddingPageShell,
@@ -42,6 +43,19 @@ export default function GiftBook() {
         filterType === "all"
             ? records
             : records.filter((r) => r.type === filterType);
+    const topGuestEntry = Array.from(stats.byGuest.entries()).sort((a, b) => {
+        return b[1].received + b[1].sent - (a[1].received + a[1].sent);
+    })[0];
+    const topGuestName =
+        topGuestEntry?.[1].guestName ||
+        guests.find((item) => item.id === topGuestEntry?.[0])?.name ||
+        "暂无";
+    const currentFilterLabel =
+        filterType === "all"
+            ? "全部往来"
+            : filterType === "received"
+              ? "收礼"
+              : "送礼";
 
     return (
         <WeddingPageShell>
@@ -70,6 +84,31 @@ export default function GiftBook() {
                         value={formatAmount(stats.netIncome)}
                     />
                 </div>
+            </section>
+
+            <section className="grid gap-3 sm:grid-cols-3">
+                <WeddingStat
+                    label="当前筛选"
+                    value={currentFilterLabel}
+                    hint={`${filteredRecords.length} 笔记录`}
+                />
+                <WeddingStat
+                    label="往来最多"
+                    value={topGuestName}
+                    hint={
+                        topGuestEntry
+                            ? formatAmount(
+                                  topGuestEntry[1].received +
+                                      topGuestEntry[1].sent,
+                              )
+                            : "添加后自动统计"
+                    }
+                />
+                <WeddingStat
+                    label="关联亲友"
+                    value={`${guests.length} 位`}
+                    hint="可直接从亲友名单选择"
+                />
             </section>
 
             <section className="wedding-surface-card p-3">
@@ -108,7 +147,7 @@ export default function GiftBook() {
                         return (
                             <div
                                 key={record.id}
-                                className="wedding-surface-card cursor-pointer p-4"
+                                className="wedding-surface-card wedding-card-interactive cursor-pointer p-4"
                                 onClick={() => {
                                     setEditingRecord(record);
                                     setShowForm(true);
@@ -130,13 +169,43 @@ export default function GiftBook() {
                                                 <div className="text-lg font-semibold text-[color:var(--wedding-text)]">
                                                     {guestName}
                                                 </div>
-                                                <div className="mt-1 text-xs wedding-muted">
-                                                    {new Date(
-                                                        record.date,
-                                                    ).toLocaleDateString()}
-                                                    {record.method
-                                                        ? ` · ${PAYMENT_METHODS.find((m) => m.id === record.method)?.name || ""}`
-                                                        : ""}
+                                                <div className="mt-2 flex flex-wrap gap-2">
+                                                    <WeddingBadge
+                                                        tone={
+                                                            record.type ===
+                                                            "received"
+                                                                ? "success"
+                                                                : "danger"
+                                                        }
+                                                    >
+                                                        {record.type ===
+                                                        "received"
+                                                            ? "收礼"
+                                                            : "送礼"}
+                                                    </WeddingBadge>
+                                                    <WeddingBadge>
+                                                        {new Date(
+                                                            record.date,
+                                                        ).toLocaleDateString()}
+                                                    </WeddingBadge>
+                                                    {record.method ? (
+                                                        <WeddingBadge tone="info">
+                                                            {PAYMENT_METHODS.find(
+                                                                (item) =>
+                                                                    item.id ===
+                                                                    record.method,
+                                                            )?.name || "其他"}
+                                                        </WeddingBadge>
+                                                    ) : null}
+                                                    <WeddingBadge tone="warning">
+                                                        {record.event ===
+                                                        "engagement"
+                                                            ? "订婚"
+                                                            : record.event ===
+                                                                "wedding"
+                                                              ? "婚礼"
+                                                              : "其他"}
+                                                    </WeddingBadge>
                                                 </div>
                                             </div>
                                             <div
@@ -160,7 +229,7 @@ export default function GiftBook() {
                                         <div className="mt-3 flex justify-end">
                                             <button
                                                 type="button"
-                                                className="text-xs text-rose-400"
+                                                className="wedding-link text-xs text-[color:var(--wedding-danger)]"
                                                 onClick={(event) => {
                                                     event.stopPropagation();
                                                     deleteGiftRecord(record.id);
@@ -194,11 +263,11 @@ export default function GiftBook() {
                     <DialogOverlay className="fixed inset-0 bg-black/50" />
                     <div className="fixed top-0 left-0 z-[61] flex h-full w-full items-center justify-center pointer-events-none">
                         <DialogContent
-                            className="pointer-events-auto bg-background w-[90vw] max-w-[500px] rounded-md overflow-y-auto max-h-[80vh]"
+                            className="pointer-events-auto w-[90vw] max-h-[80vh] max-w-[560px] overflow-y-auto rounded-[28px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[var(--wedding-shadow)]"
                             onInteractOutside={() => setShowForm(false)}
                         >
                             <DialogHeader>
-                                <DialogTitle className="text-lg font-semibold border-b pb-3 mb-4 pt-2 pl-1">
+                                <DialogTitle className="wedding-topbar-title mb-4 border-b border-[color:var(--wedding-line)] pb-3 pt-2 pl-1 text-lg text-[color:var(--wedding-text)]">
                                     {editingRecord
                                         ? "编辑礼金记录"
                                         : "添加礼金记录"}

@@ -15,20 +15,18 @@ export function UpcomingTasks() {
 
     if (upcomingTasks.length === 0) {
         return (
-            <div className="bg-card rounded-xl border border-border shadow-sm p-4">
-                <div className="flex justify-between items-center mb-2">
-                    <span className="text-sm text-muted-foreground">
-                        近期待办
-                    </span>
+            <div className="wedding-surface-card wedding-card-interactive wedding-section-enter p-4">
+                <div className="mb-2 flex items-center justify-between">
+                    <span className="text-sm wedding-muted">近期待办</span>
                     <button
                         type="button"
-                        className="text-xs text-primary"
+                        className="wedding-link text-xs"
                         onClick={() => navigate("/tasks")}
                     >
                         查看全部
                     </button>
                 </div>
-                <div className="text-center text-muted-foreground py-4 text-sm">
+                <div className="py-4 text-center text-sm wedding-muted">
                     暂无待办任务
                 </div>
             </div>
@@ -36,12 +34,12 @@ export function UpcomingTasks() {
     }
 
     return (
-        <div className="bg-card rounded-xl border border-border shadow-sm p-4">
-            <div className="flex justify-between items-center mb-3">
-                <span className="text-sm text-muted-foreground">近期待办</span>
+        <div className="wedding-surface-card wedding-card-interactive wedding-section-enter p-4">
+            <div className="mb-3 flex items-center justify-between">
+                <span className="text-sm wedding-muted">近期待办</span>
                 <button
                     type="button"
-                    className="text-xs text-primary"
+                    className="wedding-link text-xs"
                     onClick={() => navigate("/tasks")}
                 >
                     查看全部
@@ -64,28 +62,28 @@ export function UpcomingTasks() {
                         <button
                             type="button"
                             key={task.id}
-                            className="flex items-center gap-2 p-2 rounded-lg bg-muted/30 hover:bg-muted/50 cursor-pointer w-full text-left"
+                            className="flex w-full cursor-pointer items-center gap-2 rounded-[18px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-soft)] p-3 text-left transition hover:border-[color:var(--wedding-line-strong)] hover:bg-[color:var(--wedding-surface)]"
                             onClick={() => navigate("/tasks")}
                         >
                             <i
-                                className={`${getCategoryIcon(task.category)} text-lg text-primary`}
+                                className={`${getCategoryIcon(task.category)} text-lg text-[color:var(--wedding-accent)]`}
                             />
                             <div className="flex-1 min-w-0">
-                                <div className="text-sm font-medium text-foreground truncate">
+                                <div className="truncate text-sm font-medium text-[color:var(--wedding-text)]">
                                     {task.title}
                                 </div>
-                                <div className="text-xs text-muted-foreground">
+                                <div className="text-xs wedding-muted">
                                     {deadline && deadline.toLocaleDateString()}
                                 </div>
                             </div>
                             {daysLeft !== null && daysLeft <= 3 && (
                                 <span
-                                    className={`text-xs px-1.5 py-0.5 rounded ${
+                                    className={`rounded-full px-2 py-1 text-xs ${
                                         daysLeft <= 1
-                                            ? "bg-destructive/10 text-destructive"
+                                            ? "bg-[color:var(--wedding-danger-soft)] text-[color:var(--wedding-danger)]"
                                             : daysLeft <= 2
-                                              ? "bg-orange-100 text-orange-500 dark:bg-orange-900/30 dark:text-orange-400"
-                                              : "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400"
+                                              ? "bg-[color:var(--wedding-warning-soft)] text-[color:var(--wedding-warning)]"
+                                              : "bg-[color:var(--wedding-info-soft)] text-[color:var(--wedding-info)]"
                                     }`}
                                 >
                                     {daysLeft === 0

@@ -2,10 +2,11 @@
  * 亲友表单组件
  */
 
-import { useState } from "react";
+import { useId, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useWeddingStore } from "@/store/wedding";
+import { cn } from "@/utils";
 import { INVITE_STATUS, RELATION_GROUPS } from "@/wedding/constants";
 
 interface GuestFormProps {
@@ -23,6 +24,11 @@ interface GuestFormProps {
 
 export function GuestForm({ onClose, editGuest }: GuestFormProps) {
     const { addGuest, updateGuest } = useWeddingStore();
+    const baseFieldClassName = "wedding-input";
+    const nameInputId = useId();
+    const phoneInputId = useId();
+    const inviteStatusId = useId();
+    const noteInputId = useId();
 
     const [name, setName] = useState(editGuest?.name || "");
     const [phone, setPhone] = useState(editGuest?.phone || "");
@@ -65,149 +71,166 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
     };
 
     return (
-        <div className="p-4 space-y-4">
-            {/* 姓名 */}
-            <div>
-                <label
-                    htmlFor="guest-name"
-                    className="text-sm text-gray-600 mb-1 block"
-                >
-                    姓名 *
-                </label>
-                <input
-                    id="guest-name"
-                    type="text"
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="请输入姓名"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                />
-            </div>
-
-            {/* 电话 */}
-            <div>
-                <label
-                    htmlFor="guest-phone"
-                    className="text-sm text-gray-600 mb-1 block"
-                >
-                    电话
-                </label>
-                <input
-                    id="guest-phone"
-                    type="tel"
-                    className="w-full border rounded-lg px-3 py-2"
-                    placeholder="请输入电话号码"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                />
-            </div>
-
-            {/* 关系分组 */}
-            <div>
-                <span className="text-sm text-gray-600 mb-1 block">关系</span>
-                <div className="flex gap-1 overflow-x-auto">
-                    {RELATION_GROUPS.map((g) => (
-                        <button
-                            key={g.id}
-                            type="button"
-                            className={`px-3 py-1.5 text-sm rounded-lg whitespace-nowrap ${
-                                relation === g.id
-                                    ? "bg-pink-500 text-white"
-                                    : "bg-gray-100"
-                            }`}
-                            onClick={() => setRelation(g.id)}
+        <div className="space-y-5 px-1 pb-1">
+            <div className="wedding-soft-card space-y-5 p-4">
+                <div className="grid gap-4 sm:grid-cols-2">
+                    <div>
+                        <label
+                            htmlFor={nameInputId}
+                            className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
                         >
-                            {g.name}
-                        </button>
-                    ))}
+                            姓名
+                        </label>
+                        <input
+                            id={nameInputId}
+                            type="text"
+                            className={baseFieldClassName}
+                            placeholder="请输入姓名"
+                            value={name}
+                            onChange={(e) => setName(e.target.value)}
+                        />
+                    </div>
+                    <div>
+                        <label
+                            htmlFor={phoneInputId}
+                            className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
+                        >
+                            电话
+                        </label>
+                        <input
+                            id={phoneInputId}
+                            type="tel"
+                            className={baseFieldClassName}
+                            placeholder="请输入电话号码"
+                            value={phone}
+                            onChange={(e) => setPhone(e.target.value)}
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
+                        关系
+                    </span>
+                    <div className="grid grid-cols-3 gap-2 sm:grid-cols-5">
+                        {RELATION_GROUPS.map((item) => (
+                            <button
+                                key={item.id}
+                                data-active={relation === item.id}
+                                type="button"
+                                className="wedding-segment min-h-11 px-3 py-2 text-sm"
+                                onClick={() => setRelation(item.id)}
+                            >
+                                {item.name}
+                            </button>
+                        ))}
+                    </div>
                 </div>
             </div>
 
-            {/* 所属方 */}
-            <div>
-                <span className="text-sm text-gray-600 mb-1 block">所属方</span>
-                <div className="flex gap-2">
-                    <button
-                        type="button"
-                        className={`px-4 py-1.5 text-sm rounded-lg ${
-                            group === undefined ? "bg-gray-200" : "bg-gray-100"
-                        }`}
-                        onClick={() => setGroup(undefined)}
+            <div className="wedding-soft-card space-y-5 p-4">
+                <div>
+                    <span className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
+                        所属方
+                    </span>
+                    <div className="grid grid-cols-3 gap-2">
+                        {[
+                            {
+                                label: "不指定",
+                                value: undefined,
+                                activeClassName:
+                                    "border-transparent bg-[color:var(--wedding-text)] text-white shadow-sm",
+                            },
+                            {
+                                label: "男方",
+                                value: "groom" as const,
+                                activeClassName:
+                                    "border-transparent bg-sky-500 text-white shadow-sm",
+                            },
+                            {
+                                label: "女方",
+                                value: "bride" as const,
+                                activeClassName:
+                                    "border-transparent bg-pink-500 text-white shadow-sm",
+                            },
+                        ].map((item) => {
+                            const active = group === item.value;
+                            return (
+                                <button
+                                    key={item.label}
+                                    type="button"
+                                    className={cn(
+                                        "rounded-[18px] border px-3 py-3 text-sm font-medium transition",
+                                        active
+                                            ? item.activeClassName
+                                            : "border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] text-[color:var(--wedding-text-soft)]",
+                                    )}
+                                    onClick={() => setGroup(item.value)}
+                                >
+                                    {item.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                </div>
+
+                <div>
+                    <label
+                        htmlFor={inviteStatusId}
+                        className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
                     >
-                        不指定
-                    </button>
-                    <button
-                        type="button"
-                        className={`px-4 py-1.5 text-sm rounded-lg ${
-                            group === "groom"
-                                ? "bg-blue-500 text-white"
-                                : "bg-gray-100"
-                        }`}
-                        onClick={() => setGroup("groom")}
+                        邀请状态
+                    </label>
+                    <select
+                        id={inviteStatusId}
+                        className={baseFieldClassName}
+                        value={inviteStatus}
+                        onChange={(e) => setInviteStatus(e.target.value)}
                     >
-                        男方
-                    </button>
-                    <button
-                        type="button"
-                        className={`px-4 py-1.5 text-sm rounded-lg ${
-                            group === "bride"
-                                ? "bg-pink-500 text-white"
-                                : "bg-gray-100"
-                        }`}
-                        onClick={() => setGroup("bride")}
-                    >
-                        女方
-                    </button>
+                        {INVITE_STATUS.map((item) => (
+                            <option key={item.id} value={item.id}>
+                                {item.name}
+                            </option>
+                        ))}
+                    </select>
                 </div>
             </div>
 
-            {/* 邀请状态 */}
-            <div>
-                <label
-                    htmlFor="guest-invite-status"
-                    className="text-sm text-gray-600 mb-1 block"
-                >
-                    邀请状态
-                </label>
-                <select
-                    id="guest-invite-status"
-                    className="w-full border rounded-lg px-3 py-2"
-                    value={inviteStatus}
-                    onChange={(e) => setInviteStatus(e.target.value)}
-                >
-                    {INVITE_STATUS.map((s) => (
-                        <option key={s.id} value={s.id}>
-                            {s.name}
-                        </option>
-                    ))}
-                </select>
+            <div className="wedding-soft-card space-y-4 p-4">
+                <div>
+                    <label
+                        htmlFor={noteInputId}
+                        className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted"
+                    >
+                        备注
+                    </label>
+                    <textarea
+                        id={noteInputId}
+                        className={cn(
+                            baseFieldClassName,
+                            "min-h-[112px] resize-none",
+                        )}
+                        placeholder="可记录桌位偏好、同行人数或提醒事项"
+                        rows={3}
+                        value={note}
+                        onChange={(e) => setNote(e.target.value)}
+                    />
+                </div>
             </div>
 
-            {/* 备注 */}
-            <div>
-                <label
-                    htmlFor="guest-note"
-                    className="text-sm text-gray-600 mb-1 block"
+            <div className="flex gap-3 pt-1">
+                <Button
+                    variant="outline"
+                    className="h-12 flex-1 rounded-[18px] border-[color:var(--wedding-line)] bg-white/80 text-[color:var(--wedding-text)] hover:bg-white dark:bg-white/6 dark:hover:bg-white/10"
+                    onClick={onClose}
                 >
-                    备注
-                </label>
-                <textarea
-                    id="guest-note"
-                    className="w-full border rounded-lg px-3 py-2 resize-none"
-                    placeholder="备注信息"
-                    rows={2}
-                    value={note}
-                    onChange={(e) => setNote(e.target.value)}
-                />
-            </div>
-
-            {/* 操作按钮 */}
-            <div className="flex gap-2 pt-2">
-                <Button variant="outline" className="flex-1" onClick={onClose}>
                     取消
                 </Button>
-                <Button className="flex-1" onClick={handleSubmit}>
-                    {editGuest ? "更新" : "添加"}
+                <Button
+                    className="h-12 flex-1 rounded-[18px] bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 text-white shadow-[0_18px_30px_-18px_rgba(217,70,150,0.9)] hover:opacity-95"
+                    onClick={handleSubmit}
+                >
+                    {editGuest ? "保存更新" : "添加亲友"}
                 </Button>
             </div>
         </div>

@@ -14,7 +14,13 @@ import {
     DialogPortal,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { WeddingPageShell, WeddingTopBar } from "@/components/wedding-ui";
+import {
+    WeddingBadge,
+    WeddingFloatingActionButton,
+    WeddingPageShell,
+    WeddingStat,
+    WeddingTopBar,
+} from "@/components/wedding-ui";
 import { useBookStore } from "@/store/book";
 import { useWeddingStore } from "@/store/wedding";
 import { cn } from "@/utils";
@@ -222,6 +228,9 @@ export default function TaskCalendar() {
             return dayjs(task.deadline).isSame(currentMonth, "month");
         }).length;
     }, [currentMonth, tasks]);
+    const selectedCompletedCount = selectedTasks.filter(
+        (item) => item.status === "completed",
+    ).length;
 
     const selectedDateNote = useMemo(() => {
         return getCalendarNote(
@@ -384,6 +393,25 @@ export default function TaskCalendar() {
                 </div>
             </section>
 
+            <section className="grid gap-3 sm:grid-cols-3">
+                <WeddingStat
+                    label="本月任务"
+                    value={`${currentMonthTaskCount} 项`}
+                    hint={currentMonth.format("YYYY年M月")}
+                />
+                <WeddingStat
+                    label="选中日期"
+                    value={`${selectedTasks.length} 项`}
+                    hint={selectedDate.format("M月D日")}
+                />
+                <WeddingStat
+                    label="已完成"
+                    value={`${selectedCompletedCount} 项`}
+                    hint="仅统计当前日期"
+                    tone={selectedCompletedCount > 0 ? "success" : "default"}
+                />
+            </section>
+
             <section className="wedding-surface-card p-4">
                 <div className="flex items-start justify-between gap-3">
                     <div>
@@ -395,9 +423,11 @@ export default function TaskCalendar() {
                             {selectedTasks.length} 项日程
                         </div>
                     </div>
-                    <span className="rounded-full bg-pink-50 px-3 py-1.5 text-xs font-semibold text-pink-500 dark:bg-pink-500/10">
+                    <WeddingBadge
+                        tone={selectedDateNote.emphasis ? "accent" : "neutral"}
+                    >
                         {selectedDateNote.label}
-                    </span>
+                    </WeddingBadge>
                 </div>
 
                 <div className="mt-4 space-y-3">
@@ -433,23 +463,22 @@ export default function TaskCalendar() {
                                                 </div>
                                             ) : null}
                                         </div>
-                                        <span
-                                            className={cn(
-                                                "shrink-0 rounded-full px-2.5 py-1 text-xs font-medium",
-                                                task.status === "completed" &&
-                                                    "bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10",
-                                                task.status === "in_progress" &&
-                                                    "bg-pink-100 text-pink-500 dark:bg-pink-500/10",
-                                                task.status === "pending" &&
-                                                    "bg-violet-100 text-violet-500 dark:bg-violet-500/10",
-                                            )}
+                                        <WeddingBadge
+                                            tone={
+                                                task.status === "completed"
+                                                    ? "success"
+                                                    : task.status ===
+                                                        "in_progress"
+                                                      ? "accent"
+                                                      : "info"
+                                            }
                                         >
                                             {task.status === "completed"
                                                 ? "已完成"
                                                 : task.status === "in_progress"
                                                   ? "进行中"
                                                   : "待开始"}
-                                        </span>
+                                        </WeddingBadge>
                                     </div>
                                     <div className="mt-3 flex flex-wrap gap-2 text-xs">
                                         <span className="rounded-full bg-white px-2.5 py-1 text-[color:var(--wedding-text-soft)] dark:bg-white/8">
@@ -483,14 +512,13 @@ export default function TaskCalendar() {
                 </div>
             </section>
 
-            <button
-                type="button"
-                className="fixed bottom-[calc(var(--mobile-bottombar-height)+1.25rem+env(safe-area-inset-bottom))] right-5 z-30 flex h-15 w-15 items-center justify-center rounded-full bg-[#f48370] text-white shadow-[0_22px_32px_-18px_rgba(244,131,112,0.95)] transition hover:scale-[1.02] sm:bottom-8 sm:right-8"
+            <WeddingFloatingActionButton
+                className="bg-[linear-gradient(135deg,#f48370_0%,#ef5cab_100%)]"
                 onClick={() => setShowForm(true)}
                 aria-label="新增任务"
             >
                 <i className="icon-[mdi--plus] size-7" />
-            </button>
+            </WeddingFloatingActionButton>
 
             <Dialog open={showForm} onOpenChange={setShowForm}>
                 <DialogPortal>

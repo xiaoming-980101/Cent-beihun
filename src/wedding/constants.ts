@@ -42,7 +42,11 @@ export const TASK_PRIORITIES = [
 
 /** 任务状态 */
 export const TASK_STATUSES = [
-    { id: "pending", name: "待办", color: "text-gray-500" },
+    {
+        id: "pending",
+        name: "待办",
+        color: "text-[color:var(--wedding-text-soft)]",
+    },
     { id: "in_progress", name: "进行中", color: "text-blue-500" },
     { id: "completed", name: "已完成", color: "text-green-500" },
 ] as const;
@@ -73,7 +77,11 @@ export const PAYMENT_METHODS = [
 
 /** 预算状态 */
 export const BUDGET_STATUSES = [
-    { id: "planned", name: "计划中", color: "text-gray-500" },
+    {
+        id: "planned",
+        name: "计划中",
+        color: "text-[color:var(--wedding-text-soft)]",
+    },
     { id: "deposit_paid", name: "已付定金", color: "text-blue-500" },
     { id: "completed", name: "已完成", color: "text-green-500" },
 ] as const;

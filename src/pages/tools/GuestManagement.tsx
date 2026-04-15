@@ -13,9 +13,11 @@ import {
 } from "@/components/ui/dialog";
 import {
     WeddingActionButton,
+    WeddingBadge,
     WeddingEmptyState,
     WeddingFilterChip,
     WeddingPageShell,
+    WeddingStat,
     WeddingTopBar,
 } from "@/components/wedding-ui";
 import { useWeddingStore } from "@/store/wedding";
@@ -23,7 +25,7 @@ import { GuestForm } from "@/wedding/components";
 import { INVITE_STATUS, RELATION_GROUPS } from "@/wedding/constants";
 
 export default function GuestManagement() {
-    const { weddingData } = useWeddingStore();
+    const { weddingData, deleteGuest } = useWeddingStore();
     const guests = weddingData?.guests || [];
 
     const [filterRelation, setFilterRelation] = useState<string>("all");
@@ -50,6 +52,10 @@ export default function GuestManagement() {
     const confirmedCount = guests.filter(
         (g) => g.inviteStatus === "confirmed",
     ).length;
+    const pendingCount = guests.filter(
+        (g) => g.inviteStatus === "pending",
+    ).length;
+    const groomGroupCount = guests.filter((g) => g.group === "groom").length;
 
     return (
         <WeddingPageShell>
@@ -61,7 +67,7 @@ export default function GuestManagement() {
 
             <section className="wedding-hero p-5">
                 <div className="grid grid-cols-2 gap-3">
-                    <div className="rounded-[20px] bg-white/12 p-4 backdrop-blur">
+                    <div className="wedding-metric-panel p-4">
                         <div className="text-xs uppercase tracking-[0.16em] text-white/75">
                             总人数
                         </div>
@@ -69,7 +75,7 @@ export default function GuestManagement() {
                             {totalCount}
                         </div>
                     </div>
-                    <div className="rounded-[20px] bg-white/12 p-4 backdrop-blur">
+                    <div className="wedding-metric-panel p-4">
                         <div className="text-xs uppercase tracking-[0.16em] text-white/75">
                             已确认
                         </div>
@@ -78,6 +84,25 @@ export default function GuestManagement() {
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <section className="grid gap-3 sm:grid-cols-3">
+                <WeddingStat
+                    label="待回复"
+                    value={`${pendingCount} 位`}
+                    hint="可重点提醒"
+                    tone={pendingCount > 0 ? "danger" : "success"}
+                />
+                <WeddingStat
+                    label="男方亲友"
+                    value={`${groomGroupCount} 位`}
+                    hint="含已指定所属方"
+                />
+                <WeddingStat
+                    label="筛选结果"
+                    value={`${filteredGuests.length} 位`}
+                    hint={searchText ? `匹配“${searchText}”` : "当前列表结果"}
+                />
             </section>
 
             <section className="wedding-surface-card p-4">
@@ -128,7 +153,7 @@ export default function GuestManagement() {
                         return (
                             <div
                                 key={guest.id}
-                                className="wedding-surface-card cursor-pointer p-4"
+                                className="wedding-surface-card wedding-card-interactive cursor-pointer p-4"
                                 onClick={() => {
                                     setEditingGuest(guest);
                                     setShowForm(true);
@@ -144,12 +169,19 @@ export default function GuestManagement() {
                                                 <div className="flex items-center gap-2 text-lg font-semibold text-[color:var(--wedding-text)]">
                                                     {guest.name}
                                                     {guest.group ? (
-                                                        <span className="rounded-full bg-pink-100 px-2 py-0.5 text-xs text-pink-500 dark:bg-pink-500/10">
+                                                        <WeddingBadge
+                                                            tone={
+                                                                guest.group ===
+                                                                "groom"
+                                                                    ? "info"
+                                                                    : "accent"
+                                                            }
+                                                        >
                                                             {guest.group ===
                                                             "groom"
                                                                 ? "男方"
                                                                 : "女方"}
-                                                        </span>
+                                                        </WeddingBadge>
                                                     ) : null}
                                                 </div>
                                                 <div className="mt-1 text-sm wedding-muted">
@@ -160,16 +192,41 @@ export default function GuestManagement() {
                                                         : ""}
                                                 </div>
                                             </div>
-                                            <span className="rounded-full bg-white/80 px-3 py-1 text-xs text-[color:var(--wedding-text-soft)] dark:bg-white/8">
+                                            <WeddingBadge
+                                                tone={
+                                                    guest.inviteStatus ===
+                                                    "confirmed"
+                                                        ? "success"
+                                                        : guest.inviteStatus ===
+                                                            "declined"
+                                                          ? "danger"
+                                                          : guest.inviteStatus ===
+                                                              "invited"
+                                                            ? "info"
+                                                            : "warning"
+                                                }
+                                            >
                                                 {statusInfo?.name ||
                                                     guest.inviteStatus}
-                                            </span>
+                                            </WeddingBadge>
                                         </div>
                                         {guest.note ? (
                                             <div className="mt-3 text-sm wedding-muted">
                                                 {guest.note}
                                             </div>
                                         ) : null}
+                                        <div className="mt-3 flex justify-end">
+                                            <button
+                                                type="button"
+                                                className="wedding-link text-xs text-[color:var(--wedding-danger)]"
+                                                onClick={(event) => {
+                                                    event.stopPropagation();
+                                                    deleteGuest(guest.id);
+                                                }}
+                                            >
+                                                删除亲友
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -195,11 +252,11 @@ export default function GuestManagement() {
                     <DialogOverlay className="fixed inset-0 bg-black/50" />
                     <div className="fixed top-0 left-0 z-[61] flex h-full w-full items-center justify-center pointer-events-none">
                         <DialogContent
-                            className="pointer-events-auto bg-background w-[90vw] max-w-[500px] rounded-md overflow-y-auto max-h-[80vh]"
+                            className="pointer-events-auto w-[90vw] max-h-[80vh] max-w-[560px] overflow-y-auto rounded-[28px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[var(--wedding-shadow)]"
                             onInteractOutside={() => setShowForm(false)}
                         >
                             <DialogHeader>
-                                <DialogTitle className="text-lg font-semibold border-b pb-3 mb-4 pt-2 pl-1">
+                                <DialogTitle className="wedding-topbar-title mb-4 border-b border-[color:var(--wedding-line)] pb-3 pt-2 pl-1 text-lg text-[color:var(--wedding-text)]">
                                     {editingGuest ? "编辑亲友" : "添加亲友"}
                                 </DialogTitle>
                             </DialogHeader>

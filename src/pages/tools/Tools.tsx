@@ -5,11 +5,14 @@
 import { useNavigate } from "react-router";
 import { useShallow } from "zustand/shallow";
 import {
+    WeddingBadge,
     WeddingPageShell,
     WeddingSectionTitle,
+    WeddingStat,
     WeddingTopBar,
 } from "@/components/wedding-ui";
 import { useBookStore } from "@/store/book";
+import { useWeddingStore } from "@/store/wedding";
 
 const TOOLS = [
     {
@@ -68,12 +71,20 @@ export default function Tools() {
         }),
     );
     const bookLabel = currentBookName || "当前账本";
+    const { weddingData } = useWeddingStore();
+    const tasks = weddingData?.tasks || [];
+    const guests = weddingData?.guests || [];
+    const giftRecords = weddingData?.giftRecords || [];
+    const budgets = weddingData?.weddingBudgets || [];
+    const pendingTaskCount = tasks.filter(
+        (item) => item.status !== "completed",
+    ).length;
 
     return (
         <WeddingPageShell>
             <WeddingTopBar title="Cent" subtitle={`${bookLabel}常用工具`} />
 
-            <section>
+            <section className="wedding-section-enter">
                 <div className="px-1 pb-2 pt-2">
                     <h1 className="wedding-topbar-title text-[32px] text-[color:var(--wedding-text)]">
                         {bookLabel}工具箱
@@ -84,12 +95,36 @@ export default function Tools() {
                 </div>
             </section>
 
+            <section className="grid gap-3 sm:grid-cols-4">
+                <WeddingStat
+                    label="待推进任务"
+                    value={`${pendingTaskCount} 项`}
+                    hint="按优先级继续推进"
+                    tone={pendingTaskCount > 0 ? "danger" : "success"}
+                />
+                <WeddingStat
+                    label="亲友人数"
+                    value={`${guests.length} 位`}
+                    hint="邀请状态持续跟进"
+                />
+                <WeddingStat
+                    label="礼金记录"
+                    value={`${giftRecords.length} 笔`}
+                    hint="收礼送礼都会汇总"
+                />
+                <WeddingStat
+                    label="预算项目"
+                    value={`${budgets.length} 项`}
+                    hint="定金与尾款同步查看"
+                />
+            </section>
+
             <section className="grid gap-4">
                 {TOOLS.map((tool, index) => (
                     <button
                         key={tool.id}
                         type="button"
-                        className={`wedding-surface-card cursor-pointer p-5 transition-transform hover:scale-[1.01] ${
+                        className={`wedding-surface-card wedding-card-interactive wedding-section-enter cursor-pointer p-5 ${
                             index === 0 ? "min-h-[208px]" : "min-h-[186px]"
                         }`}
                         onClick={() => navigate(tool.path)}
@@ -104,9 +139,9 @@ export default function Tools() {
                                     />
                                 </div>
                                 {index === 0 ? (
-                                    <span className="rounded-full bg-fuchsia-50 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.18em] text-fuchsia-500 dark:bg-fuchsia-500/10">
-                                        Essential
-                                    </span>
+                                    <WeddingBadge tone="accent">
+                                        优先推荐
+                                    </WeddingBadge>
                                 ) : null}
                             </div>
                             <div className="mt-6 flex-1">
@@ -117,7 +152,7 @@ export default function Tools() {
                                     {tool.description}
                                 </div>
                             </div>
-                            <div className="mt-5 text-sm font-medium text-pink-500">
+                            <div className="wedding-link mt-5 text-sm font-medium">
                                 进入工具
                                 <i className="icon-[mdi--arrow-right-thin] ml-1 inline-block size-4 align-[-2px]" />
                             </div>
@@ -127,13 +162,13 @@ export default function Tools() {
             </section>
 
             <section className="space-y-4 pb-4">
-                <WeddingSectionTitle title="常用视图" trailing="Quick Access" />
+                <WeddingSectionTitle title="常用视图" trailing="快速入口" />
                 <div className="grid grid-cols-3 gap-3">
                     {FEATURE_LINKS.map((item) => (
                         <button
                             key={item.path}
                             type="button"
-                            className="wedding-surface-card flex min-h-[112px] flex-col items-center justify-center gap-3 p-4 text-center transition-transform hover:scale-[1.01]"
+                            className="wedding-surface-card wedding-card-interactive flex min-h-[112px] flex-col items-center justify-center gap-3 p-4 text-center"
                             onClick={() => navigate(item.path)}
                         >
                             <div className="flex h-11 w-11 items-center justify-center rounded-full bg-white/80 text-xl text-pink-500 shadow-sm dark:bg-white/8">
@@ -146,7 +181,7 @@ export default function Tools() {
                     ))}
                 </div>
 
-                <WeddingSectionTitle title="更多工具" trailing="Coming Soon" />
+                <WeddingSectionTitle title="更多工具" trailing="规划中" />
                 <div className="grid grid-cols-2 gap-4">
                     {[
                         ["座次表", "icon-[mdi--seat-outline]"],
@@ -156,7 +191,7 @@ export default function Tools() {
                     ].map(([name, icon]) => (
                         <div
                             key={name}
-                            className="wedding-dashed-card flex min-h-[110px] flex-col items-center justify-center gap-3 p-4 opacity-80"
+                            className="wedding-dashed-card wedding-section-enter flex min-h-[110px] flex-col items-center justify-center gap-3 p-4 opacity-80"
                         >
                             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-sm dark:bg-white/8">
                                 <i
@@ -167,8 +202,8 @@ export default function Tools() {
                         </div>
                     ))}
                 </div>
-                <div className="overflow-hidden rounded-[22px] border border-[color:var(--wedding-line)] bg-gradient-to-r from-[#f8e7ee] to-[#efe2ec] px-8 py-10 text-center dark:from-[#2d1626] dark:to-[#1d1523]">
-                    <p className="text-sm italic leading-7 text-pink-400">
+                <div className="wedding-soft-card wedding-section-enter overflow-hidden px-8 py-8 text-center">
+                    <p className="text-sm italic leading-7 text-[color:var(--wedding-accent)]">
                         “每一处细节的准备，都是对未来幸福的许诺。”
                     </p>
                 </div>

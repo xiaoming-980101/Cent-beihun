@@ -103,6 +103,7 @@ button {
 	--mobile-topbar-height: 72px;
 	--mobile-bottombar-height: 82px;
 	--radius: 0.75rem;
+	color-scheme: light;
 	--background: oklch(0.976 0 0);
 	--foreground: oklch(0.332 0.032 264.695);
 	--card: oklch(1 0 0);
@@ -311,6 +312,13 @@ button {
 	--wedding-warning: #f59e0b;
 	--wedding-danger: #ef4444;
 	--wedding-info: #60a5fa;
+	--wedding-accent: #ec4899;
+	--wedding-accent-strong: #a855f7;
+	--wedding-accent-soft: rgba(236, 72, 153, 0.12);
+	--wedding-success-soft: rgba(34, 197, 94, 0.12);
+	--wedding-warning-soft: rgba(245, 158, 11, 0.14);
+	--wedding-danger-soft: rgba(239, 68, 68, 0.14);
+	--wedding-info-soft: rgba(96, 165, 250, 0.14);
 	--wedding-shadow: 0 24px 42px -28px rgba(236, 72, 153, 0.34);
 	--wedding-shadow-soft: 0 12px 30px -24px rgba(31, 41, 55, 0.16);
 	--wedding-font-display:
@@ -321,6 +329,7 @@ button {
 
 /* 婚礼主题深色模式 */
 .dark {
+	color-scheme: dark;
 	/* 主色 - 粉紫渐变系 (深色模式调整) */
 	--wedding-pink: #f472b6;
 	--wedding-pink-light: #1c1917;
@@ -357,6 +366,13 @@ button {
 	--wedding-warning: #fbbf24;
 	--wedding-danger: #fb7185;
 	--wedding-info: #93c5fd;
+	--wedding-accent: #f472b6;
+	--wedding-accent-strong: #c084fc;
+	--wedding-accent-soft: rgba(244, 114, 182, 0.16);
+	--wedding-success-soft: rgba(74, 222, 128, 0.16);
+	--wedding-warning-soft: rgba(251, 191, 36, 0.16);
+	--wedding-danger-soft: rgba(251, 113, 133, 0.16);
+	--wedding-info-soft: rgba(147, 197, 253, 0.16);
 	--wedding-shadow: 0 28px 44px -28px rgba(0, 0, 0, 0.7);
 	--wedding-shadow-soft: 0 16px 28px -22px rgba(0, 0, 0, 0.75);
 }
@@ -508,10 +524,226 @@ button {
 	box-shadow: 0 20px 34px -18px rgba(217, 70, 150, 0.9);
 }
 
+.wedding-section-enter {
+	animation: wedding-rise 0.42s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.wedding-card-interactive {
+	position: relative;
+	transition:
+		transform 0.22s ease,
+		box-shadow 0.22s ease,
+		border-color 0.22s ease,
+		background-color 0.22s ease;
+}
+
+.wedding-card-interactive:hover {
+	transform: translateY(-2px);
+	box-shadow: var(--wedding-shadow);
+	border-color: var(--wedding-line-strong);
+}
+
+.wedding-link {
+	color: var(--wedding-accent);
+	transition:
+		color 0.2s ease,
+		opacity 0.2s ease;
+}
+
+.wedding-link:hover {
+	color: var(--wedding-accent-strong);
+}
+
+.wedding-badge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border-radius: 9999px;
+	padding: 0.35rem 0.75rem;
+	font-size: 0.75rem;
+	font-weight: 600;
+	line-height: 1;
+	background: color-mix(in srgb, var(--wedding-surface-muted) 92%, transparent);
+	color: var(--wedding-text-soft);
+}
+
+.wedding-badge[data-tone="accent"] {
+	background: var(--wedding-accent-soft);
+	color: var(--wedding-accent);
+}
+
+.wedding-badge[data-tone="success"] {
+	background: var(--wedding-success-soft);
+	color: var(--wedding-success);
+}
+
+.wedding-badge[data-tone="warning"] {
+	background: var(--wedding-warning-soft);
+	color: var(--wedding-warning);
+}
+
+.wedding-badge[data-tone="danger"] {
+	background: var(--wedding-danger-soft);
+	color: var(--wedding-danger);
+}
+
+.wedding-badge[data-tone="info"] {
+	background: var(--wedding-info-soft);
+	color: var(--wedding-info);
+}
+
+.wedding-input {
+	width: 100%;
+	border-radius: 18px;
+	border: 1px solid var(--wedding-line);
+	background: color-mix(in srgb, var(--wedding-surface) 86%, transparent);
+	padding: 0.875rem 1rem;
+	font-size: 0.875rem;
+	color: var(--wedding-text);
+	outline: none;
+	transition:
+		border-color 0.2s ease,
+		box-shadow 0.2s ease,
+		background-color 0.2s ease;
+}
+
+.wedding-input::placeholder {
+	color: var(--wedding-text-mute);
+}
+
+.wedding-input:focus {
+	border-color: color-mix(in srgb, var(--wedding-accent) 48%, white);
+	box-shadow: 0 0 0 4px
+		color-mix(in srgb, var(--wedding-accent) 16%, transparent);
+}
+
+.dark .wedding-input {
+	background: color-mix(in srgb, var(--wedding-surface-soft) 92%, transparent);
+}
+
+.wedding-segment {
+	border-radius: 18px;
+	border: 1px solid var(--wedding-line);
+	background: color-mix(in srgb, var(--wedding-surface) 88%, transparent);
+	color: var(--wedding-text-soft);
+	transition:
+		transform 0.2s ease,
+		background-color 0.2s ease,
+		color 0.2s ease,
+		border-color 0.2s ease;
+}
+
+.wedding-segment:hover {
+	transform: translateY(-1px);
+	border-color: var(--wedding-line-strong);
+}
+
+.wedding-segment[data-active="true"] {
+	border-color: transparent;
+	background: linear-gradient(135deg, #ef5bb0 0%, #ba3ed8 100%);
+	color: #fff;
+	box-shadow: 0 14px 24px -18px rgba(217, 70, 150, 0.92);
+}
+
+.wedding-ghost-button {
+	border-radius: 9999px;
+	background: color-mix(in srgb, var(--wedding-surface) 84%, transparent);
+	color: var(--wedding-text-soft);
+	transition:
+		background-color 0.2s ease,
+		color 0.2s ease,
+		transform 0.2s ease;
+}
+
+.wedding-ghost-button:hover {
+	transform: translateY(-1px);
+	background: color-mix(in srgb, var(--wedding-surface-muted) 94%, transparent);
+	color: var(--wedding-text);
+}
+
+.wedding-metric-panel {
+	border-radius: 20px;
+	background: rgba(255, 255, 255, 0.12);
+	backdrop-filter: blur(14px);
+	-webkit-backdrop-filter: blur(14px);
+}
+
+.dark .wedding-metric-panel {
+	background: rgba(255, 255, 255, 0.08);
+}
+
+.wedding-fab {
+	position: fixed;
+	bottom: calc(
+		var(--mobile-bottombar-height) +
+		1.25rem +
+		env(safe-area-inset-bottom)
+	);
+	right: 1.25rem;
+	z-index: 30;
+	display: flex;
+	height: 3.5rem;
+	width: 3.5rem;
+	align-items: center;
+	justify-content: center;
+	border-radius: 9999px;
+	background: linear-gradient(135deg, #ef5cab 0%, #cb4dc8 100%);
+	color: #fff;
+	box-shadow: 0 22px 36px -18px rgba(239, 92, 171, 0.95);
+	transition:
+		transform 0.22s ease,
+		box-shadow 0.22s ease,
+		filter 0.22s ease;
+}
+
+.wedding-fab:hover {
+	transform: translateY(-2px) scale(1.02);
+	filter: saturate(1.05);
+	box-shadow: 0 26px 42px -18px rgba(239, 92, 171, 0.96);
+}
+
+@keyframes wedding-rise {
+	from {
+		opacity: 0;
+		transform: translateY(18px);
+	}
+
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
 @media (min-width: 768px) {
 	.wedding-page {
 		max-width: 1180px;
 		padding: 24px 24px 32px;
 		gap: 16px;
+	}
+
+	.wedding-fab {
+		bottom: 2rem;
+		right: 2rem;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.page-show,
+	.wedding-section-enter {
+		animation: none !important;
+	}
+
+	.wedding-card-interactive,
+	.wedding-segment,
+	.wedding-ghost-button,
+	.wedding-fab {
+		transition: none !important;
+	}
+
+	.wedding-card-interactive:hover,
+	.wedding-segment:hover,
+	.wedding-ghost-button:hover,
+	.wedding-fab:hover {
+		transform: none !important;
 	}
 }

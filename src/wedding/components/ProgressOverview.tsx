@@ -12,39 +12,39 @@ export function ProgressOverview() {
     const progress = calculateTaskProgress(tasks);
 
     return (
-        <div className="bg-card rounded-xl border border-border shadow-sm p-4">
-            <div className="flex justify-between items-center mb-2">
-                <span className="text-sm text-muted-foreground">筹备进度</span>
-                <span className="text-sm font-medium text-foreground">
+        <div className="wedding-surface-card wedding-card-interactive wedding-section-enter p-4">
+            <div className="mb-2 flex items-center justify-between">
+                <span className="text-sm wedding-muted">筹备进度</span>
+                <span className="text-sm font-medium text-[color:var(--wedding-text)]">
                     {progress.percentage}%
                 </span>
             </div>
 
             {/* 进度条 */}
-            <div className="w-full h-3 bg-muted/50 rounded-full overflow-hidden mb-3">
+            <div className="mb-3 h-3 w-full overflow-hidden rounded-full bg-[color:var(--wedding-surface-muted)]">
                 <div
-                    className="h-full bg-gradient-to-r from-primary/80 to-primary transition-all duration-500 rounded-full"
+                    className="h-full rounded-full bg-gradient-to-r from-pink-400 via-fuchsia-500 to-violet-500 transition-all duration-500"
                     style={{ width: `${progress.percentage}%` }}
                 />
             </div>
 
             {/* 统计数字 */}
-            <div className="flex justify-between text-xs text-muted-foreground">
+            <div className="grid grid-cols-3 gap-2 text-xs">
                 <span>
-                    已完成{" "}
-                    <span className="text-green-500 font-medium">
+                    <span className="wedding-muted">已完成 </span>
+                    <span className="font-medium text-[color:var(--wedding-success)]">
                         {progress.completed}
                     </span>
                 </span>
                 <span>
-                    进行中{" "}
-                    <span className="text-blue-500 font-medium">
+                    <span className="wedding-muted">进行中 </span>
+                    <span className="font-medium text-[color:var(--wedding-info)]">
                         {progress.inProgress}
                     </span>
                 </span>
                 <span>
-                    待开始{" "}
-                    <span className="text-muted-foreground/60 font-medium">
+                    <span className="wedding-muted">待开始 </span>
+                    <span className="font-medium text-[color:var(--wedding-text-soft)]">
                         {progress.pending}
                     </span>
                 </span>

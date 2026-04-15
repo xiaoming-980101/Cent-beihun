@@ -13,9 +13,12 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import {
+    WeddingBadge,
     WeddingEmptyState,
     WeddingFilterChip,
+    WeddingFloatingActionButton,
     WeddingPageShell,
+    WeddingStat,
     WeddingTopBar,
 } from "@/components/wedding-ui";
 import { useBookStore } from "@/store/book";
@@ -65,6 +68,16 @@ export default function WeddingBudget() {
     const totalPaid = budgets.reduce((sum, b) => sum + b.spent, 0);
     const totalDeposit = budgets.reduce((sum, b) => sum + (b.deposit || 0), 0);
     const remaining = totalBudget - totalPaid;
+    const overBudgetCount = budgets.filter(
+        (item) => item.spent > item.budget,
+    ).length;
+    const dueSoonCount = budgets.filter((item) => {
+        if (!item.dueDate || item.status === "completed") {
+            return false;
+        }
+        const diff = item.dueDate - Date.now();
+        return diff >= 0 && diff <= 1000 * 60 * 60 * 24 * 14;
+    }).length;
 
     return (
         <WeddingPageShell>
@@ -80,19 +93,19 @@ export default function WeddingBudget() {
                     {formatAmount(totalBudget)}
                 </div>
                 <div className="mt-5 grid grid-cols-3 gap-2.5">
-                    <div className="rounded-[16px] bg-white/12 p-3">
+                    <div className="wedding-metric-panel p-3">
                         <div className="text-[11px] text-white/72">已支付</div>
                         <div className="mt-2 text-lg font-bold text-white">
                             {formatAmount(totalPaid)}
                         </div>
                     </div>
-                    <div className="rounded-[16px] bg-white/12 p-3">
+                    <div className="wedding-metric-panel p-3">
                         <div className="text-[11px] text-white/72">定金</div>
                         <div className="mt-2 text-lg font-bold text-white">
                             {formatAmount(totalDeposit)}
                         </div>
                     </div>
-                    <div className="rounded-[16px] bg-white/12 p-3">
+                    <div className="wedding-metric-panel p-3">
                         <div className="text-[11px] text-white/72">
                             待付尾款
                         </div>
@@ -101,6 +114,30 @@ export default function WeddingBudget() {
                         </div>
                     </div>
                 </div>
+            </section>
+
+            <section className="grid gap-3 sm:grid-cols-3">
+                <WeddingStat
+                    label="超预算项目"
+                    value={`${overBudgetCount} 项`}
+                    hint="超过预算会醒目标记"
+                    tone={overBudgetCount > 0 ? "danger" : "success"}
+                />
+                <WeddingStat
+                    label="两周内待付款"
+                    value={`${dueSoonCount} 项`}
+                    hint="包含计划中与已付定金"
+                    tone={dueSoonCount > 0 ? "warning" : "default"}
+                />
+                <WeddingStat
+                    label="预算执行率"
+                    value={
+                        totalBudget > 0
+                            ? `${Math.min(Math.round((totalPaid / totalBudget) * 100), 999)}%`
+                            : "0%"
+                    }
+                    hint="按已支付金额计算"
+                />
             </section>
 
             <section className="flex gap-2 overflow-x-auto pb-1">
@@ -161,7 +198,7 @@ export default function WeddingBudget() {
                             <button
                                 key={budget.id}
                                 type="button"
-                                className="wedding-surface-card cursor-pointer p-4 text-left"
+                                className="wedding-surface-card wedding-card-interactive cursor-pointer p-4 text-left"
                                 onClick={() => {
                                     setEditingBudget(budget);
                                     setShowForm(true);
@@ -196,11 +233,12 @@ export default function WeddingBudget() {
                                             </div>
                                         </div>
                                     </div>
-                                    <span
-                                        className={`rounded-full px-3 py-1 text-xs ${statusClassName}`}
+                                    <WeddingBadge
+                                        className={statusClassName}
+                                        tone="neutral"
                                     >
                                         {statusInfo?.name || budget.status}
-                                    </span>
+                                    </WeddingBadge>
                                 </div>
                                 <div className="mt-4 flex items-center justify-between text-sm">
                                     <span className="text-[color:var(--wedding-text-soft)]">
@@ -238,6 +276,9 @@ export default function WeddingBudget() {
                                             ).toLocaleDateString()}
                                         </span>
                                     ) : null}
+                                    {budget.vendorPhone ? (
+                                        <span>电话: {budget.vendorPhone}</span>
+                                    ) : null}
                                 </div>
                             </button>
                         );
@@ -245,9 +286,7 @@ export default function WeddingBudget() {
                 )}
             </section>
 
-            <button
-                type="button"
-                className="fixed bottom-[calc(var(--mobile-bottombar-height)+1.25rem+env(safe-area-inset-bottom))] right-5 z-30 flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-r from-[#ef5cab] to-[#cb4dc8] text-white shadow-[0_16px_28px_-16px_rgba(239,92,171,0.95)] sm:bottom-8 sm:right-8"
+            <WeddingFloatingActionButton
                 onClick={() => {
                     setEditingBudget(undefined);
                     setShowForm(true);
@@ -255,7 +294,7 @@ export default function WeddingBudget() {
                 aria-label="添加预算项目"
             >
                 <i className="icon-[mdi--plus] size-6" />
-            </button>
+            </WeddingFloatingActionButton>
 
             {/* 表单弹窗 */}
             <Dialog open={showForm} onOpenChange={setShowForm}>
