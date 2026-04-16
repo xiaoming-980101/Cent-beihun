@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1776260647786,
-  "projectRoot": "/Users/baobeizhenkeai/Documents/beihun",
+  "lastScanned": 1776299785219,
+  "projectRoot": "d:\\ai\\dinghun\\Cent-beihun",
   "techStack": {
     "languages": [
       {
@@ -92,7 +92,7 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 7,
-      "lastAccessed": 1776260647637,
+      "lastAccessed": 1776299785184,
       "keyFiles": [
         "__headers",
         "favicon.ico",
@@ -105,16 +105,23 @@
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 1,
-      "lastAccessed": 1776260647637,
+      "lastAccessed": 1776299785185,
       "keyFiles": [
         "gitee-pages-deploy.md"
       ]
+    },
+    "outputs": {
+      "path": "outputs",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1776299785193,
+      "keyFiles": []
     },
     "public": {
       "path": "public",
       "purpose": "Public files",
       "fileCount": 3,
-      "lastAccessed": 1776260647731,
+      "lastAccessed": 1776299785193,
       "keyFiles": [
         "__headers",
         "favicon.ico",
@@ -124,8 +131,8 @@
     "screenshots": {
       "path": "screenshots",
       "purpose": null,
-      "fileCount": 2,
-      "lastAccessed": 1776260647732,
+      "fileCount": 27,
+      "lastAccessed": 1776299785194,
       "keyFiles": [
         "capture.cjs",
         "config.example.cjs"
@@ -135,7 +142,7 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 5,
-      "lastAccessed": 1776260647733,
+      "lastAccessed": 1776299785194,
       "keyFiles": [
         "index.css",
         "main.tsx",
@@ -148,39 +155,39 @@
       "path": "截图",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1776260647734,
+      "lastAccessed": 1776299785195,
       "keyFiles": []
     },
     "dist/assets": {
       "path": "dist/assets",
       "purpose": "Static assets",
-      "fileCount": 25,
-      "lastAccessed": 1776260647738,
+      "fileCount": 27,
+      "lastAccessed": 1776299785196,
       "keyFiles": [
-        "GiftBook-BlMkq034.js",
-        "GuestManagement-ZW7pJmD8.js",
-        "TaskCalendar-ldrTc9ud.js"
+        "en-CR9-uxYy.js",
+        "GiftBook-B23qMM_m.js",
+        "GuestManagement-BCLctRPu.js"
       ]
     },
     "src/api": {
       "path": "src/api",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1776260647782,
+      "lastAccessed": 1776299785197,
       "keyFiles": []
     },
     "src/assets": {
       "path": "src/assets",
       "purpose": "Static assets",
       "fileCount": 0,
-      "lastAccessed": 1776260647783,
+      "lastAccessed": 1776299785197,
       "keyFiles": []
     },
     "src/components": {
       "path": "src/components",
       "purpose": "UI components",
       "fileCount": 14,
-      "lastAccessed": 1776260647784,
+      "lastAccessed": 1776299785198,
       "keyFiles": [
         "animated-number.tsx",
         "clearable.tsx",
@@ -188,6 +195,49 @@
       ]
     }
   },
-  "hotPaths": [],
+  "hotPaths": [
+    {
+      "path": "package.json",
+      "accessCount": 1,
+      "lastAccessed": 1775803519299,
+      "type": "file"
+    },
+    {
+      "path": "README.md",
+      "accessCount": 1,
+      "lastAccessed": 1775803559266,
+      "type": "file"
+    },
+    {
+      "path": "vercel.json",
+      "accessCount": 1,
+      "lastAccessed": 1775803559726,
+      "type": "file"
+    },
+    {
+      "path": "vite.config.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775803560200,
+      "type": "file"
+    },
+    {
+      "path": "index.html",
+      "accessCount": 1,
+      "lastAccessed": 1775803571134,
+      "type": "file"
+    },
+    {
+      "path": "nginx.conf",
+      "accessCount": 1,
+      "lastAccessed": 1775803650837,
+      "type": "file"
+    },
+    {
+      "path": "deploy-jdcloud.md",
+      "accessCount": 1,
+      "lastAccessed": 1775803652066,
+      "type": "file"
+    }
+  ],
   "userDirectives": []
 }

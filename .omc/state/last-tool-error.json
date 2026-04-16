@@ -1,7 +1,7 @@
 {
   "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"git stash pop && git push origin main 2>&1\",\"timeout\":60000,\"description\":\"恢复 stash 并推送\"}",
-  "error": "Exit code 1\nerror: Your local changes to the following files would be overwritten by merge:\n\t.omc/state/hud-stdin-cache.json\nPlease commit your changes or stash them before you merge.\nAborting\nOn branch main\nYour branch is ahead of 'origin/main' by 1 commit.\n  (use \"git push\" to publish your local commits)\n\nChanges not staged for commit:\n  (use \"git add <file>...\" to update what will be committed)\n  (use \"git restore <file>...\" to discard changes in working directory)\n\tmodified:   .omc/state/hud...",
-  "timestamp": "2026-04-10T03:05:04.245Z",
-  "retry_count": 8
+  "tool_input_preview": "{\"command\":\"git rm -r --cached .omc/ && git status\",\"description\":\"从 git 移除 .omc 目录\"}",
+  "error": "Exit code 1\nerror: the following file has staged content different from both the\nfile and the HEAD:\n    .omc/state/last-tool-error.json\n(use -f to force removal)",
+  "timestamp": "2026-04-16T00:42:50.621Z",
+  "retry_count": 1
 }
