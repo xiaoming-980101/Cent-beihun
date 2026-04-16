@@ -88,7 +88,20 @@ export const WebDAVEndpoint: SyncEndpointFactory = {
 
         const scheduler = new Scheduler(async (signal) => {
             const [finished, cancel] = repo.sync();
-            signal.onabort = cancel;
+            signal.onabort = () => {
+                try {
+                    cancel();
+                } catch (error) {
+                    if (
+                        !(
+                            error instanceof DOMException &&
+                            error.name === "AbortError"
+                        )
+                    ) {
+                        throw error;
+                    }
+                }
+            };
             await finished;
         });
 

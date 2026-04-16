@@ -9,6 +9,7 @@ import {
     BillFilterViewProvider,
     showBillFilterView,
 } from "@/components/bill-filter";
+import { ChartWrapper } from "@/components/features/statistics/chart-wrapper";
 import { showBillInfo } from "@/components/bill-info";
 import BillItem from "@/components/ledger/item";
 import { showSortableList } from "@/components/sortable";
@@ -154,6 +155,71 @@ export default function Page() {
     });
 
     const totalMoneys = FocusTypes.map((t) => dataSources.total[t]);
+    const trendPreviewOption = useMemo(() => {
+        const dailyMap = new Map<
+            string,
+            { income: number; expense: number; net: number }
+        >();
+
+        filtered.forEach((bill) => {
+            const key = dayjs.unix(bill.time / 1000).format("MM-DD");
+            const item = dailyMap.get(key) || { income: 0, expense: 0, net: 0 };
+            if (bill.type === "income") {
+                item.income += bill.amount;
+                item.net += bill.amount;
+            } else {
+                item.expense += bill.amount;
+                item.net -= bill.amount;
+            }
+            dailyMap.set(key, item);
+        });
+
+        const labels = Array.from(dailyMap.keys());
+        return {
+            grid: {
+                left: 8,
+                right: 8,
+                top: 30,
+                bottom: 18,
+                containLabel: true,
+            },
+            legend: {
+                data: ["收入", "支出", "净收益"],
+            },
+            xAxis: {
+                type: "category",
+                data: labels,
+            },
+            yAxis: {
+                type: "value",
+            },
+            dataZoom: [
+                {
+                    type: "inside",
+                },
+            ],
+            series: [
+                {
+                    name: "收入",
+                    type: "line",
+                    smooth: true,
+                    data: labels.map((label) => dailyMap.get(label)?.income ?? 0),
+                },
+                {
+                    name: "支出",
+                    type: "line",
+                    smooth: true,
+                    data: labels.map((label) => dailyMap.get(label)?.expense ?? 0),
+                },
+                {
+                    name: "净收益",
+                    type: "line",
+                    smooth: true,
+                    data: labels.map((label) => dailyMap.get(label)?.net ?? 0),
+                },
+            ],
+        };
+    }, [filtered]);
 
     const { tags } = useTag();
     const tagStructure = useMemo(
@@ -424,6 +490,13 @@ export default function Page() {
             </div>
             <div className="w-full flex-1 overflow-y-auto px-1">
                 <div className="relative flex w-full flex-col items-center gap-4">
+                    <ChartWrapper
+                        title="收支趋势预览"
+                        description="按当前筛选范围聚合展示收入、支出与净收益走势。"
+                        option={trendPreviewOption}
+                        isLoading={false}
+                        isEmpty={filtered.length === 0}
+                    />
                     {Part}
                     {tagStructure.length > 0 && (
                         <div className="wedding-surface-card w-full rounded-[24px] p-4 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)] flex flex-col">

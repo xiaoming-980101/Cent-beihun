@@ -85,7 +85,8 @@ export function DatePicker({
             ? displayFormatter
             : (d?: Dayjs) => d?.format(displayFormatter as string);
 
-    const current = value ? dayjs(value as any) : dayjs();
+    const current = typeof value === "number" ? dayjs(value) : undefined;
+    const timeBase = current ?? dayjs();
     return (
         <Popover
             open={open}
@@ -96,8 +97,8 @@ export function DatePicker({
                 }
             }}
         >
-            <PopoverTrigger>
-                <div className="flex justify-center items-center relative cursor-pointer">
+            <PopoverTrigger asChild>
+                <div className="flex justify-center items-center relative cursor-pointer" data-date-picker-root>
                     {children}
                     <div className="mx-2">
                         {display(value ? current : undefined)}
@@ -105,49 +106,58 @@ export function DatePicker({
                 </div>
             </PopoverTrigger>
             <PopoverContent
-                className="w-auto overflow-hidden p-3 flex flex-col gap-2"
+                className="z-[90] w-auto overflow-hidden p-3 flex flex-col gap-2"
                 align="center"
                 side="bottom"
-                sideOffset={-36}
+                sideOffset={8}
             >
                 <Calendar
                     mode="single"
                     captionLayout="dropdown"
                     className="rounded-md p-0"
-                    selected={current.toDate()}
+                    startMonth={dayjs().subtract(30, "year").startOf("year").toDate()}
+                    endMonth={dayjs().add(30, "year").endOf("year").toDate()}
+                    selected={current?.toDate()}
                     onSelect={(v) => {
                         if (v) {
-                            const x = new Date(v);
-                            if (fixedTime) {
-                                x.setHours(current.hour());
-                                x.setMinutes(current.minute());
+                            const next = dayjs(v);
+                            if (type === "date") {
+                                onChange?.(next.startOf("day").valueOf());
+                                setOpen(false);
+                                return;
                             }
-                            onChange?.(x.getTime());
+                            if (fixedTime && current) {
+                                next.hour(current.hour());
+                                next.minute(current.minute());
+                            }
+                            onChange?.(next.valueOf());
                         }
                     }}
                 />
-                <div className="flex justify-between items-center [--cell-size:--spacing(8)] px-2">
-                    <span className="text-sm">{t("time")}</span>
-                    <div className="flex gap-2 items-center">
-                        <NativeSelect
-                            value={current.format("HH")}
-                            options={Hours}
-                            onValueChange={(v) => {
-                                const newValue = current.hour(Number(v));
-                                onChange?.(newValue.unix() * 1000);
-                            }}
-                        />
-                        <span>:</span>
-                        <NativeSelect
-                            value={current.format("mm")}
-                            options={Minutes}
-                            onValueChange={(v) => {
-                                const newValue = current.minute(Number(v));
-                                onChange?.(newValue.unix() * 1000);
-                            }}
-                        />
+                {type !== "date" ? (
+                    <div className="flex justify-between items-center [--cell-size:--spacing(8)] px-2">
+                        <span className="text-sm">{t("time")}</span>
+                        <div className="flex gap-2 items-center">
+                            <NativeSelect
+                                value={timeBase.format("HH")}
+                                options={Hours}
+                                onValueChange={(v) => {
+                                    const newValue = timeBase.hour(Number(v));
+                                    onChange?.(newValue.valueOf());
+                                }}
+                            />
+                            <span>:</span>
+                            <NativeSelect
+                                value={timeBase.format("mm")}
+                                options={Minutes}
+                                onValueChange={(v) => {
+                                    const newValue = timeBase.minute(Number(v));
+                                    onChange?.(newValue.valueOf());
+                                }}
+                            />
+                        </div>
                     </div>
-                </div>
+                ) : null}
             </PopoverContent>
         </Popover>
     );

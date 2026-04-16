@@ -28,6 +28,7 @@ type WeddingStoreActions = {
     // 日期管理
     updateEngagementDate: (date: number) => Promise<void>;
     updateWeddingDate: (date: number) => Promise<void>;
+    updatePartnerName: (name: string) => Promise<void>;
 
     // 任务管理
     addTask: (task: Omit<WeddingTask, "id" | "createdAt">) => Promise<void>;
@@ -73,19 +74,35 @@ export const useWeddingStore = create<WeddingStore>()((set, get) => {
     const updateWeddingData = async (newData: WeddingData) => {
         const ledgerStore = useLedgerStore.getState();
 
-        // 使用现有的 updateGlobalMeta 方法更新 meta.wedding 字段
-        await ledgerStore.updateGlobalMeta((prevMeta) => {
-            return {
-                ...prevMeta,
-                wedding: newData,
-            };
-        });
+        try {
+            // 使用现有的 updateGlobalMeta 方法更新 meta.wedding 字段
+            await ledgerStore.updateGlobalMeta((prevMeta) => {
+                return {
+                    ...prevMeta,
+                    wedding: newData,
+                };
+            });
 
-        set(
-            produce((state: WeddingStore) => {
-                state.weddingData = newData;
-            }),
-        );
+            set(
+                produce((state: WeddingStore) => {
+                    state.weddingData = newData;
+                }),
+            );
+        } catch (error) {
+            // 如果是 AbortError，忽略它（通常是因为快速连续更新）
+            if (error instanceof Error && error.name === "AbortError") {
+                console.warn("Wedding data update aborted, will retry");
+                // 直接更新本地状态
+                set(
+                    produce((state: WeddingStore) => {
+                        state.weddingData = newData;
+                    }),
+                );
+            } else {
+                console.error("Failed to update wedding data:", error);
+                throw error;
+            }
+        }
     };
 
     const init = async () => {
@@ -159,6 +176,12 @@ export const useWeddingStore = create<WeddingStore>()((set, get) => {
             const prev = get().weddingData;
             if (!prev) return;
             await updateWeddingData({ ...prev, weddingDate: date });
+        },
+
+        updatePartnerName: async (name) => {
+            const prev = get().weddingData;
+            if (!prev) return;
+            await updateWeddingData({ ...prev, partnerName: name });
         },
 
         addTask: async (task) => {

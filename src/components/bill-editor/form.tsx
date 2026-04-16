@@ -58,7 +58,6 @@ export default function EditorForm({
     const isCreate = edit === undefined;
 
     const predictCategory = useMemo(() => {
-        // 只有新增账单时才展示预测
         if (!isCreate) {
             return;
         }
@@ -72,7 +71,6 @@ export default function EditorForm({
     }, [isCreate, allCategories]);
 
     const predictComments = useMemo(() => {
-        // 只有新增账单时才展示预测
         if (!isCreate) {
             return;
         }
@@ -112,8 +110,6 @@ export default function EditorForm({
     });
 
     const handleParentCategoryClick = (parentCategoryId: string) => {
-        // 点击父类时，如果此前选中的【是该父类的子类】，则直接选中该父类
-        // 否则选中该父类的 MatchDefault 类别
         setBillState((prev) => {
             const parentCategory = [...incomes, ...expenses].find(
                 (c) => c.id === parentCategoryId,
@@ -243,6 +239,7 @@ export default function EditorForm({
 
     const tagSelectorRef = useRef<HTMLDivElement>(null);
     useWheelScrollX(tagSelectorRef);
+    
     return (
         <Calculator.Root
             multiplyKey={multiplyKey}
@@ -274,13 +271,17 @@ export default function EditorForm({
             input={monitorFocused}
         >
             <PopupLayout
-                className="h-full gap-2 pb-0 scrollbar-hidden"
+                className="flex h-full flex-col overflow-hidden bg-[color:var(--wedding-app-bg)] pb-0"
                 onBack={goBack}
-                title={
-                    <div className="pl-[54px] w-full min-h-12 rounded-lg flex pt-2 pb-0 overflow-hidden scrollbar-hidden">
-                        <div className="text-white">
+                hideBack={false}
+            >
+                {/* 顶部金额输入区 */}
+                <div className="flex-shrink-0 px-4 pt-2 pb-3">
+                    <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-pink-500 to-purple-600 p-5 shadow-xl dark:from-pink-600 dark:to-purple-700">
+                        {/* 收支切换 */}
+                        <div className="mb-4 flex justify-center">
                             <Switch.Root
-                                className="w-24 h-12 relative bg-gradient-to-r from-pink-500 to-purple-500 dark:from-pink-600 dark:to-purple-600 rounded-lg p-1 flex justify-center items-center"
+                                className="relative flex h-12 w-48 items-center justify-center rounded-2xl bg-black/20 p-1.5 backdrop-blur-sm"
                                 checked={billState.type === "income"}
                                 onCheckedChange={() => {
                                     setBillState((v) => ({
@@ -296,16 +297,18 @@ export default function EditorForm({
                                     }));
                                 }}
                             >
-                                <Switch.Thumb className="w-1/2 h-full flex justify-center items-center transition-all rounded-lg bg-semantic-expense -translate-x-[22px] data-[state=checked]:bg-semantic-income data-[state=checked]:translate-x-[21px]">
-                                    <span className="text-[8px]">
+                                <Switch.Thumb className="flex h-full w-1/2 -translate-x-[90px] items-center justify-center rounded-xl bg-red-500 shadow-md transition-all data-[state=checked]:translate-x-[90px] data-[state=checked]:bg-green-500">
+                                    <span className="text-sm font-bold text-white">
                                         {billState.type === "expense"
-                                            ? t("expense")
-                                            : t("income")}
+                                            ? "💸 " + t("expense")
+                                            : "💰 " + t("income")}
                                     </span>
                                 </Switch.Thumb>
                             </Switch.Root>
                         </div>
-                        <div className="flex-1 flex backdrop-blur-lg bg-white/20 dark:bg-black/20 focus:outline rounded-lg ml-2 px-2 relative">
+
+                        {/* 金额输入 */}
+                        <div className="flex items-center justify-center gap-2">
                             {quickCurrencies.length > 0 && (
                                 <Select
                                     value={targetCurrency?.id}
@@ -313,21 +316,18 @@ export default function EditorForm({
                                         changeCurrency(newCurrencyId);
                                     }}
                                 >
-                                    <div className="flex items-center">
-                                        <SelectTrigger className="w-fit outline-none ring-none border-none shadow-none p-0 [&_svg]:hidden">
-                                            <div className="flex items-center font-semibold text-2xl text-white">
-                                                {targetCurrency?.symbol}
-                                            </div>
-                                        </SelectTrigger>
-                                    </div>
+                                    <SelectTrigger className="w-fit border-none bg-transparent p-0 shadow-none outline-none ring-none [&_svg]:hidden">
+                                        <div className="text-3xl font-bold text-white">
+                                            {targetCurrency?.symbol}
+                                        </div>
+                                    </SelectTrigger>
                                     <SelectContent>
                                         {quickCurrencies.map((currency) => (
                                             <SelectItem
                                                 key={currency.id}
                                                 value={currency.id}
                                             >
-                                                {currency.label}
-                                                {`(${currency.symbol})`}
+                                                {currency.label} ({currency.symbol})
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -336,255 +336,106 @@ export default function EditorForm({
                             <button
                                 ref={monitorRef}
                                 type="button"
-                                onFocus={() => {
-                                    setMonitorFocused(true);
-                                }}
-                                onBlur={() => {
-                                    setMonitorFocused(false);
-                                }}
-                                className="flex-1 flex flex-col justify-center items-end overflow-x-scroll outline-none"
+                                onFocus={() => setMonitorFocused(true)}
+                                onBlur={() => setMonitorFocused(false)}
+                                className="flex-1 text-center outline-none"
                             >
-                                {billState.currency && (
-                                    <div className="absolute text-white text-[8px] top-0">
-                                        ≈ {baseCurrency.symbol}{" "}
-                                        {amountToNumber(billState.amount)}{" "}
-                                        {baseCurrency.label}
-                                    </div>
-                                )}
                                 <Calculator.Value
                                     className={cn(
-                                        "text-white text-3xl font-semibold text-right bg-transparent after:inline-block after:content-['|'] after:opacity-0 after:font-thin after:translate-y-[-3px] ",
-                                        monitorFocused &&
-                                            "after:animate-caret-blink",
+                                        "text-5xl font-black text-white after:inline-block after:translate-y-[-6px] after:font-thin after:opacity-0 after:content-['|']",
+                                        monitorFocused && "after:animate-caret-blink",
                                     )}
-                                ></Calculator.Value>
-                                {billState.amount < 0 && (
-                                    <div className="absolute text-red-700 text-[8px] bottom-0">
-                                        {t("bill-negative-tip")}
-                                    </div>
-                                )}
+                                />
                             </button>
                         </div>
+
+                        {/* 汇率提示 */}
+                        {billState.currency && (
+                            <div className="mt-3 text-center text-sm text-white/80">
+                                ≈ {baseCurrency.symbol} {amountToNumber(billState.amount)} {baseCurrency.label}
+                            </div>
+                        )}
+                        {billState.amount < 0 && (
+                            <div className="mt-2 text-center text-xs text-red-200">
+                                {t("bill-negative-tip")}
+                            </div>
+                        )}
                     </div>
-                }
-            >
-                {/* categories */}
-                <div className="flex-1 flex-shrink-0 overflow-y-auto min-h-[80px] scrollbar-hidden flex flex-col px-2 text-sm font-medium gap-2">
-                    <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl p-2 m-1 flex flex-col min-h-[80px] grow-[2] shrink overflow-y-auto scrollbar-hidden w-full">
-                        <div
-                            className={cn(
-                                "grid gap-1",
-                                categoriesGridClassName(categories),
-                            )}
-                        >
+                </div>
+
+                {/* 中间内容区 - 可滚动 */}
+                <div className="flex-1 overflow-y-auto px-4 pb-2 scrollbar-hidden">
+                    {/* 分类选择卡片 */}
+                    <div className="mb-3 rounded-2xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4 shadow-sm">
+                        <div className="mb-3 flex items-center justify-between">
+                            <h3 className="text-sm font-semibold text-[color:var(--wedding-text)]">
+                                📂 选择分类
+                            </h3>
+                            <button
+                                type="button"
+                                className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-purple-600 transition-colors hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-950/30"
+                                onClick={() => showCategoryList(billState.type)}
+                            >
+                                <i className="icon-[mdi--cog-outline] size-3.5" />
+                                管理
+                            </button>
+                        </div>
+                        <div className={cn("grid gap-2", categoriesGridClassName(categories))}>
                             {categories.map((item) => (
                                 <CategoryItem
                                     key={item.id}
                                     category={item}
                                     selected={billState.categoryId === item.id}
-                                    onMouseDown={() => {
-                                        handleParentCategoryClick(item.id);
-                                    }}
+                                    onMouseDown={() => handleParentCategoryClick(item.id)}
                                 />
                             ))}
-                            <button
-                                type="button"
-                                className={cn(
-                                    `rounded-lg border flex-1 py-1 px-2 h-8 flex gap-2 items-center justify-center whitespace-nowrap cursor-pointer`,
-                                )}
-                                onClick={() => {
-                                    showCategoryList(billState.type);
-                                }}
-                            >
-                                <i className="icon-[mdi--settings]"></i>
-                                {t("edit")}
-                            </button>
                         </div>
                     </div>
-                    {(subCategories?.length ?? 0) > 0 && (
-                        <div className="backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl border p-2 shadow scrollbar-hidden flex flex-col min-h-[68px] grow-[1] shrink max-h-fit overflow-y-auto">
-                            <div
-                                className={cn(
-                                    "grid gap-1",
-                                    categoriesGridClassName(subCategories),
-                                )}
-                            >
-                                {subCategories?.map((subCategory) => {
-                                    return (
-                                        <CategoryItem
-                                            key={subCategory.id}
-                                            category={subCategory}
-                                            selected={
-                                                billState.categoryId ===
-                                                subCategory.id
-                                            }
-                                            onMouseDown={() => {
-                                                setBillState((v) => ({
-                                                    ...v,
-                                                    categoryId: subCategory.id,
-                                                }));
-                                            }}
-                                        />
-                                    );
-                                })}
-                            </div>
-                        </div>
-                    )}
-                </div>
-                {/* tags */}
-                <div
-                    ref={tagSelectorRef}
-                    className="w-full h-[40px] flex-shrink-0 flex-grow-0 backdrop-blur-lg bg-white/70 dark:bg-stone-900/70 rounded-xl flex gap-1 py-1 items-center overflow-x-auto px-2 text-sm font-medium scrollbar-hidden"
-                >
-                    <TagGroupSelector
-                        isCreate={isCreate}
-                        selectedTags={billState.tagIds}
-                        onSelectChange={(newTagIds, extra) => {
-                            setBillState((prev) => ({
-                                ...prev,
-                                tagIds: newTagIds,
-                            }));
-                            if (extra?.preferCurrency) {
-                                changeCurrency(extra.preferCurrency);
-                            }
-                        }}
-                    />
-                    <button
-                        type="button"
-                        className={cn(
-                            `rounded-lg border py-1 px-2 h-8 flex gap-2 items-center justify-center whitespace-nowrap cursor-pointer hover:bg-pink-100 dark:hover:bg-pink-900/30`,
-                        )}
-                        onClick={() => {
-                            showTagList();
-                        }}
-                    >
-                        <i className="icon-[mdi--tag-text-outline]"></i>
-                        {t("edit-tags")}
-                    </button>
-                </div>
 
-                {/* keyboard area */}
-                <div
-                    className={cn(
-                        "h-[calc(480px+160px*(var(--bekh,0.5)-0.5))] sm:h-[calc(380px+160px*(var(--bekh,0.5)-0.5))] min-h-[264px] max-h-[calc(100%-124px)]",
-                        "keyboard-field relative flex gap-2 flex-col justify-start bg-gradient-to-br from-pink-600 to-purple-600 dark:from-pink-700 dark:to-purple-700 sm:rounded-b-md text-[white] p-2 pb-[max(env(safe-area-inset-bottom),8px)]",
-                    )}
-                >
-                    <ResizeHandle />
-                    <div className="flex justify-between items-center">
-                        <div className="flex gap-2 items-center h-10">
-                            <div className="flex items-center h-full">
-                                {(billState.images?.length ?? 0) > 0 && (
-                                    <div className="pr-2 flex gap-[6px] items-center overflow-x-auto max-w-22 h-full scrollbar-hidden">
-                                        {billState.images?.map((img, index) => (
-                                            <Deletable
-                                                // biome-ignore lint/suspicious/noArrayIndexKey: <explanation>
-                                                key={index}
-                                                onDelete={() => {
-                                                    setBillState((v) => ({
-                                                        ...v,
-                                                        images: v.images?.filter(
-                                                            (m) => m !== img,
-                                                        ),
-                                                    }));
-                                                }}
-                                            >
-                                                <SmartImage
-                                                    source={img}
-                                                    alt=""
-                                                    className="w-6 h-6 object-cover rounded"
-                                                />
-                                            </Deletable>
-                                        ))}
-                                    </div>
-                                )}
-                                {(billState.images?.length ?? 0) < 3 && (
-                                    <button
-                                        type="button"
-                                        className="px-1 flex justify-center items-center rounded-full transition-all cursor-pointer"
-                                        onClick={chooseImage}
-                                    >
-                                        <i className="icon-xs icon-[mdi--image-plus-outline] text-[white]"></i>
-                                    </button>
-                                )}
-                            </div>
-                            <div className="h-full flex items-center">
-                                {billState?.location ? (
-                                    <Deletable
-                                        onDelete={() => {
-                                            setBillState((prev) => {
-                                                return {
-                                                    ...prev,
-                                                    location: undefined,
-                                                };
-                                            });
+                    {/* 子分类卡片 */}
+                    {(subCategories?.length ?? 0) > 0 && (
+                        <div className="mb-3 rounded-2xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4 shadow-sm">
+                            <h3 className="mb-3 text-sm font-semibold text-[color:var(--wedding-text)]">
+                                🏷️ 子分类
+                            </h3>
+                            <div className={cn("grid gap-2", categoriesGridClassName(subCategories))}>
+                                {subCategories?.map((subCategory) => (
+                                    <CategoryItem
+                                        key={subCategory.id}
+                                        category={subCategory}
+                                        selected={billState.categoryId === subCategory.id}
+                                        onMouseDown={() => {
+                                            setBillState((v) => ({
+                                                ...v,
+                                                categoryId: subCategory.id,
+                                            }));
                                         }}
-                                    >
-                                        <i className="w-5 icon-[mdi--location-radius]"></i>
-                                    </Deletable>
-                                ) : (
-                                    <CurrentLocation
-                                        ref={locationRef}
-                                        className="px-1 flex items-center justify-center"
-                                        onValueChange={(v) => {
-                                            setBillState((prev) => {
-                                                return { ...prev, location: v };
-                                            });
-                                        }}
-                                    >
-                                        <i className="icon-[mdi--add-location]" />
-                                    </CurrentLocation>
-                                )}
-                            </div>
-                            <div className="rounded-full transition-all hover:(bg-stone-700) active:(bg-stone-500)">
-                                <DatePicker
-                                    fixedTime
-                                    value={billState.time}
-                                    onChange={(time) => {
-                                        setBillState((prev) => {
-                                            if (!prev.currency) {
-                                                return {
-                                                    ...prev,
-                                                    time: time,
-                                                };
-                                            }
-                                            const { predict } = convert(
-                                                amountToNumber(
-                                                    prev.currency?.amount ??
-                                                        prev.amount,
-                                                ),
-                                                prev.currency.target,
-                                                baseCurrency.id,
-                                                time,
-                                            );
-                                            return {
-                                                ...prev,
-                                                time: time,
-                                                amount: numberToAmount(predict),
-                                                currency: {
-                                                    base: baseCurrency.id,
-                                                    target: prev.currency
-                                                        .target,
-                                                    amount:
-                                                        prev.currency?.amount ??
-                                                        prev.amount,
-                                                },
-                                            };
-                                        });
-                                    }}
-                                />
+                                    />
+                                ))}
                             </div>
                         </div>
-                        <RemarkHint
-                            recommends={predictComments}
-                            onSelect={(v) => {
-                                setBillState((prev) => ({
-                                    ...prev,
-                                    comment: `${prev.comment} ${v}`,
-                                }));
-                            }}
-                        >
-                            <div className="flex h-full flex-1">
+                    )}
+
+                    {/* 详细信息卡片 */}
+                    <div className="mb-3 rounded-2xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4 shadow-sm">
+                        <h3 className="mb-3 text-sm font-semibold text-[color:var(--wedding-text)]">
+                            📝 详细信息
+                        </h3>
+
+                        {/* 备注输入 */}
+                        <div className="mb-3">
+                            <label className="mb-1.5 block text-xs text-[color:var(--wedding-text-mute)]">
+                                备注说明
+                            </label>
+                            <RemarkHint
+                                recommends={predictComments}
+                                onSelect={(v) => {
+                                    setBillState((prev) => ({
+                                        ...prev,
+                                        comment: `${prev.comment} ${v}`,
+                                    }));
+                                }}
+                            >
                                 <IOSUnscrolledInput
                                     value={billState.comment}
                                     onChange={(e) => {
@@ -594,23 +445,161 @@ export default function EditorForm({
                                         }));
                                     }}
                                     type="text"
-                                    className="w-full bg-transparent text-white text-right placeholder-opacity-50 outline-none"
-                                    placeholder={t("comment")}
+                                    className="w-full rounded-xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-3 py-2.5 text-sm text-[color:var(--wedding-text)] outline-none placeholder:text-[color:var(--wedding-text-mute)]"
+                                    placeholder="添加备注..."
                                     enterKeyHint="done"
                                 />
+                            </RemarkHint>
+                        </div>
+
+                        {/* 时间、位置、图片 */}
+                        <div className="flex flex-wrap gap-2">
+                            {/* 时间选择 */}
+                            <div className="flex items-center gap-2 rounded-xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-3 py-2">
+                                <i className="icon-[mdi--clock-outline] size-4 text-blue-500" />
+                                <DatePicker
+                                    fixedTime
+                                    value={billState.time}
+                                    onChange={(time) => {
+                                        setBillState((prev) => {
+                                            if (!prev.currency) {
+                                                return { ...prev, time };
+                                            }
+                                            const { predict } = convert(
+                                                amountToNumber(prev.currency?.amount ?? prev.amount),
+                                                prev.currency.target,
+                                                baseCurrency.id,
+                                                time,
+                                            );
+                                            return {
+                                                ...prev,
+                                                time,
+                                                amount: numberToAmount(predict),
+                                                currency: {
+                                                    base: baseCurrency.id,
+                                                    target: prev.currency.target,
+                                                    amount: prev.currency?.amount ?? prev.amount,
+                                                },
+                                            };
+                                        });
+                                    }}
+                                />
                             </div>
-                        </RemarkHint>
+
+                            {/* 位置 */}
+                            {billState?.location ? (
+                                <Deletable
+                                    onDelete={() => {
+                                        setBillState((prev) => ({
+                                            ...prev,
+                                            location: undefined,
+                                        }));
+                                    }}
+                                >
+                                    <div className="flex items-center gap-2 rounded-xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-3 py-2">
+                                        <i className="icon-[mdi--map-marker] size-4 text-green-500" />
+                                        <span className="text-sm text-[color:var(--wedding-text)]">已定位</span>
+                                    </div>
+                                </Deletable>
+                            ) : (
+                                <CurrentLocation
+                                    ref={locationRef}
+                                    className="flex items-center gap-2 rounded-xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-3 py-2 transition-colors hover:bg-[color:var(--wedding-surface)]"
+                                    onValueChange={(v) => {
+                                        setBillState((prev) => ({ ...prev, location: v }));
+                                    }}
+                                >
+                                    <i className="icon-[mdi--map-marker-plus-outline] size-4 text-green-500" />
+                                    <span className="text-sm text-[color:var(--wedding-text)]">添加位置</span>
+                                </CurrentLocation>
+                            )}
+
+                            {/* 图片 */}
+                            {(billState.images?.length ?? 0) > 0 && (
+                                <div className="flex gap-2">
+                                    {billState.images?.map((img, index) => (
+                                        <Deletable
+                                            key={index}
+                                            onDelete={() => {
+                                                setBillState((v) => ({
+                                                    ...v,
+                                                    images: v.images?.filter((m) => m !== img),
+                                                }));
+                                            }}
+                                        >
+                                            <SmartImage
+                                                source={img}
+                                                alt=""
+                                                className="h-12 w-12 rounded-xl border border-[color:var(--wedding-line)] object-cover"
+                                            />
+                                        </Deletable>
+                                    ))}
+                                </div>
+                            )}
+                            {(billState.images?.length ?? 0) < 3 && (
+                                <button
+                                    type="button"
+                                    className="flex items-center gap-2 rounded-xl border border-dashed border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-3 py-2 transition-colors hover:bg-[color:var(--wedding-surface)]"
+                                    onClick={chooseImage}
+                                >
+                                    <i className="icon-[mdi--image-plus-outline] size-4 text-purple-500" />
+                                    <span className="text-sm text-[color:var(--wedding-text)]">添加图片</span>
+                                </button>
+                            )}
+                        </div>
                     </div>
 
+                    {/* 标签卡片 */}
+                    <div className="mb-3 rounded-2xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4 shadow-sm">
+                        <div className="mb-3 flex items-center justify-between">
+                            <h3 className="text-sm font-semibold text-[color:var(--wedding-text)]">
+                                🏷️ 标签
+                            </h3>
+                            <button
+                                type="button"
+                                className="flex items-center gap-1 rounded-lg px-2 py-1 text-xs text-pink-600 transition-colors hover:bg-pink-50 dark:text-pink-400 dark:hover:bg-pink-950/30"
+                                onClick={() => showTagList()}
+                            >
+                                <i className="icon-[mdi--tag-outline] size-3.5" />
+                                管理
+                            </button>
+                        </div>
+                        <div ref={tagSelectorRef} className="flex flex-wrap gap-2 overflow-x-auto scrollbar-hidden">
+                            <TagGroupSelector
+                                isCreate={isCreate}
+                                selectedTags={billState.tagIds}
+                                onSelectChange={(newTagIds, extra) => {
+                                    setBillState((prev) => ({
+                                        ...prev,
+                                        tagIds: newTagIds,
+                                    }));
+                                    if (extra?.preferCurrency) {
+                                        changeCurrency(extra.preferCurrency);
+                                    }
+                                }}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                {/* 底部键盘区 - 固定 */}
+                <div
+                    className={cn(
+                        "keyboard-field relative flex flex-shrink-0 flex-col gap-3 bg-gradient-to-br from-pink-600 to-purple-600 p-3 pb-[max(env(safe-area-inset-bottom),12px)] text-white dark:from-pink-700 dark:to-purple-700 sm:rounded-b-2xl",
+                        "h-[calc(360px+120px*(var(--bekh,0.5)-0.5))] min-h-[280px] max-h-[420px]",
+                    )}
+                >
+                    <ResizeHandle />
                     <button
                         type="button"
-                        className="flex h-[80px] min-h-[48px] justify-center items-center bg-gradient-to-r from-pink-400 to-purple-500 dark:from-pink-500 dark:to-purple-600 rounded-xl shadow-lg font-bold text-lg cursor-pointer"
+                        className="flex h-14 items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-pink-400 to-purple-500 text-lg font-bold shadow-lg transition-all hover:scale-[1.02] active:scale-[0.98] dark:from-pink-500 dark:to-purple-600"
                         onClick={toConfirm}
                     >
-                        <i className="icon-[mdi--check] icon-md"></i>
+                        <i className="icon-[mdi--check-circle] size-6" />
+                        确认记账
                     </button>
                     <Calculator.Keyboard
-                        className={cn("flex-1")}
+                        className="flex-1"
                         onKey={(v) => {
                             if (v === "r") {
                                 toConfirm();

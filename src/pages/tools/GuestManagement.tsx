@@ -1,15 +1,9 @@
 import { useMemo, useState } from "react";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogOverlay,
-    DialogPortal,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { GuestFormDialog } from "@/components/features/guests/guest-form-dialog";
+import { EmptyState, FloatingActionButton } from "@/components/shared";
+import { Badge } from "@/components/ui/badge";
 import { WeddingPageShell, WeddingTopBar } from "@/components/wedding-ui";
 import { useWeddingStore } from "@/store/wedding";
-import { GuestForm } from "@/wedding/components";
 import {
     getGroupLabel,
     getGuestRelationLabel,
@@ -144,14 +138,17 @@ export default function GuestManagement() {
 
             <section className="space-y-2.5">
                 {filtered.length === 0 ? (
-                    <div className="rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] px-5 py-10 text-center">
-                        <div className="text-lg font-semibold text-[color:var(--wedding-text)]">
-                            还没有亲友记录
-                        </div>
-                        <div className="mt-2 text-sm wedding-muted">
-                            添加亲友后，这里会展示所属关系、邀请状态和联系方式。
-                        </div>
-                    </div>
+                    <EmptyState
+                        title="还没有亲友记录"
+                        description="添加亲友后，这里会展示所属关系、邀请状态和联系方式。"
+                        action={{
+                            label: "添加亲友",
+                            onClick: () => {
+                                setEditingGuest(undefined);
+                                setShowForm(true);
+                            },
+                        }}
+                    />
                 ) : (
                     filtered.map((guest) => {
                         const statusStyle = STATUS_STYLE[guest.inviteStatus];
@@ -182,8 +179,8 @@ export default function GuestManagement() {
                                                         · 1位
                                                     </span>
                                                 </div>
-                                                <span
-                                                    className="inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium"
+                                                <Badge
+                                                    className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium"
                                                     style={{
                                                         background: statusStyle.bg,
                                                         color: statusStyle.color,
@@ -195,7 +192,7 @@ export default function GuestManagement() {
                                                     {getInviteStatusLabel(
                                                         guest.inviteStatus,
                                                     )}
-                                                </span>
+                                                </Badge>
                                             </div>
                                             <div className="mt-1.5 flex items-center gap-1.5">
                                                 <span className="rounded-full bg-pink-50 px-2 py-0.5 text-[10px] font-medium text-pink-500 dark:bg-pink-500/12">
@@ -235,38 +232,27 @@ export default function GuestManagement() {
                 )}
             </section>
 
-            <button
-                type="button"
+            <FloatingActionButton
                 onClick={() => {
                     setEditingGuest(undefined);
                     setShowForm(true);
                 }}
-                className="fixed bottom-[calc(var(--mobile-bottombar-height)+1.25rem+env(safe-area-inset-bottom))] right-6 z-10 flex h-14 w-14 items-center justify-center rounded-full bg-[#3B82F6] text-white shadow-[0_16px_28px_-16px_rgba(59,130,246,0.85)] sm:bottom-8"
+                className="bg-[#3B82F6] text-white"
                 aria-label="新增亲友"
             >
                 <i className="icon-[mdi--plus] size-6" />
-            </button>
+            </FloatingActionButton>
 
-            <Dialog open={showForm} onOpenChange={setShowForm}>
-                <DialogPortal>
-                    <DialogOverlay className="fixed inset-0 z-[80] bg-[rgba(15,12,18,0.56)]" />
-                    <div className="fixed inset-0 z-[81] flex items-end justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:items-center sm:px-4 sm:py-6">
-                        <DialogContent className="z-[82] flex max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] w-full max-w-[560px] flex-col overflow-hidden rounded-[30px] border border-[#edd6df] bg-[#fffdfd] shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)] dark:border-[#302631] dark:bg-[#181419] sm:max-h-[min(84vh,760px)]">
-                            <DialogHeader className="border-b border-[color:var(--wedding-line)] px-5 pb-4 pt-5">
-                                <DialogTitle className="wedding-topbar-title pl-1 text-[24px] text-[color:var(--wedding-text)]">
-                                    {editingGuest ? "编辑亲友" : "添加亲友"}
-                                </DialogTitle>
-                            </DialogHeader>
-                            <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-4">
-                                <GuestForm
-                                    editGuest={editingGuest}
-                                    onClose={() => setShowForm(false)}
-                                />
-                            </div>
-                        </DialogContent>
-                    </div>
-                </DialogPortal>
-            </Dialog>
+            <GuestFormDialog
+                open={showForm}
+                onOpenChange={(open) => {
+                    setShowForm(open);
+                    if (!open) {
+                        setEditingGuest(undefined);
+                    }
+                }}
+                editGuest={editingGuest}
+            />
         </WeddingPageShell>
     );
 }

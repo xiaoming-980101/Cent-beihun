@@ -28,7 +28,7 @@ export class Scheduler {
             this.timer = null;
         }
 
-        if (this.currentController) {
+        if (this.currentController && !this.currentController.signal.aborted) {
             try {
                 this.currentController.abort();
             } catch {

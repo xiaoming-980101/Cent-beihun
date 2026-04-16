@@ -1,7 +1,0 @@
-{
-  "tool_name": "Bash",
-  "tool_input_preview": "{\"command\":\"git rm -r --cached .omc/ && git status\",\"description\":\"从 git 移除 .omc 目录\"}",
-  "error": "Exit code 1\nerror: the following file has staged content different from both the\nfile and the HEAD:\n    .omc/state/last-tool-error.json\n(use -f to force removal)",
-  "timestamp": "2026-04-16T00:42:50.621Z",
-  "retry_count": 1
-}

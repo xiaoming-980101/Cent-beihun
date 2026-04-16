@@ -1,25 +1,54 @@
 const plugin = require("tailwindcss/plugin");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+    // Configure dark mode to use 'class' strategy
+    // Requirements: 1.1, 1.2, 16.4
     darkMode: "class",
     content: ["./src/**/*.{js,ts,jsx,tsx}", "!./docs/**/*"],
     theme: {
         extend: {
-            // Semantic color tokens (mapped to CSS variables).
-            // Use classes like `bg-semantic-expense`, `text-semantic-income-medium`.
+            // Design System Colors - 设计系统颜色
+            // Maps CSS variables to Tailwind color tokens
+            // Requirements: 1.1, 1.2
             colors: {
+                // Background colors - 背景色
+                background: "var(--color-background)",
+                card: {
+                    DEFAULT: "var(--color-card-bg)",
+                },
+                // Text colors - 文字颜色
+                text: {
+                    primary: "var(--color-text-primary)",
+                    secondary: "var(--color-text-secondary)",
+                    tertiary: "var(--color-text-tertiary)",
+                },
+                // Brand colors - Purple - 主色调紫色系
+                primary: {
+                    DEFAULT: "var(--color-primary)",
+                    hover: "var(--color-primary-hover)",
+                    light: "var(--color-primary-light)",
+                    lighter: "var(--color-primary-lighter)",
+                },
+                // Brand colors - Blue - 蓝色系
+                secondary: {
+                    DEFAULT: "var(--color-secondary)",
+                    light: "var(--color-secondary-light)",
+                },
+                // Border colors - 边框颜色
+                border: {
+                    DEFAULT: "var(--color-border)",
+                    light: "var(--color-border-light)",
+                },
+                // Legacy semantic color tokens (kept for backward compatibility)
                 semantic: {
-                    // strong / primary usage for expense/income
                     expense: "var(--color-expense)",
-                    // '-medium' mappings point to legacy aliases so we can
-                    // change component usages without altering visual colors.
                     "expense-medium": "var(--color-expense-medium-legacy)",
                     "expense-muted": "var(--color-expense-400)",
                     income: "var(--color-income)",
                     "income-medium": "var(--color-income-medium-legacy)",
                     "income-muted": "var(--color-income-400)",
                 },
-                // Wedding theme colors
+                // Wedding theme colors (kept for backward compatibility)
                 wedding: {
                     pink: "var(--wedding-pink)",
                     "pink-light": "var(--wedding-pink-light)",
@@ -31,6 +60,44 @@ module.exports = {
                 error: "var(--color-error)",
                 warning: "var(--color-warning)",
                 info: "var(--color-info)",
+            },
+            // Font families - 字体族
+            // Requirements: 1.3
+            fontFamily: {
+                sans: ["var(--font-primary)"],
+                inter: ["var(--font-secondary)"],
+            },
+            // Font sizes - 字号
+            // Requirements: 1.3
+            fontSize: {
+                h1: "var(--text-h1)",
+                h2: "var(--text-h2)",
+                h3: "var(--text-h3)",
+                body: "var(--text-body)",
+                caption: "var(--text-caption)",
+                tiny: "var(--text-tiny)",
+            },
+            // Spacing - 间距
+            // Requirements: 1.4
+            spacing: {
+                nav: "var(--nav-height)",
+                "bottom-nav": "var(--bottom-nav-height)",
+            },
+            // Border radius - 圆角
+            // Requirements: 1.5
+            borderRadius: {
+                card: "var(--radius-card)",
+                icon: "var(--radius-icon-background)",
+            },
+            // Box shadow - 阴影
+            // Requirements: 1.1
+            boxShadow: {
+                card: "var(--shadow-card)",
+            },
+            // Transition duration - 过渡时长
+            // Requirements: 13.4
+            transitionDuration: {
+                theme: "200ms",
             },
             // Gradient backgrounds
             backgroundImage: {

@@ -1,0 +1,73 @@
+/**
+ * Color Design Tokens
+ * 颜色设计令牌
+ * 
+ * 定义浅色和深色模式的颜色变量
+ * Requirements: 1.1, 1.2
+ */
+
+:root {
+  /* ========== Light Mode Colors ========== */
+  
+  /* Background Colors - 背景色 */
+  --color-background: #f9f9f9;
+  --color-card-bg: #ffffff;
+  
+  /* Text Colors - 文字颜色 */
+  --color-text-primary: #1f2937;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #544249;
+  
+  /* Brand Colors - Purple - 主色调紫色系 */
+  --color-primary: #9333ea;
+  --color-primary-hover: #a855f7;
+  --color-primary-light: #f3e8ff;
+  --color-primary-lighter: #faf5ff;
+  
+  /* Brand Colors - Blue - 蓝色系 */
+  --color-secondary: #2563eb;
+  --color-secondary-light: #dbeafe;
+  
+  /* Border Colors - 边框颜色 */
+  --color-border: #fdf2f8;
+  --color-border-light: #f3f4f6;
+  
+  /* Shadow - 阴影 */
+  --shadow-card: 0 4px 20px -2px rgba(244, 114, 182, 0.1);
+}
+
+.dark {
+  /* ========== Dark Mode Colors ========== */
+  
+  /* Background Colors - 背景色 */
+  --color-background: #0c0e0e;
+  --color-card-bg: #121414;
+  --color-background-alt-1: #0b0e0e;
+  --color-background-alt-2: #0a0a0a;
+  --color-background-alt-3: #09090b;
+  --color-background-alt-4: #030712;
+  --color-background-alt-5: #121212;
+  
+  /* Text Colors - 文字颜色 */
+  --color-text-primary: #f9fafb;
+  --color-text-secondary: #9ca3af;
+  --color-text-tertiary: #d1d5db;
+  
+  /* Brand Colors - Purple - 主色调紫色系 */
+  --color-primary: #a855f7;
+  --color-primary-hover: #9333ea;
+  --color-primary-light: #581c87;
+  --color-primary-lighter: #3b0764;
+  
+  /* Brand Colors - Blue - 蓝色系 */
+  --color-secondary: #3b82f6;
+  --color-secondary-light: #1e3a8a;
+  
+  /* Border Colors - 边框颜色 */
+  --color-border: #ffffff;
+  --color-border-light: #27272a;
+  --color-border-alt: #3f3f46;
+  
+  /* Shadow - 阴影 */
+  --shadow-card: 0 4px 20px -2px rgba(0, 0, 0, 0.3);
+}

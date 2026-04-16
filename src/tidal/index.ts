@@ -442,7 +442,23 @@ export const createTidal = <Item extends BaseItem>({
     const sync = () => {
         const ac = new AbortController();
         const p = syncImmediate(ac.signal);
-        const cancel = () => ac.abort();
+        const cancel = () => {
+            if (ac.signal.aborted) {
+                return;
+            }
+            try {
+                ac.abort();
+            } catch (error) {
+                if (
+                    !(
+                        error instanceof DOMException &&
+                        error.name === "AbortError"
+                    )
+                ) {
+                    throw error;
+                }
+            }
+        };
         return [p, cancel] as const;
     };
 

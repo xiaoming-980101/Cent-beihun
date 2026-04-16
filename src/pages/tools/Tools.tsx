@@ -1,38 +1,35 @@
 import { useNavigate } from "react-router";
 import { useShallow } from "zustand/shallow";
+import { FeatureCard, ThemeToggle } from "@/components/shared";
 import { WeddingPageShell, WeddingTopBar } from "@/components/wedding-ui";
 import { useBookStore } from "@/store/book";
 import { useWeddingStore } from "@/store/wedding";
+import { Gift, Users, Wallet } from "lucide-react";
 
 const MAIN_TOOLS = [
     {
         key: "gift-book",
         label: "礼金簿",
         desc: "人情往来台账",
-        icon: "🎁",
-        color: "#F472B6",
-        bg: "from-[#fff0f7] to-[#fde7f3] dark:from-[#3d1a2e] dark:to-[#2a1020]",
-        border: "border-pink-200 dark:border-pink-900/70",
+        icon: <Gift className="h-6 w-6 text-purple-600 dark:text-purple-300" />,
+        iconVariant: "purple" as const,
+        badge: "Essential",
         path: "/tools/gift-book",
     },
     {
         key: "guests",
         label: "亲友管理",
         desc: "宾客名单与邀请",
-        icon: "👥",
-        color: "#3B82F6",
-        bg: "from-[#f0f7ff] to-[#eff6ff] dark:from-[#0f2b4a] dark:to-[#091e35]",
-        border: "border-blue-200 dark:border-blue-900/70",
+        icon: <Users className="h-6 w-6 text-blue-600 dark:text-blue-300" />,
+        iconVariant: "blue" as const,
         path: "/tools/guests",
     },
     {
         key: "wedding-budget",
         label: "婚礼预算",
         desc: "花销与付款管理",
-        icon: "💜",
-        color: "#A855F7",
-        bg: "from-[#f5f0ff] to-[#f3e8ff] dark:from-[#2d1a45] dark:to-[#1e102d]",
-        border: "border-purple-200 dark:border-purple-900/70",
+        icon: <Wallet className="h-6 w-6 text-green-600 dark:text-green-300" />,
+        iconVariant: "green" as const,
         path: "/tools/wedding-budget",
     },
 ];
@@ -118,7 +115,12 @@ export default function Tools() {
 
     return (
         <WeddingPageShell>
-            <WeddingTopBar title="Cent" subtitle={`${bookLabel}常用工具`} />
+            <WeddingTopBar
+                title="Cent"
+                subtitle={`${bookLabel}常用工具`}
+                backTo="/"
+                rightSlot={<ThemeToggle />}
+            />
 
             <section className="px-1 pb-1 pt-1">
                 <h1 className="wedding-topbar-title text-[20px] font-bold text-[color:var(--wedding-text)]">
@@ -159,35 +161,15 @@ export default function Tools() {
 
             <section className="grid gap-3">
                 {MAIN_TOOLS.map((tool) => (
-                    <button
+                    <FeatureCard
                         key={tool.key}
-                        type="button"
-                        onClick={() => navigate(tool.path)}
-                        className={`w-full rounded-[24px] border bg-gradient-to-br p-4 text-left shadow-[0_18px_30px_-24px_rgba(15,23,42,0.22)] transition-transform hover:-translate-y-0.5 ${tool.bg} ${tool.border}`}
-                    >
-                        <div className="flex items-start justify-between gap-4">
-                            <div className="flex items-center gap-3">
-                                <div
-                                    className="flex h-12 w-12 items-center justify-center rounded-[18px] border border-white/40 bg-white/45 text-[22px] dark:bg-white/10"
-                                    style={{ color: tool.color }}
-                                >
-                                    {tool.icon}
-                                </div>
-                                <div>
-                                    <div className="text-[16px] font-semibold text-[color:var(--wedding-text)]">
-                                        {tool.label}
-                                    </div>
-                                    <div className="mt-1 text-[12px] wedding-muted">
-                                        {tool.desc}
-                                    </div>
-                                </div>
-                            </div>
-                            <i className="icon-[mdi--chevron-right] mt-1 size-5 text-[color:var(--wedding-text-mute)]" />
-                        </div>
-                        <div className="mt-3 rounded-2xl bg-white/65 px-3 py-2 text-[11px] font-medium text-[color:var(--wedding-text-soft)] dark:bg-black/15">
-                            {subMap[tool.key as keyof typeof subMap]}
-                        </div>
-                    </button>
+                        icon={tool.icon}
+                        iconVariant={tool.iconVariant}
+                        title={tool.label}
+                        description={`${tool.desc} · ${subMap[tool.key as keyof typeof subMap]}`}
+                        badge={tool.badge}
+                        onAction={() => navigate(tool.path)}
+                    />
                 ))}
             </section>
 

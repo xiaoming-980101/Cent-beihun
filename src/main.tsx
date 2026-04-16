@@ -6,10 +6,12 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 
 import Login from "./components/login";
+import { ErrorBoundary, OfflineBanner } from "./components/shared";
 import { initIntl, LocaleProvider } from "./locale/index";
 import { usePreferenceStore } from "./store/preference";
 import { register as registerLaunchQueue } from "./utils/launch-queue";
 import { lazyWithReload } from "./utils/lazy";
+import { ThemeProvider } from "@/lib/theme/theme-provider";
 
 const Rooot = lazyWithReload(() => import("./route"));
 
@@ -27,12 +29,17 @@ initIntl(lang).then(() => {
 
     createRoot(rootElement).render(
         <StrictMode>
-            <LocaleProvider>
-                <Suspense>
-                    <Rooot />
-                </Suspense>
-                <Login />
-            </LocaleProvider>
+            <ThemeProvider defaultTheme="system" storageKey="wedding-app-theme">
+                <LocaleProvider>
+                    <ErrorBoundary>
+                        <OfflineBanner />
+                        <Suspense>
+                            <Rooot />
+                        </Suspense>
+                    </ErrorBoundary>
+                    <Login />
+                </LocaleProvider>
+            </ThemeProvider>
         </StrictMode>,
     );
 });

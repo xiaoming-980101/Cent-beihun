@@ -17,13 +17,14 @@ import modal from "@/components/modal";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
-    WeddingEmptyState,
     WeddingPageShell,
     WeddingTopBar,
 } from "@/components/wedding-ui";
+import { EmptyState } from "@/components/shared";
 import useCategory from "@/hooks/use-category";
 import { useCurrency } from "@/hooks/use-currency";
 import { useCustomFilters } from "@/hooks/use-custom-filters";
+import { useDebouncedSearch } from "@/hooks/use-debounced-search";
 import type { Bill, BillFilter } from "@/ledger/type";
 import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
@@ -87,6 +88,7 @@ export default function Page() {
         return {};
     });
     const [filterOpen, setFilterOpen] = useState(false);
+    const debouncedComment = useDebouncedSearch(form.comment ?? "", 300);
 
     const toReset = useCallback(() => {
         setForm({});
@@ -135,6 +137,16 @@ export default function Page() {
             hasFilter.current = false;
         }
     }, [toSearch]);
+
+    useEffect(() => {
+        if (debouncedComment === undefined) {
+            return;
+        }
+        if ((debouncedComment ?? "").length === 0) {
+            return;
+        }
+        toSearch();
+    }, [debouncedComment, toSearch]);
 
     const [sortIndex, setSortIndex] = useState(0);
     const sorted = useMemo(() => {
@@ -504,8 +516,7 @@ export default function Page() {
                             showAssets={showAssets}
                         />
                     ) : (
-                        <WeddingEmptyState
-                            icon="icon-[mdi--file-search-outline]"
+                        <EmptyState
                             title="还没有搜索结果"
                             description="输入关键字或展开筛选面板，账本记录会在这里展示。"
                         />

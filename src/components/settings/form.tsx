@@ -4,15 +4,30 @@ import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
 import { useUserStore } from "@/store/user";
 import { useWeddingStore } from "@/store/wedding";
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+} from "../ui/alert-dialog";
+import { Button } from "../ui/button";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "../ui/collapsible";
+import { Separator } from "../ui/separator";
 import TagSettingsItem from "../bill-tag";
 import { BookSettings } from "../book";
 import Budget from "../budget";
 import CategorySettingsItem from "../category";
 import CurrencySettingsItem from "../currency";
 import DataManagerSettingsItem from "../data-manager";
-import modal from "../modal";
 import ScheduledSettingsItems from "../scheduled/settings-item";
-import { Button } from "../ui/button";
 import AboutSettingsItem, { AdvancedGuideItem } from "./about";
 import AssistantSettingsItem from "./assistant";
 import LabSettingsItem from "./lab";
@@ -23,13 +38,15 @@ import QuickEntrySettingsItem from "./quick-entry";
 import ThemeSettingsItem from "./theme";
 import UserSettingsItem from "./user";
 import VoiceSettingsItem from "./voice";
+import WeddingDateSettingsItem from "./wedding-date";
+import { useState } from "react";
 
 function UserInfo() {
     const t = useIntl();
     const { id, avatar_url, name, expired } = useUserStore();
-    const toLogOut = async () => {
-        await modal.prompt({ title: t("logout-warning") });
+    const [showLogoutDialog, setShowLogoutDialog] = useState(false);
 
+    const toLogOut = async () => {
         await Promise.all([
             StorageAPI.logout(),
             new Promise<void>((res) => {
@@ -42,54 +59,75 @@ function UserInfo() {
         sessionStorage.clear();
         location.reload();
     };
-    return (
-        <div className="mx-4 my-4 rounded-[24px] bg-[linear-gradient(135deg,#fbbcdf_0%,#ddb6f7_100%)] p-4 text-[#3b0d29] shadow-[0_18px_36px_-28px_rgba(244,114,182,0.45)] dark:bg-[linear-gradient(135deg,#3d1030_0%,#1e0d30_100%)] dark:text-white">
-            <div className="flex-1 flex items-center gap-2 overflow-hidden">
-                <img
-                    src={avatar_url}
-                    alt={`${id}`}
-                    className="h-12 w-12 rounded-full border-2 border-white/70 dark:border-white/15"
-                />
 
-                <div className="flex flex-col overflow-hidden">
-                    <div className="flex">
-                        <div className="flex-1 truncate text-base font-semibold">
-                            {name}
-                        </div>
-                        <div
-                            className="flex-shrink-0 px-2"
-                            title={`Signed with ${StorageAPI.name}`}
-                        >
-                            <div className="rounded-full bg-white/45 px-2 py-0.5 text-[10px] font-medium dark:bg-white/10">
+    return (
+        <>
+            <div className="mx-4 my-4 rounded-[24px] bg-[linear-gradient(135deg,#fbbcdf_0%,#ddb6f7_100%)] p-4 text-[#3b0d29] shadow-[0_18px_36px_-28px_rgba(244,114,182,0.45)] dark:bg-[linear-gradient(135deg,#3d1030_0%,#1e0d30_100%)] dark:text-white">
+                <div className="flex items-center gap-3">
+                    <img
+                        src={avatar_url}
+                        alt={`${id}`}
+                        className="h-14 w-14 rounded-full border-2 border-white/70 shadow-md dark:border-white/15"
+                    />
+
+                    <div className="flex flex-1 flex-col overflow-hidden">
+                        <div className="flex items-center gap-2">
+                            <div className="truncate text-lg font-bold">
+                                {name}
+                            </div>
+                            <div
+                                className="shrink-0 rounded-full bg-white/45 px-2 py-0.5 text-[10px] font-medium dark:bg-white/10"
+                                title={`Signed with ${StorageAPI.name}`}
+                            >
                                 {StorageAPI.name}
                             </div>
                         </div>
+                        <div className="mt-0.5 truncate text-sm opacity-70">
+                            {id}
+                        </div>
                     </div>
-                    <div className="text-sm opacity-70">{id}</div>
                 </div>
-            </div>
-            <div className="flex items-center gap-2">
+
                 {expired && (
-                    <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => {
-                            StorageAPI.loginWith(StorageAPI.type);
-                        }}
-                    >
-                        <i className="icon-[mdi--reload]"></i>
-                        {t("re-login")}
-                    </Button>
+                    <div className="mt-3">
+                        <Button
+                            size="sm"
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => {
+                                StorageAPI.loginWith(StorageAPI.type);
+                            }}
+                        >
+                            <i className="icon-[mdi--reload] mr-1.5 size-4"></i>
+                            {t("re-login")}
+                        </Button>
+                    </div>
                 )}
-                <Button
-                    size="sm"
-                    className="rounded-full bg-white/80 text-[#9d174d] hover:bg-white dark:bg-white/12 dark:text-pink-100 dark:hover:bg-white/18"
-                    onClick={toLogOut}
-                >
-                    {t("logout")}
-                </Button>
             </div>
-        </div>
+
+            <AlertDialog
+                open={showLogoutDialog}
+                onOpenChange={setShowLogoutDialog}
+            >
+                <AlertDialogContent>
+                    <AlertDialogHeader>
+                        <AlertDialogTitle>确认退出登录？</AlertDialogTitle>
+                        <AlertDialogDescription>
+                            {t("logout-warning")}
+                        </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                        <AlertDialogCancel>取消</AlertDialogCancel>
+                        <AlertDialogAction
+                            onClick={toLogOut}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                            确认退出
+                        </AlertDialogAction>
+                    </AlertDialogFooter>
+                </AlertDialogContent>
+            </AlertDialog>
+        </>
     );
 }
 
@@ -151,8 +189,29 @@ export default function SettingsForm({
     hideHeaderOnMobile?: boolean;
 }) {
     const t = useIntl();
+    const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+    const [openSections, setOpenSections] = useState({
+        book: true,
+        ai: false,
+        billing: false,
+        other: false,
+    });
 
     const showRelyr = Boolean(import.meta.env.VITE_RELAYR_URL);
+
+    const toLogOut = async () => {
+        await Promise.all([
+            StorageAPI.logout(),
+            new Promise<void>((res) => {
+                setTimeout(() => {
+                    res();
+                }, 100);
+            }),
+        ]);
+        localStorage.clear();
+        sessionStorage.clear();
+        location.reload();
+    };
 
     return (
         <PopupLayout
@@ -165,55 +224,159 @@ export default function SettingsForm({
             <div className="flex h-full flex-col overflow-hidden bg-[color:var(--wedding-app-bg)]">
                 <UserInfo />
                 <SettingsSummary />
-                <div className="flex flex-1 flex-col overflow-y-auto pb-6">
-                    <div className="px-4">
-                        <div className="mb-2 pl-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
-                            {t("book-settings")}
-                        </div>
-                        <div className="mb-4 flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
-                            <BookSettings />
-                            <PresetSettingsItem />
-                            <UserSettingsItem />
-                            <DataManagerSettingsItem />
-                        </div>
-                    </div>
-                    <div className="px-4">
-                        <div className="mb-2 pl-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
-                            {t("ai")}
-                        </div>
-                        <div className="mb-4 flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
-                            <AssistantSettingsItem />
-                            {showRelyr && <QuickEntrySettingsItem />}
-                            <VoiceSettingsItem />
-                        </div>
-                    </div>
-                    <div className="px-4">
-                        <div className="mb-2 pl-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
-                            {t("billing-functions")}
-                        </div>
-                        <div className="mb-4 flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
-                            <CategorySettingsItem />
-                            <TagSettingsItem />
-                            <Budget />
-                            <ScheduledSettingsItems />
-                            <CurrencySettingsItem />
-                        </div>
+                
+                <div className="flex flex-1 flex-col overflow-y-auto pb-24">
+                    {/* 账本设置 */}
+                    <div className="px-4 pb-4">
+                        <Collapsible
+                            open={openSections.book}
+                            onOpenChange={(open) =>
+                                setOpenSections({ ...openSections, book: open })
+                            }
+                        >
+                            <CollapsibleTrigger className="mb-2 flex w-full items-center justify-between pl-1">
+                                <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
+                                    <i className="icon-[mdi--book-open-variant] mr-1.5 inline-block size-3.5" />
+                                    {t("book-settings")}
+                                </div>
+                                <i
+                                    className={`icon-[mdi--chevron-down] size-4 text-[color:var(--wedding-text-mute)] transition-transform ${openSections.book ? "rotate-180" : ""}`}
+                                />
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
+                                    <WeddingDateSettingsItem />
+                                    <BookSettings />
+                                    <PresetSettingsItem />
+                                    <UserSettingsItem />
+                                    <DataManagerSettingsItem />
+                                </div>
+                            </CollapsibleContent>
+                        </Collapsible>
                     </div>
 
-                    <div className="px-4">
-                        <div className="mb-2 pl-1 text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
-                            {t("other-settings")}
-                        </div>
-                        <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
-                            <MapSettingsItem />
-                            <LabSettingsItem />
-                            <AboutSettingsItem />
-                            <ThemeSettingsItem />
-                            <LanguageSettingsItem />
-                            <AdvancedGuideItem />
-                        </div>
+                    {/* AI 设置 */}
+                    <div className="px-4 pb-4">
+                        <Collapsible
+                            open={openSections.ai}
+                            onOpenChange={(open) =>
+                                setOpenSections({ ...openSections, ai: open })
+                            }
+                        >
+                            <CollapsibleTrigger className="mb-2 flex w-full items-center justify-between pl-1">
+                                <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
+                                    <i className="icon-[mdi--robot-outline] mr-1.5 inline-block size-3.5" />
+                                    {t("ai")}
+                                </div>
+                                <i
+                                    className={`icon-[mdi--chevron-down] size-4 text-[color:var(--wedding-text-mute)] transition-transform ${openSections.ai ? "rotate-180" : ""}`}
+                                />
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
+                                    <AssistantSettingsItem />
+                                    {showRelyr && <QuickEntrySettingsItem />}
+                                    <VoiceSettingsItem />
+                                </div>
+                            </CollapsibleContent>
+                        </Collapsible>
+                    </div>
+
+                    {/* 记账功能 */}
+                    <div className="px-4 pb-4">
+                        <Collapsible
+                            open={openSections.billing}
+                            onOpenChange={(open) =>
+                                setOpenSections({ ...openSections, billing: open })
+                            }
+                        >
+                            <CollapsibleTrigger className="mb-2 flex w-full items-center justify-between pl-1">
+                                <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
+                                    <i className="icon-[mdi--receipt-text-outline] mr-1.5 inline-block size-3.5" />
+                                    {t("billing-functions")}
+                                </div>
+                                <i
+                                    className={`icon-[mdi--chevron-down] size-4 text-[color:var(--wedding-text-mute)] transition-transform ${openSections.billing ? "rotate-180" : ""}`}
+                                />
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
+                                    <CategorySettingsItem />
+                                    <TagSettingsItem />
+                                    <Budget />
+                                    <ScheduledSettingsItems />
+                                    <CurrencySettingsItem />
+                                </div>
+                            </CollapsibleContent>
+                        </Collapsible>
+                    </div>
+
+                    {/* 其他设置 */}
+                    <div className="px-4 pb-4">
+                        <Collapsible
+                            open={openSections.other}
+                            onOpenChange={(open) =>
+                                setOpenSections({ ...openSections, other: open })
+                            }
+                        >
+                            <CollapsibleTrigger className="mb-2 flex w-full items-center justify-between pl-1">
+                                <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
+                                    <i className="icon-[mdi--cog-outline] mr-1.5 inline-block size-3.5" />
+                                    {t("other-settings")}
+                                </div>
+                                <i
+                                    className={`icon-[mdi--chevron-down] size-4 text-[color:var(--wedding-text-mute)] transition-transform ${openSections.other ? "rotate-180" : ""}`}
+                                />
+                            </CollapsibleTrigger>
+                            <CollapsibleContent>
+                                <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
+                                    <MapSettingsItem />
+                                    <LabSettingsItem />
+                                    <AboutSettingsItem />
+                                    <ThemeSettingsItem />
+                                    <LanguageSettingsItem />
+                                    <AdvancedGuideItem />
+                                </div>
+                            </CollapsibleContent>
+                        </Collapsible>
                     </div>
                 </div>
+
+                {/* 退出登录按钮 - 固定在底部 */}
+                <div className="border-t border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4">
+                    <Button
+                        variant="destructive"
+                        className="w-full rounded-full"
+                        onClick={() => setShowLogoutDialog(true)}
+                    >
+                        <i className="icon-[mdi--logout] mr-2 size-5" />
+                        {t("logout")}
+                    </Button>
+                </div>
+
+                {/* 退出登录确认对话框 */}
+                <AlertDialog
+                    open={showLogoutDialog}
+                    onOpenChange={setShowLogoutDialog}
+                >
+                    <AlertDialogContent>
+                        <AlertDialogHeader>
+                            <AlertDialogTitle>确认退出登录？</AlertDialogTitle>
+                            <AlertDialogDescription>
+                                {t("logout-warning")}
+                            </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                            <AlertDialogCancel>取消</AlertDialogCancel>
+                            <AlertDialogAction
+                                onClick={toLogOut}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                            >
+                                确认退出
+                            </AlertDialogAction>
+                        </AlertDialogFooter>
+                    </AlertDialogContent>
+                </AlertDialog>
             </div>
         </PopupLayout>
     );

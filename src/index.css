@@ -4,6 +4,11 @@
 @import "tw-animate-css";
 @config "../tailwind.config.mjs";
 
+/* Import Design Tokens - 导入设计令牌 */
+@import "./styles/tokens/colors.css";
+@import "./styles/tokens/typography.css";
+@import "./styles/tokens/spacing.css";
+
 @custom-variant dark (&:is(.dark *));
 
 @plugin "@iconify/tailwind4";
@@ -13,7 +18,7 @@
 body {
 	width: 100vw;
 	height: 100vh;
-	min-width: 200px;
+	min-width: 320px;
 	min-height: 200px;
 	overflow: hidden;
 	touch-action: manipulation;
@@ -25,6 +30,13 @@ body {
 	padding: env(safe-area-inset-top) env(safe-area-inset-right)
 		env(safe-area-inset-bottom) env(safe-area-inset-left);
 	overflow: hidden;
+}
+
+@media (max-width: 390px) {
+	#root {
+		max-width: 390px;
+		margin: 0 auto;
+	}
 }
 
 * {
@@ -457,6 +469,7 @@ button {
 	border: 1px solid var(--wedding-line);
 	border-radius: 22px;
 	box-shadow: var(--wedding-shadow-soft);
+	contain: layout paint;
 }
 
 .wedding-soft-card {
@@ -464,6 +477,7 @@ button {
 	border: 1px solid color-mix(in srgb, var(--wedding-line) 90%, transparent);
 	border-radius: 22px;
 	box-shadow: 0 10px 28px -26px rgba(31, 41, 55, 0.18);
+	contain: layout paint;
 }
 
 .wedding-dashed-card {
@@ -696,6 +710,8 @@ button {
 		transform 0.22s ease,
 		box-shadow 0.22s ease,
 		filter 0.22s ease;
+	min-height: 44px;
+	min-width: 44px;
 }
 
 .wedding-fab:hover {
@@ -715,6 +731,20 @@ button {
 	transition:
 		background-color 0.18s ease,
 		transform 0.18s ease;
+}
+
+/* Theme transition */
+html,
+body,
+.wedding-surface-card,
+.wedding-soft-card,
+.wedding-input,
+.wedding-pill,
+.wedding-badge {
+	transition:
+		background-color 0.2s ease,
+		border-color 0.2s ease,
+		color 0.2s ease;
 }
 
 .wedding-settings-item:hover {

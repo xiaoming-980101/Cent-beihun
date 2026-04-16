@@ -8,6 +8,8 @@ export type WeddingData = {
     engagementDate: number;
     /** 结婚日期时间戳 */
     weddingDate: number;
+    /** 伴侣昵称（用于彩蛋等个性化显示） */
+    partnerName?: string;
     /** 任务列表 */
     tasks: WeddingTask[];
     /** 亲友列表 */

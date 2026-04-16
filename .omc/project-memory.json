@@ -197,6 +197,18 @@
   },
   "hotPaths": [
     {
+      "path": "src\\pages\\home\\index.tsx",
+      "accessCount": 14,
+      "lastAccessed": 1776304555640,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\settings\\form.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1776304354075,
+      "type": "file"
+    },
+    {
       "path": "package.json",
       "accessCount": 1,
       "lastAccessed": 1775803519299,
@@ -236,6 +248,42 @@
       "path": "deploy-jdcloud.md",
       "accessCount": 1,
       "lastAccessed": 1775803652066,
+      "type": "file"
+    },
+    {
+      "path": "src\\store\\wedding.ts",
+      "accessCount": 1,
+      "lastAccessed": 1776304254266,
+      "type": "file"
+    },
+    {
+      "path": "src\\wedding\\components\\CountdownCard.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776304254336,
+      "type": "file"
+    },
+    {
+      "path": "src\\pages\\tools\\PlannerAssistant.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776304260669,
+      "type": "file"
+    },
+    {
+      "path": "src\\pages\\settings\\index.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776304284126,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\settings\\preset.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776304300463,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\settings\\wedding-date.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1776304330025,
       "type": "file"
     }
   ],
