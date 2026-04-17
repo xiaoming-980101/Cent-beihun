@@ -57,6 +57,7 @@ export default function TagList({
             onBack={onCancel}
             className="overflow-hidden h-full"
             title={t("edit-tags")}
+            dialogMode
             right={
                 <div className="flex items-center gap-2">
                     <Button onClick={() => toUpdateTag()} variant="secondary">

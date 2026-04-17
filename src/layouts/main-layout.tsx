@@ -19,6 +19,7 @@ import {
     ScheduledProvider,
 } from "@/components/scheduled";
 import { Settings } from "@/components/settings";
+import { ProfileEditorProvider } from "@/components/settings/profile-editor";
 import { SortableListProvider } from "@/components/sortable";
 import { SortableGroupProvider } from "@/components/sortable/group";
 import { Toaster } from "@/components/ui/sonner";
@@ -94,6 +95,7 @@ export default function MainLayout() {
                 <CategoryListProvider />
                 <ModalProvider />
                 <Settings />
+                <ProfileEditorProvider />
                 <Toaster />
             </TooltipProvider>
         </ThemeProvider>

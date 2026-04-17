@@ -61,6 +61,7 @@ export default function BatchEditForm({
     return (
         <PopupLayout
             title={t("batch-edit")}
+            dialogMode
             right={
                 <Button
                     onClick={() => {

@@ -1,15 +1,21 @@
+import { useState } from "react";
 import { useShallow } from "zustand/shallow";
-import PopupLayout from "@/layouts/popup-layout";
 import { useIntl } from "@/locale";
 import { useLedgerStore } from "@/store/ledger";
 import { usePreference } from "@/store/preference";
 import { useUserStore } from "@/store/user";
 import { isSpeechRecognitionSupported } from "../add-button/recognize";
-import createConfirmProvider from "../confirm";
+import { FormDialog } from "../ui/dialog/form-dialog";
 import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
 
-function Form({ onCancel }: { onCancel?: () => void }) {
+function VoiceSettingsDialog({ 
+    open, 
+    onOpenChange 
+}: { 
+    open: boolean; 
+    onOpenChange: (open: boolean) => void; 
+}) {
     const t = useIntl();
     const { id: userId } = useUserStore();
 
@@ -37,17 +43,20 @@ function Form({ onCancel }: { onCancel?: () => void }) {
         usePreference("voiceByKeyboard");
 
     return (
-        <PopupLayout
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
             title={t("voice-recording-settings")}
-            onBack={onCancel}
-            className="h-full overflow-hidden"
+            maxWidth="md"
         >
-            <div className="flex-1 flex flex-col overflow-y-auto py-4">
+            <div className="space-y-4">
                 {/* 语音记账开关 */}
-                <div className="w-full min-h-10 pb-2 flex justify-between items-center px-4 gap-2">
-                    <div className="text-sm">
-                        <div>{t("enable-voice-recording")}</div>
-                        <div className="text-xs opacity-60">
+                <div className="flex items-start justify-between gap-4 rounded-xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4">
+                    <div className="flex-1">
+                        <div className="font-medium text-[color:var(--wedding-text)]">
+                            {t("enable-voice-recording")}
+                        </div>
+                        <div className="mt-1 text-sm text-[color:var(--wedding-text-mute)]">
                             {hasAIConfig
                                 ? voiceEnabled
                                     ? t("voice-recording-tip")
@@ -75,22 +84,24 @@ function Form({ onCancel }: { onCancel?: () => void }) {
 
                 {/* 提示信息 */}
                 {!hasAIConfig && (
-                    <div className="px-4 py-2">
-                        <div className="text-xs p-3 bg-yellow-50 dark:bg-yellow-950 border border-yellow-200 dark:border-yellow-800 rounded-md">
-                            <div className="flex items-start gap-2">
-                                <i className="icon-[mdi--information-outline] size-4 flex-shrink-0 mt-0.5"></i>
-                                <div>{t("voice-recording-setup-tip")}</div>
+                    <div className="rounded-xl border border-yellow-200 bg-yellow-50 p-4 dark:border-yellow-800 dark:bg-yellow-950">
+                        <div className="flex items-start gap-2 text-sm">
+                            <i className="icon-[mdi--information-outline] mt-0.5 size-4 flex-shrink-0 text-yellow-600 dark:text-yellow-400"></i>
+                            <div className="text-yellow-800 dark:text-yellow-200">
+                                {t("voice-recording-setup-tip")}
                             </div>
                         </div>
                     </div>
                 )}
+
+                {/* 键盘输入开关 */}
                 {voiceEnabled && (
-                    <div className="w-full min-h-10 pb-2 flex justify-between items-center px-4 gap-2">
-                        <div className="text-sm">
-                            <div>
+                    <div className="flex items-start justify-between gap-4 rounded-xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4">
+                        <div className="flex-1">
+                            <div className="font-medium text-[color:var(--wedding-text)]">
                                 {t("use-keyboard-input-instead-of-voice")}
                             </div>
-                            <div className="text-xs opacity-60">
+                            <div className="mt-1 text-sm text-[color:var(--wedding-text-mute)]">
                                 {t("use-keyboard-input-description")}
                             </div>
                         </div>
@@ -103,27 +114,19 @@ function Form({ onCancel }: { onCancel?: () => void }) {
                     </div>
                 )}
             </div>
-        </PopupLayout>
+        </FormDialog>
     );
 }
 
-const [VoiceSettingsProvider, showVoiceSettings] = createConfirmProvider(Form, {
-    dialogTitle: "voice-recording-settings",
-    dialogModalClose: true,
-    contentClassName:
-        "h-full w-full max-h-full max-w-full rounded-none sm:rounded-md sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]",
-});
-
 export default function VoiceSettingsItem() {
     const t = useIntl();
+    const [open, setOpen] = useState(false);
     const betaClassName = `relative after:content-['beta'] after:rounded after:bg-yellow-400 after:px-[2px] after:text-[8px] after:block after:absolute after:top-0 after:right-0 after:translate-x-[calc(100%+4px)]`;
 
     return (
-        <div className="voice-settings">
+        <>
             <Button
-                onClick={() => {
-                    showVoiceSettings();
-                }}
+                onClick={() => setOpen(true)}
                 variant="ghost"
                 className="h-auto w-full rounded-none px-1 py-1"
             >
@@ -144,7 +147,7 @@ export default function VoiceSettingsItem() {
                     <i className="icon-[mdi--chevron-right] size-5 text-[color:var(--wedding-text-mute)]"></i>
                 </div>
             </Button>
-            <VoiceSettingsProvider />
-        </div>
+            <VoiceSettingsDialog open={open} onOpenChange={setOpen} />
+        </>
     );
 }

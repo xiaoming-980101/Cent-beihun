@@ -1,12 +1,39 @@
-import createConfirmProvider from "../confirm";
+import { useEffect, useState } from "react";
 import ScheduledListForm from "./list";
 
-export const [ScheduledProvider, showScheduled] = createConfirmProvider(
-    ScheduledListForm,
-    {
-        dialogTitle: "Scheduled",
-        dialogModalClose: false,
-        contentClassName:
-            "h-full w-full max-h-full max-w-full rounded-none sm:rounded-md sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]",
-    },
-);
+export function ScheduledProvider() {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        const handleShow = () => setOpen(true);
+        window.addEventListener("show-scheduled", handleShow);
+        return () => {
+            window.removeEventListener("show-scheduled", handleShow);
+        };
+    }, []);
+
+    return (
+        <ScheduledListForm
+            open={open}
+            onOpenChange={(nextOpen) => {
+                setOpen(nextOpen);
+                if (!nextOpen) {
+                    window.dispatchEvent(new CustomEvent("scheduled-closed"));
+                }
+            }}
+        />
+    );
+}
+
+export function showScheduled(): Promise<void> {
+    return new Promise((resolve) => {
+        requestAnimationFrame(() => {
+            window.dispatchEvent(new CustomEvent("show-scheduled"));
+        });
+        const handleClose = () => {
+            window.removeEventListener("scheduled-closed", handleClose);
+            resolve();
+        };
+        window.addEventListener("scheduled-closed", handleClose);
+    });
+}

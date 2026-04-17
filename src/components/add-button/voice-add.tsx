@@ -1,20 +1,70 @@
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useLongPress } from "@/hooks/use-long-press";
 import { t } from "@/locale";
 import { useLedgerStore } from "@/store/ledger";
 import { parseTextToBill } from "../assistant/text-to-bill";
-import createConfirmProvider from "../confirm";
+import { FormDialog } from "../ui/dialog/form-dialog";
 import { BaseButton } from "./base";
 import { startRecognize } from "./recognize";
 import VoiceForm, { VoiceFormContext, type VoiceFormState } from "./voice-form";
 
-const [VoiceFormProvider, , showVoiceForm] = createConfirmProvider(VoiceForm, {
-    dialogTitle: t("voice-recording-dialog-title"),
-    dialogModalClose: false,
-    fade: true,
-    swipe: false,
-});
+// 事件驱动的弹窗管理
+let resolveCallback: (() => void) | null = null;
+
+export const VoiceFormProvider = ({ formState }: { formState: VoiceFormState }) => {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        const handleShow = () => {
+            setOpen(true);
+        };
+
+        window.addEventListener("show-voice-form" as any, handleShow);
+        return () => {
+            window.removeEventListener("show-voice-form" as any, handleShow);
+        };
+    }, []);
+
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen) {
+            resolveCallback?.();
+            resolveCallback = null;
+        }
+        setOpen(newOpen);
+    };
+
+    const handleCancel = () => {
+        resolveCallback?.();
+        resolveCallback = null;
+        setOpen(false);
+    };
+
+    return (
+        <FormDialog
+            open={open}
+            onOpenChange={handleOpenChange}
+            title={t("voice-recording-dialog-title")}
+            maxWidth="md"
+        >
+            <VoiceForm onCancel={handleCancel} />
+        </FormDialog>
+    );
+};
+
+export const showVoiceForm = (): { promise: Promise<void>; cancel: () => void } => {
+    const promise = new Promise<void>((resolve) => {
+        resolveCallback = resolve;
+        window.dispatchEvent(new CustomEvent("show-voice-form"));
+    });
+    
+    const cancel = () => {
+        resolveCallback?.();
+        resolveCallback = null;
+    };
+    
+    return { promise, cancel };
+};
 
 export function VoiceAddButton({
     onClick,
@@ -103,7 +153,7 @@ export function VoiceAddButton({
                 {/* <i className="icon-[mdi--microphone-plus] text-[white] size-7"></i> */}
                 <i className="icon-[mdi--add] text-[white] size-7"></i>
             </BaseButton>
-            <VoiceFormProvider />
+            <VoiceFormProvider formState={formState} />
         </VoiceFormContext.Provider>
     );
 }

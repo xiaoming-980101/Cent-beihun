@@ -5,7 +5,7 @@ import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
 import { useIsLogin } from "@/store/user";
 import Loading from "../loading";
-import modal from "../modal";
+import { prompt } from "@/components/ui/dialog/utils";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
 import { Label } from "../ui/label";
@@ -54,8 +54,8 @@ export function BookForm() {
     };
 
     return (
-        <div className="w-fit h-full flex justify-center items-center pointer-events-auto">
-            <div className="bg-background w-[350px] h-[480px] max-h-[55vh] py-4 flex flex-col justify-center items-center rounded">
+        <div className="h-full w-full pointer-events-auto">
+            <div className="flex h-full w-full flex-col justify-center py-2">
                 {books.length > 0 ? (
                     <div className="flex-1 flex flex-col w-full gap-2 h-full overflow-hidden">
                         <div className="flex gap-2 px-4">
@@ -90,6 +90,7 @@ export function BookForm() {
                                                     .inviteForBook && (
                                                     <Button
                                                         size="sm"
+                                                        className="bg-[color:var(--wedding-accent)] text-white hover:bg-[color:var(--wedding-accent-strong)]"
                                                         onClick={() =>
                                                             toInvite(book)
                                                         }
@@ -124,11 +125,12 @@ export function BookForm() {
                 )}
                 <Button
                     disabled={creating}
+                    className="mt-2 bg-[color:var(--wedding-accent)] text-white hover:bg-[color:var(--wedding-accent-strong)]"
                     onClick={async () => {
-                        const name = (await modal.prompt({
+                        const name = await prompt({
                             title: t("please-input-book-name"),
-                            input: { type: "text" },
-                        })) as string;
+                            inputType: "text",
+                        });
                         if (!name) {
                             return;
                         }

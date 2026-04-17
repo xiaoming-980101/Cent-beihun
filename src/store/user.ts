@@ -22,6 +22,7 @@ type UserStoreState = {
 
 type UserStoreActions = {
     updateUserInfo: () => Promise<void>;
+    updateProfile: (data: { avatar?: string; nickname?: string }) => void;
 
     getUserInfo: (login: string) => Promise<UserInfo>;
     getCollaborators: (repo: string) => Promise<UserInfo[]>;
@@ -91,6 +92,19 @@ export const useUserStore = create<UserStore>()(
 
             updateUserInfo();
 
+            const updateProfile = (data: { avatar?: string; nickname?: string }) => {
+                set(
+                    produce((state: UserStore) => {
+                        if (data.avatar) {
+                            state.avatar_url = data.avatar;
+                        }
+                        if (data.nickname) {
+                            state.name = data.nickname;
+                        }
+                    }),
+                );
+            };
+
             const getUserInfo = async (login: string) => {
                 const run = async () => {
                     const { StorageAPI } = await loadStorageAPI();
@@ -141,6 +155,7 @@ export const useUserStore = create<UserStore>()(
                 name: "",
                 id: 0,
                 updateUserInfo,
+                updateProfile,
                 getUserInfo,
                 getCollaborators,
                 cachedUsers: {},

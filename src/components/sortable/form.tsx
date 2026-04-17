@@ -1,45 +1,55 @@
 import { useCallback, useState } from "react";
-import PopupLayout from "@/layouts/popup-layout";
+import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import { useIntl } from "@/locale";
 import { Button } from "../ui/button";
 import { type SortableItem, SortableList } from "./list";
 
-export default function Form<T extends SortableItem>({
-    edit,
-    onCancel,
-    onConfirm,
-}: {
+interface SortableFormDialogProps<T extends SortableItem> {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
     edit?: T[];
     onConfirm?: (v: T[]) => void;
-    onCancel?: () => void;
-}) {
+}
+
+export default function Form<T extends SortableItem>({
+    open,
+    onOpenChange,
+    edit,
+    onConfirm,
+}: SortableFormDialogProps<T>) {
     const [list, setList] = useState([...(edit ?? [])]);
     const onReorder: typeof setList = useCallback((v) => {
         setList(v);
     }, []);
     const t = useIntl();
+    
+    const handleConfirm = () => {
+        onConfirm?.(list);
+        onOpenChange(false);
+    };
+    
     return (
-        <PopupLayout
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
             title={t("sort")}
-            onBack={onCancel}
-            right={
-                <Button
-                    onClick={() => {
-                        onConfirm?.(list);
-                    }}
-                >
-                    {t("confirm")}
-                </Button>
-            }
-            className="h-full overflow-hidden"
+            maxWidth="md"
+            fullScreenOnMobile={true}
         >
-            <div className="flex-1 w-full overflow-hidden py-2">
-                <SortableList
-                    items={list}
-                    onReorder={onReorder}
-                    className="h-full max-h-full px-2"
-                />
+            <div className="flex flex-col gap-4">
+                <div className="w-full overflow-hidden">
+                    <SortableList
+                        items={list}
+                        onReorder={onReorder}
+                        className="h-full max-h-[400px]"
+                    />
+                </div>
+                <div className="flex justify-end">
+                    <Button onClick={handleConfirm}>
+                        {t("confirm")}
+                    </Button>
+                </div>
             </div>
-        </PopupLayout>
+        </FormDialog>
     );
 }

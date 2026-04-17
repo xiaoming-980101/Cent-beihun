@@ -118,6 +118,7 @@ export default function CurrencyListForm({
             onBack={onCancel}
             title={t("currency-manager")}
             className="flex flex-col h-full overflow-hidden"
+            dialogMode
             right={
                 <div className="flex gap-2 items-center">
                     <Button onClick={() => toUpdateCurrency()}>

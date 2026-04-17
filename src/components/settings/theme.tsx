@@ -1,16 +1,17 @@
 import { type Theme, useTheme } from "@/hooks/use-theme";
 import { useIntl } from "@/locale";
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "../ui/select";
+import { cn } from "@/utils";
+import { Button } from "../ui/button";
 
 export default function ThemeSettingsItem() {
     const t = useIntl();
     const { theme, setTheme } = useTheme();
+    const options: Array<{ value: Theme; label: string }> = [
+        { value: "system", label: t("theme-system") },
+        { value: "light", label: t("theme-light") },
+        { value: "dark", label: t("theme-dark") },
+    ];
+
     return (
         <div className="px-1 py-1">
             <div className="wedding-settings-item rounded-[18px]">
@@ -27,25 +28,25 @@ export default function ThemeSettingsItem() {
                         </div>
                     </div>
                 </div>
-                <Select
-                    value={theme}
-                    onValueChange={(v) => {
-                        setTheme(v as Theme);
-                    }}
-                >
-                    <SelectTrigger className="h-9 w-fit rounded-full border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-3 text-xs">
-                        <SelectValue></SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                        <SelectItem value="system">
-                            {t("theme-system")}
-                        </SelectItem>
-                        <SelectItem value="light">
-                            {t("theme-light")}
-                        </SelectItem>
-                        <SelectItem value="dark">{t("theme-dark")}</SelectItem>
-                    </SelectContent>
-                </Select>
+                <div className="flex items-center gap-1 rounded-full border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] p-1">
+                    {options.map((option) => (
+                        <Button
+                            key={option.value}
+                            type="button"
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setTheme(option.value)}
+                            className={cn(
+                                "h-8 rounded-full px-3 text-xs",
+                                theme === option.value
+                                    ? "bg-[color:var(--wedding-text)] text-white hover:bg-[color:var(--wedding-text)]"
+                                    : "text-[color:var(--wedding-text-mute)] hover:bg-white/70 dark:hover:bg-white/10",
+                            )}
+                        >
+                            {option.label}
+                        </Button>
+                    ))}
+                </div>
             </div>
         </div>
     );

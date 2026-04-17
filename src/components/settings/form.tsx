@@ -1,19 +1,11 @@
+import { useState } from "react";
 import { StorageAPI } from "@/api/storage";
-import PopupLayout from "@/layouts/popup-layout";
 import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
 import { useUserStore } from "@/store/user";
 import { useWeddingStore } from "@/store/wedding";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "../ui/alert-dialog";
+import { useLedgerStore } from "@/store/ledger";
+import { confirm } from "@/components/ui/dialog/utils";
 import { Button } from "../ui/button";
 import {
     Collapsible,
@@ -39,41 +31,99 @@ import ThemeSettingsItem from "./theme";
 import UserSettingsItem from "./user";
 import VoiceSettingsItem from "./voice";
 import WeddingDateSettingsItem from "./wedding-date";
-import { useState } from "react";
+import { showProfileEditor } from "./profile-editor";
+import { useEffect } from "react";
 
 function UserInfo() {
     const t = useIntl();
-    const { id, avatar_url, name, expired } = useUserStore();
-    const [showLogoutDialog, setShowLogoutDialog] = useState(false);
+    const { id, avatar_url: defaultAvatar, name: defaultName, expired, updateProfile } = useUserStore();
+    const [displayAvatar, setDisplayAvatar] = useState(defaultAvatar);
+    const [displayName, setDisplayName] = useState(defaultName);
 
-    const toLogOut = async () => {
-        await Promise.all([
-            StorageAPI.logout(),
-            new Promise<void>((res) => {
-                setTimeout(() => {
-                    res();
-                }, 100);
-            }),
-        ]);
-        localStorage.clear();
-        sessionStorage.clear();
-        location.reload();
+    // 从个人元数据加载头像和昵称
+    useEffect(() => {
+        const loadProfile = async () => {
+            const personalMeta = useLedgerStore.getState().infos?.personalMeta;
+            if (personalMeta?.userProfile) {
+                if (personalMeta.userProfile.avatar) {
+                    setDisplayAvatar(personalMeta.userProfile.avatar);
+                }
+                if (personalMeta.userProfile.nickname) {
+                    setDisplayName(personalMeta.userProfile.nickname);
+                }
+            }
+        };
+        loadProfile();
+    }, []);
+
+    const handleEditProfile = async () => {
+        const result = await showProfileEditor();
+        if (result) {
+            // 更新显示
+            if (result.avatar) {
+                setDisplayAvatar(result.avatar as string);
+            }
+            if (result.nickname) {
+                setDisplayName(result.nickname);
+            }
+            
+            // 同时更新本地 store (用于其他地方显示)
+            updateProfile({
+                avatar: result.avatar as string,
+                nickname: result.nickname,
+            });
+        }
+    };
+
+    const handleLogout = async () => {
+        const confirmed = await confirm({
+            title: "确认退出登录？",
+            description: t("logout-warning"),
+            variant: "destructive",
+            confirmText: "确认退出",
+            cancelText: "取消"
+        });
+
+        if (confirmed) {
+            await Promise.all([
+                StorageAPI.logout(),
+                new Promise<void>((res) => {
+                    setTimeout(() => {
+                        res();
+                    }, 100);
+                }),
+            ]);
+            localStorage.clear();
+            sessionStorage.clear();
+            location.reload();
+        }
     };
 
     return (
         <>
             <div className="mx-4 my-4 rounded-[24px] bg-[linear-gradient(135deg,#fbbcdf_0%,#ddb6f7_100%)] p-4 text-[#3b0d29] shadow-[0_18px_36px_-28px_rgba(244,114,182,0.45)] dark:bg-[linear-gradient(135deg,#3d1030_0%,#1e0d30_100%)] dark:text-white">
                 <div className="flex items-center gap-3">
-                    <img
-                        src={avatar_url}
-                        alt={`${id}`}
-                        className="h-14 w-14 rounded-full border-2 border-white/70 shadow-md dark:border-white/15"
-                    />
+                    {/* 头像 - 可点击编辑 */}
+                    <button
+                        type="button"
+                        onClick={handleEditProfile}
+                        className="group relative flex-shrink-0"
+                    >
+                        <img
+                            src={displayAvatar}
+                            alt={`${id}`}
+                            className="h-14 w-14 rounded-full border-2 border-white/70 shadow-md transition-all group-hover:scale-105 dark:border-white/15"
+                        />
+                        {/* 编辑图标 */}
+                        <div className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+                            <i className="icon-[mdi--pencil] size-5 text-white" />
+                        </div>
+                    </button>
 
                     <div className="flex flex-1 flex-col overflow-hidden">
                         <div className="flex items-center gap-2">
                             <div className="truncate text-lg font-bold">
-                                {name}
+                                {displayName}
                             </div>
                             <div
                                 className="shrink-0 rounded-full bg-white/45 px-2 py-0.5 text-[10px] font-medium dark:bg-white/10"
@@ -86,6 +136,16 @@ function UserInfo() {
                             {id}
                         </div>
                     </div>
+
+                    {/* 编辑按钮 */}
+                    <button
+                        type="button"
+                        onClick={handleEditProfile}
+                        className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-white/30 transition-all hover:bg-white/50 active:scale-95 dark:bg-white/10 dark:hover:bg-white/20"
+                        title="编辑个人资料"
+                    >
+                        <i className="icon-[mdi--pencil-outline] size-5" />
+                    </button>
                 </div>
 
                 {expired && (
@@ -104,29 +164,6 @@ function UserInfo() {
                     </div>
                 )}
             </div>
-
-            <AlertDialog
-                open={showLogoutDialog}
-                onOpenChange={setShowLogoutDialog}
-            >
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>确认退出登录？</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            {t("logout-warning")}
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>取消</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={toLogOut}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                            确认退出
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
         </>
     );
 }
@@ -179,17 +216,16 @@ function SettingsSummary() {
     );
 }
 
-export default function SettingsForm({
-    onCancel,
-    hideBack,
-    hideHeaderOnMobile,
-}: {
-    onCancel?: () => void;
+interface SettingsFormProps {
     hideBack?: boolean;
     hideHeaderOnMobile?: boolean;
-}) {
+}
+
+export default function SettingsForm({
+    hideBack,
+    hideHeaderOnMobile,
+}: SettingsFormProps) {
     const t = useIntl();
-    const [showLogoutDialog, setShowLogoutDialog] = useState(false);
     const [openSections, setOpenSections] = useState({
         book: true,
         ai: false,
@@ -199,35 +235,38 @@ export default function SettingsForm({
 
     const showRelyr = Boolean(import.meta.env.VITE_RELAYR_URL);
 
-    const toLogOut = async () => {
-        await Promise.all([
-            StorageAPI.logout(),
-            new Promise<void>((res) => {
-                setTimeout(() => {
-                    res();
-                }, 100);
-            }),
-        ]);
-        localStorage.clear();
-        sessionStorage.clear();
-        location.reload();
+    const handleLogout = async () => {
+        const confirmed = await confirm({
+            title: "确认退出登录？",
+            description: t("logout-warning"),
+            variant: "destructive",
+            confirmText: "确认退出",
+            cancelText: "取消"
+        });
+
+        if (confirmed) {
+            await Promise.all([
+                StorageAPI.logout(),
+                new Promise<void>((res) => {
+                    setTimeout(() => {
+                        res();
+                    }, 100);
+                }),
+            ]);
+            localStorage.clear();
+            sessionStorage.clear();
+            location.reload();
+        }
     };
 
     return (
-        <PopupLayout
-            onBack={onCancel}
-            title={t("settings")}
-            className="h-full overflow-hidden bg-[color:var(--wedding-app-bg)]"
-            hideBack={hideBack}
-            hideHeaderOnMobile={hideHeaderOnMobile}
-        >
-            <div className="flex h-full flex-col overflow-hidden bg-[color:var(--wedding-app-bg)]">
-                <UserInfo />
-                <SettingsSummary />
-                
-                <div className="flex flex-1 flex-col overflow-y-auto pb-24">
-                    {/* 账本设置 */}
-                    <div className="px-4 pb-4">
+        <div className="flex h-full flex-col overflow-hidden bg-[color:var(--wedding-app-bg)]">
+            <UserInfo />
+            <SettingsSummary />
+            
+            <div className="flex flex-1 flex-col overflow-y-auto pb-24">
+                {/* 账本设置 */}
+                <div className="px-4 pb-4">
                         <Collapsible
                             open={openSections.book}
                             onOpenChange={(open) =>
@@ -255,8 +294,8 @@ export default function SettingsForm({
                         </Collapsible>
                     </div>
 
-                    {/* AI 设置 */}
-                    <div className="px-4 pb-4">
+                {/* AI 设置 */}
+                <div className="px-4 pb-4">
                         <Collapsible
                             open={openSections.ai}
                             onOpenChange={(open) =>
@@ -282,8 +321,8 @@ export default function SettingsForm({
                         </Collapsible>
                     </div>
 
-                    {/* 记账功能 */}
-                    <div className="px-4 pb-4">
+                {/* 记账功能 */}
+                <div className="px-4 pb-4">
                         <Collapsible
                             open={openSections.billing}
                             onOpenChange={(open) =>
@@ -311,8 +350,8 @@ export default function SettingsForm({
                         </Collapsible>
                     </div>
 
-                    {/* 其他设置 */}
-                    <div className="px-4 pb-4">
+                {/* 其他设置 */}
+                <div className="px-4 pb-4">
                         <Collapsible
                             open={openSections.other}
                             onOpenChange={(open) =>
@@ -342,42 +381,17 @@ export default function SettingsForm({
                     </div>
                 </div>
 
-                {/* 退出登录按钮 - 固定在底部 */}
-                <div className="border-t border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4">
+            {/* 退出登录按钮 - 固定在底部 */}
+            <div className="border-t border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4">
                     <Button
                         variant="destructive"
                         className="w-full rounded-full"
-                        onClick={() => setShowLogoutDialog(true)}
+                        onClick={handleLogout}
                     >
-                        <i className="icon-[mdi--logout] mr-2 size-5" />
-                        {t("logout")}
-                    </Button>
-                </div>
-
-                {/* 退出登录确认对话框 */}
-                <AlertDialog
-                    open={showLogoutDialog}
-                    onOpenChange={setShowLogoutDialog}
-                >
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>确认退出登录？</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                {t("logout-warning")}
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel>取消</AlertDialogCancel>
-                            <AlertDialogAction
-                                onClick={toLogOut}
-                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                            >
-                                确认退出
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                    <i className="icon-[mdi--logout] mr-2 size-5" />
+                    {t("logout")}
+                </Button>
             </div>
-        </PopupLayout>
+        </div>
     );
 }

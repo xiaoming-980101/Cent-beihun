@@ -1,21 +1,27 @@
-import PopupLayout from "@/layouts/popup-layout";
+import { useEffect, useState } from "react";
+import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import { useIntl } from "@/locale";
 
-import createConfirmProvider from "../confirm";
 import { Button } from "../ui/button";
 import Version from "./version";
 
-function Form({ onCancel }: { onCancel?: () => void }) {
+interface AboutDialogProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}
+
+function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
     const t = useIntl();
 
     return (
-        <PopupLayout
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
             title={t("about-cent")}
-            onBack={onCancel}
-            className="h-full overflow-hidden"
+            maxWidth="md"
         >
-            <div className="divide-y divide-solid flex flex-col overflow-hidden py-4 gap-2">
-                <div className="w-full flex flex-col justify-between items-center px-4 gap-2 pb-4">
+            <div className="divide-y divide-solid flex flex-col gap-2">
+                <div className="w-full flex flex-col justify-between items-center gap-2 pb-4">
                     <img
                         src="/icon.png"
                         alt=""
@@ -26,7 +32,7 @@ function Form({ onCancel }: { onCancel?: () => void }) {
                     <Version />
                 </div>
                 <a
-                    className="w-full min-h-10 pb-2 flex justify-between items-center px-4"
+                    className="w-full min-h-10 pb-2 flex justify-between items-center"
                     target="_blank"
                     href="https://github.com/glink25/Cent/issues/new"
                     rel="noopener"
@@ -38,7 +44,7 @@ function Form({ onCancel }: { onCancel?: () => void }) {
                     <i className="icon-[mdi--arrow-top-right]"></i>
                 </a>
                 <a
-                    className="w-full min-h-10 pb-2 flex justify-between items-center px-4"
+                    className="w-full min-h-10 pb-2 flex justify-between items-center"
                     target="_blank"
                     href="https://glink25.github.io/tag/Cent/"
                     rel="noopener"
@@ -50,7 +56,7 @@ function Form({ onCancel }: { onCancel?: () => void }) {
                     <i className="icon-[mdi--arrow-top-right]"></i>
                 </a>
                 <a
-                    className="w-full min-h-10 pb-2 flex justify-between items-center px-4"
+                    className="w-full min-h-10 pb-2 flex justify-between items-center"
                     target="_blank"
                     href="https://github.com/glink25/Cent"
                     rel="noopener"
@@ -61,24 +67,48 @@ function Form({ onCancel }: { onCancel?: () => void }) {
                     </div>
                     <i className="icon-[mdi--arrow-top-right]"></i>
                 </a>
-                {/* <div className="w-full min-h-10 pb-2 flex justify-between items-center px-4 opacity-60">
-                    <div className="flex items-center gap-2">
-                        <i className="icon-[mdi--github] size-5"></i>
-                        <div className="text-sm">Github</div>
-                    </div>
-                    <div className="text-xs">{t("preparing")}</div>
-                </div> */}
             </div>
-        </PopupLayout>
+        </FormDialog>
     );
 }
 
-const [AboutSettingsProvider, showAboutSettings] = createConfirmProvider(Form, {
-    dialogTitle: "experimental-functions",
-    dialogModalClose: true,
-    contentClassName:
-        "h-full w-full max-h-full max-w-full rounded-none sm:rounded-md sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]",
-});
+let aboutResolveCallback: (() => void) | null = null;
+
+export function showAboutSettings(): Promise<void> {
+    return new Promise((resolve) => {
+        aboutResolveCallback = resolve;
+        window.dispatchEvent(new CustomEvent("open-about-settings"));
+    });
+}
+
+function AboutSettingsProvider() {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        const handleOpen = () => {
+            setOpen(true);
+        };
+        window.addEventListener("open-about-settings", handleOpen);
+        return () => {
+            window.removeEventListener("open-about-settings", handleOpen);
+        };
+    }, []);
+
+    const handleOpenChange = (newOpen: boolean) => {
+        setOpen(newOpen);
+        if (!newOpen && aboutResolveCallback) {
+            aboutResolveCallback();
+            aboutResolveCallback = null;
+        }
+    };
+
+    return (
+        <AboutDialog
+            open={open}
+            onOpenChange={handleOpenChange}
+        />
+    );
+}
 
 export default function AboutSettingsItem() {
     const t = useIntl();

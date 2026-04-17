@@ -3,7 +3,7 @@ import { DefaultCurrencyId } from "@/api/currency/currencies";
 import { useCurrency } from "@/hooks/use-currency";
 import type { BillFilter } from "@/ledger/type";
 import { useIntl } from "@/locale";
-import modal from "../modal";
+import { confirm } from "@/components/ui/dialog/utils";
 import { Button } from "../ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
@@ -39,10 +39,10 @@ export default function BillFilterView({
 
     const { quickCurrencies } = useCurrency();
     return (
-        <div className="flex flex-col p-2 gap-2 h-[55vh] overflow-hidden">
-            <label className="outline rounded px-4 py-1 w-fit">
+        <div className="flex max-h-[60vh] min-h-[360px] flex-col gap-3 rounded-[22px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-3 shadow-[0_12px_28px_-22px_rgba(15,23,42,0.35)]">
+            <label className="w-fit rounded-xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-4 py-1">
                 <input
-                    className="w-min outline-none font-semibold text-lg"
+                    className="w-min bg-transparent text-lg font-semibold outline-none"
                     value={name}
                     onChange={(e) => {
                         setName(e.currentTarget.value);
@@ -105,17 +105,21 @@ export default function BillFilterView({
                     </Select>
                 </div>
             </div>
-            <div className="w-full px-4 flex justify-between gap-2">
+            <div className="flex w-full justify-between gap-2 px-2">
                 <div>
                     {!edit?.hideDelete && (
                         <Button
                             variant="destructive"
                             onClick={async () => {
-                                await modal.prompt({
+                                const confirmed = await confirm({
                                     title: t(
                                         "are-you-sure-to-delete-this-filter",
                                     ),
+                                    variant: "destructive",
                                 });
+                                if (!confirmed) {
+                                    return;
+                                }
                                 onConfirm?.("delete");
                             }}
                         >

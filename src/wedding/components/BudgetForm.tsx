@@ -5,6 +5,7 @@
 import { useId, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { DatePicker } from "@/components/ui/date-picker";
 import { useWeddingStore } from "@/store/wedding";
 import { cn } from "@/utils";
 import { BUDGET_STATUSES } from "@/wedding/constants";
@@ -55,10 +56,8 @@ export function BudgetForm({ onClose, editBudget }: BudgetFormProps) {
         editBudget?.vendorPhone || "",
     );
     const [status, setStatus] = useState(editBudget?.status || "planned");
-    const [dueDate, setDueDate] = useState(
-        editBudget?.dueDate
-            ? new Date(editBudget.dueDate).toISOString().split("T")[0]
-            : "",
+    const [dueDate, setDueDate] = useState<Date | undefined>(
+        editBudget?.dueDate ? new Date(editBudget.dueDate) : undefined,
     );
     const [notes, setNotes] = useState(editBudget?.notes || "");
 
@@ -85,7 +84,7 @@ export function BudgetForm({ onClose, editBudget }: BudgetFormProps) {
             vendor: vendor.trim() || undefined,
             vendorPhone: vendorPhone.trim() || undefined,
             status: status as BudgetStatus,
-            dueDate: dueDate ? new Date(dueDate).getTime() : undefined,
+            dueDate: dueDate ? dueDate.getTime() : undefined,
             notes: notes.trim() || undefined,
         };
 
@@ -265,12 +264,10 @@ export function BudgetForm({ onClose, editBudget }: BudgetFormProps) {
                     >
                         截止日期
                     </label>
-                    <input
-                        id={dueDateInputId}
-                        type="date"
-                        className={baseFieldClassName}
-                        value={dueDate}
-                        onChange={(e) => setDueDate(e.target.value)}
+                    <DatePicker
+                        date={dueDate}
+                        onDateChange={setDueDate}
+                        placeholder="选择截止日期"
                     />
                 </div>
             </div>
@@ -301,10 +298,10 @@ export function BudgetForm({ onClose, editBudget }: BudgetFormProps) {
                 <Button
                     type="button"
                     variant="outline"
-                    className="h-12 flex-1 rounded-[18px] border-[color:var(--wedding-line)] bg-white/80 text-[color:var(--wedding-text)] hover:bg-white dark:bg-white/6 dark:hover:bg-white/10"
+                    className="h-12 flex-1 rounded-[18px] border-[color:var(--wedding-line)] bg-white/90 text-[color:var(--wedding-text)] hover:bg-white dark:border-white/20 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
                     onClick={onClose}
                 >
-                    取消
+                    关闭
                 </Button>
                 <Button
                     type="button"

@@ -4,9 +4,10 @@ import {
     type ReactNode,
     useEffect,
     useRef,
+    useState,
 } from "react";
 import { useIntl } from "@/locale";
-import createConfirmProvider from "../confirm";
+import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import IOSUnscrolledInput from "../input";
 import { Button } from "../ui/button";
 
@@ -22,26 +23,36 @@ type PromptOptions = {
     cancellable?: boolean;
 };
 
+interface PromptFormProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    edit?: PromptOptions;
+    onConfirm?: (v?: unknown) => void;
+}
+
 const PromptForm = ({
+    open,
+    onOpenChange,
     edit,
     onConfirm,
-    onCancel,
-}: {
-    edit?: PromptOptions;
-    onCancel?: () => void;
-    onConfirm?: (v?: unknown) => void;
-}) => {
+}: PromptFormProps) => {
     const t = useIntl();
     const inputRef = useRef<HTMLInputElement>(null);
     const autoFocus = edit?.input?.autoFocus !== false;
     useEffect(() => {
-        if (autoFocus) {
+        if (autoFocus && open) {
             inputRef.current?.focus();
         }
-    }, [autoFocus]);
+    }, [autoFocus, open]);
+    
     return (
-        <div className="w-full h-full flex flex-col p-4">
-            <div className="flex-1 flex flex-col gap-2">
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title={edit?.title?.toString() || ""}
+            maxWidth="sm"
+        >
+            <div className="flex flex-col gap-4">
                 {edit?.title}
                 {edit?.input && (
                     <IOSUnscrolledInput
@@ -51,13 +62,13 @@ const PromptForm = ({
                     />
                 )}
 
-                <div className="w-full flex gap-2 pt-2 items-center justify-end">
+                <div className="flex gap-2 justify-end">
                     {edit?.cancellable !== false && (
                         <Button
                             variant="ghost"
                             size="sm"
                             onClick={() => {
-                                onCancel?.();
+                                onOpenChange(false);
                             }}
                         >
                             {t("cancel")}
@@ -70,22 +81,85 @@ const PromptForm = ({
                                 inputRef.current,
                             );
                             onConfirm?.(value ?? inputRef.current?.value);
+                            onOpenChange(false);
                         }}
                     >
                         {t("confirm")}
                     </Button>
                 </div>
             </div>
-        </div>
+        </FormDialog>
     );
 };
 
-export const [PromptProvider, showPrompt] = createConfirmProvider(PromptForm, {
-    dialogTitle: "prompt",
-    dialogModalClose: false,
-    contentClassName: "w-[360px] h-fit",
-    fade: true,
-});
+export function PromptProvider() {
+    const [open, setOpen] = useState(false);
+    const [edit, setEdit] = useState<PromptOptions | undefined>(undefined);
+    const [resolveRef, setResolveRef] = useState<{
+        resolve: (value?: unknown) => void;
+    } | null>(null);
+
+    useEffect(() => {
+        const handleShow = ((e: CustomEvent<{ edit?: PromptOptions }>) => {
+            setEdit(e.detail.edit);
+            setOpen(true);
+        }) as EventListener;
+
+        const handleStoreResolve = ((
+            e: CustomEvent<{ resolve: (value?: unknown) => void }>,
+        ) => {
+            setResolveRef({ resolve: e.detail.resolve });
+        }) as EventListener;
+
+        window.addEventListener("show-prompt-modal", handleShow);
+        window.addEventListener("store-prompt-resolve", handleStoreResolve);
+
+        return () => {
+            window.removeEventListener("show-prompt-modal", handleShow);
+            window.removeEventListener("store-prompt-resolve", handleStoreResolve);
+        };
+    }, []);
+
+    const handleConfirm = (value?: unknown) => {
+        resolveRef?.resolve(value);
+        setOpen(false);
+        setEdit(undefined);
+        setResolveRef(null);
+    };
+
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen) {
+            resolveRef?.resolve(undefined);
+            setResolveRef(null);
+            setEdit(undefined);
+        }
+        setOpen(newOpen);
+    };
+
+    return (
+        <PromptForm
+            open={open}
+            onOpenChange={handleOpenChange}
+            edit={edit}
+            onConfirm={handleConfirm}
+        />
+    );
+}
+
+export function showPrompt(edit?: PromptOptions): Promise<unknown | undefined> {
+    return new Promise((resolve) => {
+        window.dispatchEvent(
+            new CustomEvent("show-prompt-modal", { detail: { edit } }),
+        );
+        setTimeout(() => {
+            window.dispatchEvent(
+                new CustomEvent("store-prompt-resolve", {
+                    detail: { resolve },
+                }),
+            );
+        }, 0);
+    });
+}
 
 export const prompt = (v: PromptOptions) => {
     return showPrompt(v);

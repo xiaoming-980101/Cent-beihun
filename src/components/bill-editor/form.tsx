@@ -271,9 +271,10 @@ export default function EditorForm({
             input={monitorFocused}
         >
             <PopupLayout
-                className="flex h-full flex-col overflow-hidden bg-[color:var(--wedding-app-bg)] pb-0"
+                className="flex h-full flex-col overflow-hidden pb-0"
                 onBack={goBack}
                 hideBack={false}
+                dialogMode
             >
                 {/* 顶部金额输入区 */}
                 <div className="flex-shrink-0 px-4 pt-2 pb-3">
@@ -281,7 +282,7 @@ export default function EditorForm({
                         {/* 收支切换 */}
                         <div className="mb-4 flex justify-center">
                             <Switch.Root
-                                className="relative flex h-12 w-48 items-center justify-center rounded-2xl bg-black/20 p-1.5 backdrop-blur-sm"
+                                className="relative inline-flex h-12 w-[340px] items-center rounded-2xl bg-white/20 p-1 backdrop-blur-sm"
                                 checked={billState.type === "income"}
                                 onCheckedChange={() => {
                                     setBillState((v) => ({
@@ -297,8 +298,8 @@ export default function EditorForm({
                                     }));
                                 }}
                             >
-                                <Switch.Thumb className="flex h-full w-1/2 -translate-x-[90px] items-center justify-center rounded-xl bg-red-500 shadow-md transition-all data-[state=checked]:translate-x-[90px] data-[state=checked]:bg-green-500">
-                                    <span className="text-sm font-bold text-white">
+                                <Switch.Thumb className="block h-10 w-[calc(50%-4px)] rounded-xl bg-gradient-to-r from-red-500 to-orange-500 shadow-lg transition-transform duration-200 ease-out data-[state=checked]:translate-x-[calc(100%+8px)] data-[state=checked]:from-green-500 data-[state=checked]:to-emerald-500">
+                                    <span className="flex h-full items-center justify-center text-sm font-bold text-white">
                                         {billState.type === "expense"
                                             ? "💸 " + t("expense")
                                             : "💰 " + t("income")}

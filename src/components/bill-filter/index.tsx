@@ -1,18 +1,82 @@
-import createConfirmProvider from "../confirm";
+import { useEffect, useState } from "react";
+import { FormDialog } from "../ui/dialog/form-dialog";
 import BillFilterView from "./filter-view";
 import BillFilterForm from "./form";
+import type { BillFilter } from "@/ledger/type";
 
 export default BillFilterForm;
 
-const confirms = createConfirmProvider(BillFilterView, {
-    dialogTitle: "Edit Bill Filter",
-    fade: true,
-    swipe: false,
-    contentClassName: "overflow-hidden",
-});
+// 事件驱动的弹窗管理
+type BillFilterEdit = {
+    filter: BillFilter;
+    name?: string;
+    displayCurrency?: string;
+    hideDelete?: boolean;
+};
 
-const [BillFilterViewProvider, showBillFilterView] = confirms;
+type BillFilterResult = "delete" | { filter: BillFilter; name?: string; displayCurrency?: string };
 
-export { BillFilterViewProvider };
+let resolveCallback: ((value: BillFilterResult | null) => void) | null = null;
 
-export { showBillFilterView };
+export const BillFilterViewProvider = () => {
+    const [open, setOpen] = useState(false);
+    const [editData, setEditData] = useState<BillFilterEdit | undefined>();
+
+    useEffect(() => {
+        const handleShow = (event: CustomEvent<BillFilterEdit>) => {
+            setEditData(event.detail);
+            setOpen(true);
+        };
+
+        window.addEventListener("show-bill-filter-view" as any, handleShow);
+        return () => {
+            window.removeEventListener("show-bill-filter-view" as any, handleShow);
+        };
+    }, []);
+
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen) {
+            resolveCallback?.(null);
+            resolveCallback = null;
+        }
+        setOpen(newOpen);
+    };
+
+    const handleConfirm = (value: BillFilterResult) => {
+        resolveCallback?.(value);
+        resolveCallback = null;
+        setOpen(false);
+    };
+
+    const handleCancel = () => {
+        resolveCallback?.(null);
+        resolveCallback = null;
+        setOpen(false);
+    };
+
+    return (
+        <FormDialog
+            open={open}
+            onOpenChange={handleOpenChange}
+            title="Edit Bill Filter"
+            description="保存筛选条件并设置统计展示币种"
+            maxWidth="sm"
+            className="overflow-hidden sm:max-h-[72vh]"
+        >
+            <BillFilterView
+                edit={editData}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+        </FormDialog>
+    );
+};
+
+export const showBillFilterView = (edit?: BillFilterEdit): Promise<BillFilterResult | null> => {
+    return new Promise((resolve) => {
+        resolveCallback = resolve;
+        window.dispatchEvent(
+            new CustomEvent("show-bill-filter-view", { detail: edit })
+        );
+    });
+};

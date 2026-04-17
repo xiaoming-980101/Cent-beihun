@@ -3,7 +3,6 @@ import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod/mini";
 import { StorageDeferredAPI } from "@/api/storage";
-import createConfirmProvider from "@/components/confirm";
 import { Button } from "@/components/ui/button";
 import {
     Form,
@@ -27,7 +26,7 @@ import type { BillCategory, BillType } from "@/ledger/type";
 import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
 import { cn } from "@/utils";
-import modal from "../modal";
+import { alert } from "@/components/ui/dialog/utils";
 import { Switch } from "../ui/switch";
 import CategoryIcon from "./icon";
 import { ICONS } from "./icons";
@@ -151,9 +150,8 @@ export default function CategoryEditForm({
             categories: cates.map((c) => c.id),
         });
         if (exist.length > 0) {
-            modal.prompt({
+            await alert({
                 title: t("category-delete-alert", { n: exist.length }),
-                cancellable: false,
             });
             return;
         }
@@ -167,6 +165,7 @@ export default function CategoryEditForm({
                 className="overflow-hidden w-full h-full flex-col gap-2 items-center"
                 onBack={onCancel}
                 title={t("edit-category-details")}
+                dialogMode
                 right={
                     <div className="flex items-center gap-2 pr-2">
                         {edit?.id && (

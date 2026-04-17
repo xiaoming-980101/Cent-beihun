@@ -9,8 +9,8 @@ import { useUserStore } from "@/store/user";
 import { cn } from "@/utils";
 import { decodeApiKey, encodeApiKey } from "@/utils/api-key";
 import { requestAI } from "../assistant/request";
-import createConfirmProvider from "../confirm";
-import modal from "../modal";
+import { FormDialog } from "../ui/dialog/form-dialog";
+import { prompt } from "../ui/dialog/utils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -22,15 +22,19 @@ import {
 } from "../ui/select";
 
 // 配置编辑弹框
-function ConfigForm({
-    onCancel,
+interface ConfigFormDialogProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onConfirm?: (v: AIConfig) => void;
+    edit?: AIConfig;
+}
+
+function ConfigFormDialog({
+    open,
+    onOpenChange,
     onConfirm,
     edit,
-}: {
-    onConfirm?: (v: AIConfig) => void;
-    onCancel?: () => void;
-    edit?: AIConfig;
-}) {
+}: ConfigFormDialogProps) {
     const t = useIntl();
     const [name, setName] = useState(edit?.name ?? "");
     const [apiKey, setApiKey] = useState(edit ? decodeApiKey(edit.apiKey) : "");
@@ -71,7 +75,8 @@ function ConfigForm({
         };
 
         onConfirm?.(config);
-    }, [name, apiKey, apiUrl, model, apiType, edit, onConfirm, t]);
+        onOpenChange(false);
+    }, [name, apiKey, apiUrl, model, apiType, edit, onConfirm, onOpenChange, t]);
 
     const handleTestConnection = useCallback(async () => {
         if (!apiKey.trim() || !apiUrl.trim() || !model.trim()) {
@@ -115,157 +120,157 @@ function ConfigForm({
     }, [apiKey, apiUrl, model, apiType, t]);
 
     return (
-        <PopupLayout
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
             title={edit ? t("edit-ai-config") : t("create-ai-config")}
-            onBack={onCancel}
-            className="h-full overflow-hidden"
+            maxWidth="md"
+            fullScreenOnMobile={true}
         >
-            <div className="flex-1 flex flex-col pb-4 gap-4 overflow-hidden">
-                <div className="flex-1 flex flex-col gap-4 overflow-y-auto">
-                    {/* 配置名称 */}
-                    <div className="px-4">
-                        <div className="text-sm py-1">
-                            {t("ai-config-name")}
-                        </div>
-                        <Input
-                            name="ai-config-name"
-                            placeholder={t("ai-config-name-placeholder")}
-                            value={name}
-                            onChange={(e) => setName(e.currentTarget.value)}
-                        />
+            <div className="flex flex-col gap-4">
+                {/* 配置名称 */}
+                <div>
+                    <div className="text-sm py-1">
+                        {t("ai-config-name")}
                     </div>
+                    <Input
+                        name="ai-config-name"
+                        placeholder={t("ai-config-name-placeholder")}
+                        value={name}
+                        onChange={(e) => setName(e.currentTarget.value)}
+                    />
+                </div>
 
-                    {/* API 类型 */}
-                    <div className="px-4">
-                        <div className="text-sm py-1">
-                            {t("ai-config-api-type")}
-                        </div>
-                        <Select
-                            value={apiType}
-                            onValueChange={(value: AIConfig["apiType"]) =>
-                                setApiType(value)
+                {/* API 类型 */}
+                <div>
+                    <div className="text-sm py-1">
+                        {t("ai-config-api-type")}
+                    </div>
+                    <Select
+                        value={apiType}
+                        onValueChange={(value: AIConfig["apiType"]) =>
+                            setApiType(value)
+                        }
+                    >
+                        <SelectTrigger>
+                            <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                            <SelectItem value="open-ai-compatible">
+                                {t("open-ai-compatible")}
+                            </SelectItem>
+                            <SelectItem value="google-ai-studio">
+                                {t("google-ai-studio")}
+                            </SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <div className="text-xs opacity-60 mt-1">
+                        {apiType === "open-ai-compatible"
+                            ? t("ai-config-api-type-description", {
+                                  a: (chunks: React.ReactNode) => (
+                                      <a
+                                          href="https://platform.openai.com/docs/api-reference"
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-blue-500 hover:text-blue-600 underline"
+                                      >
+                                          {chunks}
+                                      </a>
+                                  ),
+                              })
+                            : t("ai-config-api-type-google-description", {
+                                  a: (chunks: React.ReactNode) => (
+                                      <a
+                                          href="https://ai.google.dev/api"
+                                          target="_blank"
+                                          rel="noopener noreferrer"
+                                          className="text-blue-500 hover:text-blue-600 underline"
+                                      >
+                                          {chunks}
+                                      </a>
+                                  ),
+                              })}
+                    </div>
+                </div>
+
+                {/* API URL */}
+                <div>
+                    <div className="text-sm py-1">
+                        {t("ai-config-api-url")}
+                    </div>
+                    <Input
+                        name="ai-config-url"
+                        placeholder={t("ai-config-api-url-placeholder")}
+                        value={apiUrl}
+                        onChange={(e) => setApiUrl(e.currentTarget.value)}
+                    />
+                    <div className="text-xs opacity-60 mt-1">
+                        {t("ai-config-api-url-description", {
+                            a: (chunks: React.ReactNode) => (
+                                <a
+                                    href="https://glink25.github.io/post/%E4%BD%BF%E7%94%A8Relayr%E4%BB%A3%E7%90%86%E5%8D%8F%E8%AE%AEURL/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-500 hover:text-blue-600 underline"
+                                >
+                                    {chunks}
+                                </a>
+                            ),
+                        })}
+                    </div>
+                </div>
+
+                {/* API Key */}
+                <div>
+                    <div className="text-sm py-1">
+                        {t("ai-config-api-key")}
+                    </div>
+                    <div className="relative">
+                        <Input
+                            name="ai-config-password"
+                            type={showApiKey ? "text" : "password"}
+                            placeholder={t("ai-config-api-key-placeholder")}
+                            value={apiKey}
+                            onChange={(e) =>
+                                setApiKey(e.currentTarget.value)
                             }
+                            className="pr-10"
+                        />
+                        <button
+                            type="button"
+                            onClick={() => setShowApiKey(!showApiKey)}
+                            className="absolute right-0 top-0 h-full px-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
                         >
-                            <SelectTrigger>
-                                <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="open-ai-compatible">
-                                    {t("open-ai-compatible")}
-                                </SelectItem>
-                                <SelectItem value="google-ai-studio">
-                                    {t("google-ai-studio")}
-                                </SelectItem>
-                            </SelectContent>
-                        </Select>
-                        <div className="text-xs opacity-60 mt-1">
-                            {apiType === "open-ai-compatible"
-                                ? t("ai-config-api-type-description", {
-                                      a: (chunks: React.ReactNode) => (
-                                          <a
-                                              href="https://platform.openai.com/docs/api-reference"
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="text-blue-500 hover:text-blue-600 underline"
-                                          >
-                                              {chunks}
-                                          </a>
-                                      ),
-                                  })
-                                : t("ai-config-api-type-google-description", {
-                                      a: (chunks: React.ReactNode) => (
-                                          <a
-                                              href="https://ai.google.dev/api"
-                                              target="_blank"
-                                              rel="noopener noreferrer"
-                                              className="text-blue-500 hover:text-blue-600 underline"
-                                          >
-                                              {chunks}
-                                          </a>
-                                      ),
-                                  })}
-                        </div>
+                            {showApiKey ? (
+                                <i className="icon-[mdi--eye-off] size-4"></i>
+                            ) : (
+                                <i className="icon-[mdi--eye] size-4"></i>
+                            )}
+                        </button>
                     </div>
-
-                    {/* API URL */}
-                    <div className="px-4">
-                        <div className="text-sm py-1">
-                            {t("ai-config-api-url")}
-                        </div>
-                        <Input
-                            name="ai-config-url"
-                            placeholder={t("ai-config-api-url-placeholder")}
-                            value={apiUrl}
-                            onChange={(e) => setApiUrl(e.currentTarget.value)}
-                        />
-                        <div className="text-xs opacity-60 mt-1">
-                            {t("ai-config-api-url-description", {
-                                a: (chunks: React.ReactNode) => (
-                                    <a
-                                        href="https://glink25.github.io/post/%E4%BD%BF%E7%94%A8Relayr%E4%BB%A3%E7%90%86%E5%8D%8F%E8%AE%AEURL/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-blue-500 hover:text-blue-600 underline"
-                                    >
-                                        {chunks}
-                                    </a>
-                                ),
-                            })}
-                        </div>
+                    <div className="text-xs opacity-60 mt-1">
+                        {t("ai-config-api-key-description")}
                     </div>
+                </div>
 
-                    {/* API Key */}
-                    <div className="px-4">
-                        <div className="text-sm py-1">
-                            {t("ai-config-api-key")}
-                        </div>
-                        <div className="relative">
-                            <Input
-                                name="ai-config-password"
-                                type={showApiKey ? "text" : "password"}
-                                placeholder={t("ai-config-api-key-placeholder")}
-                                value={apiKey}
-                                onChange={(e) =>
-                                    setApiKey(e.currentTarget.value)
-                                }
-                                className="pr-10"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setShowApiKey(!showApiKey)}
-                                className="absolute right-0 top-0 h-full px-3 flex items-center text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 transition-colors"
-                            >
-                                {showApiKey ? (
-                                    <i className="icon-[mdi--eye-off] size-4"></i>
-                                ) : (
-                                    <i className="icon-[mdi--eye] size-4"></i>
-                                )}
-                            </button>
-                        </div>
-                        <div className="text-xs opacity-60 mt-1">
-                            {t("ai-config-api-key-description")}
-                        </div>
+                {/* Model */}
+                <div>
+                    <div className="text-sm py-1">
+                        {t("ai-config-model")}
                     </div>
-
-                    {/* Model */}
-                    <div className="px-4">
-                        <div className="text-sm py-1">
-                            {t("ai-config-model")}
-                        </div>
-                        <Input
-                            name="ai-config-model"
-                            placeholder={t("ai-config-model-placeholder")}
-                            value={model}
-                            onChange={(e) => setModel(e.currentTarget.value)}
-                        />
-                        <div className="text-xs opacity-60 mt-1">
-                            {t("ai-config-model-description")}
-                        </div>
+                    <Input
+                        name="ai-config-model"
+                        placeholder={t("ai-config-model-placeholder")}
+                        value={model}
+                        onChange={(e) => setModel(e.currentTarget.value)}
+                    />
+                    <div className="text-xs opacity-60 mt-1">
+                        {t("ai-config-model-description")}
                     </div>
                 </div>
 
                 {/* 测试连接按钮 */}
-                <div className="px-4">
+                <div>
                     <Button
                         variant="outline"
                         size="sm"
@@ -280,12 +285,12 @@ function ConfigForm({
                 </div>
 
                 {/* 保存按钮 */}
-                <div className="px-4">
+                <div>
                     <div className="flex gap-2">
                         <Button
                             variant="outline"
                             size="sm"
-                            onClick={onCancel}
+                            onClick={() => onOpenChange(false)}
                             className="flex-1"
                         >
                             {t("cancel")}
@@ -301,19 +306,70 @@ function ConfigForm({
                     </div>
                 </div>
             </div>
-        </PopupLayout>
+        </FormDialog>
     );
 }
 
-const [ConfigFormProvider, showConfigForm] = createConfirmProvider(ConfigForm, {
-    dialogTitle: "create-ai-config",
-    dialogModalClose: true,
-    contentClassName:
-        "h-full w-full max-h-full max-w-full rounded-none sm:rounded-md sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]",
-});
+let configFormResolveCallback: ((config: AIConfig | null) => void) | null = null;
+let configFormEditData: AIConfig | undefined = undefined;
+
+export function showConfigForm(edit?: AIConfig): Promise<AIConfig | null> {
+    return new Promise((resolve) => {
+        configFormResolveCallback = resolve;
+        configFormEditData = edit;
+        window.dispatchEvent(new CustomEvent("open-config-form"));
+    });
+}
+
+function ConfigFormProvider() {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        const handleOpen = () => {
+            setOpen(true);
+        };
+        window.addEventListener("open-config-form", handleOpen);
+        return () => {
+            window.removeEventListener("open-config-form", handleOpen);
+        };
+    }, []);
+
+    const handleConfirm = (config: AIConfig) => {
+        if (configFormResolveCallback) {
+            configFormResolveCallback(config);
+            configFormResolveCallback = null;
+        }
+        configFormEditData = undefined;
+    };
+
+    const handleOpenChange = (newOpen: boolean) => {
+        setOpen(newOpen);
+        if (!newOpen && configFormResolveCallback) {
+            configFormResolveCallback(null);
+            configFormResolveCallback = null;
+        }
+        if (!newOpen) {
+            configFormEditData = undefined;
+        }
+    };
+
+    return (
+        <ConfigFormDialog
+            open={open}
+            onOpenChange={handleOpenChange}
+            onConfirm={handleConfirm}
+            edit={configFormEditData}
+        />
+    );
+}
 
 // 主配置列表界面
-function Form({ onCancel }: { onCancel?: () => void }) {
+interface AssistantFormDialogProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}
+
+function AssistantFormDialog({ open, onOpenChange }: AssistantFormDialogProps) {
     const t = useIntl();
     const { id: userId } = useUserStore();
 
@@ -438,9 +494,11 @@ function Form({ onCancel }: { onCancel?: () => void }) {
 
     const handleDeleteConfig = useCallback(
         async (configId: string) => {
-            await modal.prompt({
+            const result = await prompt({
                 title: t("are-you-sure-to-delete-this-config"),
             });
+            if (!result) return;
+            
             await useLedgerStore.getState().updatePersonalMeta((prev) => {
                 if (!prev.assistant?.configs) return prev;
 
@@ -467,25 +525,29 @@ function Form({ onCancel }: { onCancel?: () => void }) {
     );
 
     return (
-        <PopupLayout
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
             title={t("ai-assistant")}
-            onBack={onCancel}
-            className="h-full overflow-hidden"
-            right={
-                <Button
-                    variant="default"
-                    size="sm"
-                    onClick={handleCreateConfig}
-                    className="w-full"
-                >
-                    <i className="icon-[mdi--plus] size-4"></i>
-                    {t("create-ai-config")}
-                </Button>
-            }
+            maxWidth="md"
+            fullScreenOnMobile={true}
         >
-            <div className="flex-1 flex flex-col overflow-y-auto pb-4">
+            <div className="flex flex-col gap-4">
+                {/* 创建配置按钮 */}
+                <div>
+                    <Button
+                        variant="default"
+                        size="sm"
+                        onClick={handleCreateConfig}
+                        className="w-full"
+                    >
+                        <i className="icon-[mdi--plus] size-4"></i>
+                        {t("create-ai-config")}
+                    </Button>
+                </div>
+
                 {/* 配置列表 */}
-                <div className="px-4">
+                <div>
                     <div className="text-sm font-medium py-2">
                         {t("ai-config-list")}
                     </div>
@@ -577,16 +639,47 @@ function Form({ onCancel }: { onCancel?: () => void }) {
                 </div>
             </div>
             <ConfigFormProvider />
-        </PopupLayout>
+        </FormDialog>
     );
 }
 
-export const [AssistantProvider, showAssistant] = createConfirmProvider(Form, {
-    dialogTitle: "ai-assistant",
-    dialogModalClose: true,
-    contentClassName:
-        "h-full w-full max-h-full max-w-full rounded-none sm:rounded-md sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]",
-});
+let assistantResolveCallback: (() => void) | null = null;
+
+export function showAssistant(): Promise<void> {
+    return new Promise((resolve) => {
+        assistantResolveCallback = resolve;
+        window.dispatchEvent(new CustomEvent("open-assistant"));
+    });
+}
+
+export function AssistantProvider() {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        const handleOpen = () => {
+            setOpen(true);
+        };
+        window.addEventListener("open-assistant", handleOpen);
+        return () => {
+            window.removeEventListener("open-assistant", handleOpen);
+        };
+    }, []);
+
+    const handleOpenChange = (newOpen: boolean) => {
+        setOpen(newOpen);
+        if (!newOpen && assistantResolveCallback) {
+            assistantResolveCallback();
+            assistantResolveCallback = null;
+        }
+    };
+
+    return (
+        <AssistantFormDialog
+            open={open}
+            onOpenChange={handleOpenChange}
+        />
+    );
+}
 
 export default function AssistantSettingsItem() {
     const t = useIntl();

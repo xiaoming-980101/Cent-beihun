@@ -1,18 +1,67 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useLongPress } from "@/hooks/use-long-press";
-import createConfirmProvider from "../confirm";
+import { FormDialog } from "../ui/dialog/form-dialog";
 import { BaseButton } from "./base";
 import KeyboardForm from "./keyboard-form";
 
-const [KeyboardFormProvider, showKeyboardForm] = createConfirmProvider(
-    KeyboardForm,
-    {
-        dialogTitle: "text input",
-        dialogModalClose: false,
-        fade: true,
-        swipe: false,
-    },
-);
+// 事件驱动的弹窗管理
+let resolveCallback: ((value: string | null) => void) | null = null;
+
+export const KeyboardFormProvider = () => {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        const handleShow = () => {
+            setOpen(true);
+        };
+
+        window.addEventListener("show-keyboard-form" as any, handleShow);
+        return () => {
+            window.removeEventListener("show-keyboard-form" as any, handleShow);
+        };
+    }, []);
+
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen) {
+            resolveCallback?.(null);
+            resolveCallback = null;
+        }
+        setOpen(newOpen);
+    };
+
+    const handleConfirm = (value: string) => {
+        resolveCallback?.(value);
+        resolveCallback = null;
+        setOpen(false);
+    };
+
+    const handleCancel = () => {
+        resolveCallback?.(null);
+        resolveCallback = null;
+        setOpen(false);
+    };
+
+    return (
+        <FormDialog
+            open={open}
+            onOpenChange={handleOpenChange}
+            title="text input"
+            maxWidth="md"
+        >
+            <KeyboardForm
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+        </FormDialog>
+    );
+};
+
+export const showKeyboardForm = (): Promise<string | null> => {
+    return new Promise((resolve) => {
+        resolveCallback = resolve;
+        window.dispatchEvent(new CustomEvent("show-keyboard-form"));
+    });
+};
 
 export function KeyboardAddButton({
     onClick,

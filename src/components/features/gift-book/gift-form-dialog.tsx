@@ -4,18 +4,21 @@ import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod/mini";
 import { Button } from "@/components/ui/button";
-import { useFocusTrap } from "@/hooks/use-focus-trap";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogOverlay,
-    DialogPortal,
-    DialogTitle,
-} from "@/components/ui/dialog";
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
+import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import { useWeddingStore } from "@/store/wedding";
 import { GIFT_EVENTS, PAYMENT_METHODS, RELATION_GROUPS } from "@/wedding/constants";
 import type { GiftRecord } from "@/wedding/type";
+
+const EMPTY_SELECT_VALUE = "__EMPTY__";
 
 const giftFormSchema = z.object({
     type: z.enum(["received", "sent"]),
@@ -72,7 +75,6 @@ export function GiftFormDialog({
 
     const { register, handleSubmit, watch, setValue, formState } = form;
     const selectedGuestId = watch("guestId");
-    const focusTrapRef = useFocusTrap(open);
 
     const onSubmit = async (values: GiftFormValues) => {
         const selectedGuest = guests.find((guest) => guest.id === values.guestId);
@@ -116,179 +118,207 @@ export function GiftFormDialog({
     };
 
     return (
-        <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogPortal>
-                <DialogOverlay className="fixed inset-0 z-[80] bg-[rgba(15,12,18,0.56)]" />
-                <div
-                    ref={focusTrapRef}
-                    className="fixed inset-0 z-[81] flex items-end justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:items-center sm:px-4 sm:py-6"
-                >
-                    <DialogContent className="z-[82] flex max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] w-full max-w-[560px] flex-col overflow-hidden rounded-[30px] border border-[#edd6df] bg-[#fffdfd] shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)] dark:border-[#302631] dark:bg-[#181419] sm:max-h-[min(84vh,760px)]">
-                        <DialogHeader className="border-b border-[color:var(--wedding-line)] px-5 pb-4 pt-5">
-                            <DialogTitle className="wedding-topbar-title pl-1 text-[24px] text-[color:var(--wedding-text)]">
-                                {editRecord ? "编辑礼金记录" : "添加礼金记录"}
-                            </DialogTitle>
-                        </DialogHeader>
-                        <form
-                            className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-4"
-                            onSubmit={handleSubmit(onSubmit)}
-                        >
-                            <div className="space-y-5 px-1 pb-1">
-                                <div className="wedding-soft-card space-y-5 p-4">
-                                    <div>
-                                        <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
-                                            往来类型
-                                        </label>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {[
-                                                { key: "received", label: "收礼" },
-                                                { key: "sent", label: "送礼" },
-                                            ].map((item) => (
-                                                <button
-                                                    key={item.key}
-                                                    type="button"
-                                                    className={`rounded-[18px] border px-3 py-3 text-sm font-medium transition ${
-                                                        watch("type") === item.key
-                                                            ? "border-transparent bg-pink-500 text-white shadow-sm"
-                                                            : "border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] text-[color:var(--wedding-text-soft)]"
-                                                    }`}
-                                                    onClick={() =>
-                                                        setValue(
-                                                            "type",
-                                                            item.key as "received" | "sent",
-                                                        )
-                                                    }
-                                                >
-                                                    {item.label}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
-                                            关联亲友
-                                        </label>
-                                        <select className="wedding-input" {...register("guestId")}>
-                                            <option value="">选择亲友（可选）</option>
-                                            {guests.map((item) => (
-                                                <option key={item.id} value={item.id}>
-                                                    {item.name}
-                                                </option>
-                                            ))}
-                                        </select>
-                                        {!selectedGuestId ? (
-                                            <div className="mt-2 grid gap-2 sm:grid-cols-2">
-                                                <input
-                                                    type="text"
-                                                    className="wedding-input"
-                                                    placeholder="未关联亲友时，输入姓名"
-                                                    {...register("guestName")}
-                                                />
-                                                <select className="wedding-input" {...register("relation")}>
-                                                    {RELATION_GROUPS.map((item) => (
-                                                        <option key={item.id} value={item.id}>
-                                                            {item.name}
-                                                        </option>
-                                                    ))}
-                                                </select>
-                                            </div>
-                                        ) : null}
-                                    </div>
-                                </div>
-
-                                <div className="wedding-soft-card space-y-4 p-4">
-                                    <div className="grid gap-4 sm:grid-cols-2">
-                                        <div>
-                                            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
-                                                金额
-                                            </label>
-                                            <input
-                                                type="number"
-                                                className="wedding-input"
-                                                placeholder="请输入金额"
-                                                {...register("amount", { valueAsNumber: true })}
-                                            />
-                                            {formState.errors.amount ? (
-                                                <p className="mt-1 text-xs text-red-500">
-                                                    {formState.errors.amount.message}
-                                                </p>
-                                            ) : null}
-                                        </div>
-                                        <div>
-                                            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
-                                                日期
-                                            </label>
-                                            <input
-                                                type="date"
-                                                className="wedding-input"
-                                                {...register("date")}
-                                            />
-                                        </div>
-                                    </div>
-                                    <div className="grid gap-4 sm:grid-cols-2">
-                                        <div>
-                                            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
-                                                事件
-                                            </label>
-                                            <select className="wedding-input" {...register("event")}>
-                                                {GIFT_EVENTS.map((item) => (
-                                                    <option key={item.id} value={item.id}>
-                                                        {item.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                        <div>
-                                            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
-                                                支付方式
-                                            </label>
-                                            <select className="wedding-input" {...register("method")}>
-                                                <option value="">选择支付方式（可选）</option>
-                                                {PAYMENT_METHODS.map((item) => (
-                                                    <option key={item.id} value={item.id}>
-                                                        {item.name}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="wedding-soft-card space-y-4 p-4">
-                                    <div>
-                                        <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
-                                            备注
-                                        </label>
-                                        <textarea
-                                            className="wedding-input min-h-[112px] resize-none"
-                                            rows={3}
-                                            placeholder="记录红包来源、回礼情况或补充说明"
-                                            {...register("note")}
-                                        />
-                                    </div>
-                                </div>
-
-                                <div className="flex gap-3 pt-1">
-                                    <Button
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title={editRecord ? "编辑礼金记录" : "添加礼金记录"}
+            maxWidth="md"
+            fullScreenOnMobile={true}
+            saveButtonText={editRecord ? "保存更新" : "添加记录"}
+            onSave={handleSubmit(onSubmit)}
+        >
+            <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="space-y-5">
+                    {/* 往来类型 */}
+                    <div className="wedding-soft-card space-y-5 p-4">
+                        <div>
+                            <label className="mb-2 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
+                                往来类型
+                            </label>
+                            <div className="grid grid-cols-2 gap-2">
+                                {[
+                                    { key: "received", label: "收礼" },
+                                    { key: "sent", label: "送礼" },
+                                ].map((item) => (
+                                    <button
+                                        key={item.key}
                                         type="button"
-                                        variant="outline"
-                                        className="h-12 flex-1 rounded-[18px] border-[color:var(--wedding-line)] bg-white/80 text-[color:var(--wedding-text)] hover:bg-white dark:bg-white/6 dark:hover:bg-white/10"
-                                        onClick={() => onOpenChange(false)}
+                                        className={`rounded-[18px] border px-3 py-3 text-sm font-medium transition ${
+                                            watch("type") === item.key
+                                                ? "border-transparent bg-pink-500 text-white shadow-sm"
+                                                : "border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] text-[color:var(--wedding-text-soft)]"
+                                        }`}
+                                        onClick={() =>
+                                            setValue(
+                                                "type",
+                                                item.key as "received" | "sent",
+                                            )
+                                        }
                                     >
-                                        取消
-                                    </Button>
-                                    <Button
-                                        type="submit"
-                                        className="h-12 flex-1 rounded-[18px] bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 text-white shadow-[0_18px_30px_-18px_rgba(217,70,150,0.9)] hover:opacity-95"
-                                    >
-                                        {editRecord ? "保存更新" : "添加记录"}
-                                    </Button>
-                                </div>
+                                        {item.label}
+                                    </button>
+                                ))}
                             </div>
-                        </form>
-                    </DialogContent>
+                        </div>
+
+                        {/* 关联亲友 */}
+                        <div>
+                            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
+                                关联亲友
+                            </label>
+                            <Select
+                                value={watch("guestId") || ""}
+                                onValueChange={(value) =>
+                                    setValue(
+                                        "guestId",
+                                        value === EMPTY_SELECT_VALUE ? "" : value,
+                                    )
+                                }
+                            >
+                                <SelectTrigger className="wedding-input">
+                                    <SelectValue placeholder="选择亲友（可选）" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value={EMPTY_SELECT_VALUE}>
+                                        选择亲友（可选）
+                                    </SelectItem>
+                                    {guests.map((item) => (
+                                        <SelectItem key={item.id} value={item.id}>
+                                            {item.name}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+
+                            {!selectedGuestId ? (
+                                <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                                    <Input
+                                        type="text"
+                                        className="wedding-input"
+                                        placeholder="未关联亲友时，输入姓名"
+                                        {...register("guestName")}
+                                    />
+                                    <Select
+                                        value={watch("relation")}
+                                        onValueChange={(value: any) =>
+                                            setValue("relation", value)
+                                        }
+                                    >
+                                        <SelectTrigger className="wedding-input">
+                                            <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            {RELATION_GROUPS.map((item) => (
+                                                <SelectItem key={item.id} value={item.id}>
+                                                    {item.name}
+                                                </SelectItem>
+                                            ))}
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+                            ) : null}
+                        </div>
+                    </div>
+
+                    {/* 金额和日期 */}
+                    <div className="wedding-soft-card space-y-4 p-4">
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
+                                    金额
+                                </label>
+                                <Input
+                                    type="number"
+                                    className="wedding-input"
+                                    placeholder="请输入金额"
+                                    {...register("amount", { valueAsNumber: true })}
+                                />
+                                {formState.errors.amount ? (
+                                    <p className="mt-1 text-xs text-red-500">
+                                        {formState.errors.amount.message}
+                                    </p>
+                                ) : null}
+                            </div>
+                            <div>
+                                <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
+                                    日期
+                                </label>
+                                <Input
+                                    type="date"
+                                    className="wedding-input"
+                                    {...register("date")}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="grid gap-4 sm:grid-cols-2">
+                            <div>
+                                <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
+                                    事件
+                                </label>
+                                <Select
+                                    value={watch("event")}
+                                    onValueChange={(value: any) => setValue("event", value)}
+                                >
+                                    <SelectTrigger className="wedding-input">
+                                        <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {GIFT_EVENTS.map((item) => (
+                                            <SelectItem key={item.id} value={item.id}>
+                                                {item.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            <div>
+                                <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
+                                    支付方式
+                                </label>
+                                <Select
+                                    value={watch("method") || ""}
+                                    onValueChange={(value) =>
+                                        setValue(
+                                            "method",
+                                            value === EMPTY_SELECT_VALUE ? "" : value,
+                                        )
+                                    }
+                                >
+                                    <SelectTrigger className="wedding-input">
+                                        <SelectValue placeholder="选择支付方式（可选）" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value={EMPTY_SELECT_VALUE}>
+                                            选择支付方式（可选）
+                                        </SelectItem>
+                                        {PAYMENT_METHODS.map((item) => (
+                                            <SelectItem key={item.id} value={item.id}>
+                                                {item.name}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* 备注 */}
+                    <div className="wedding-soft-card space-y-4 p-4">
+                        <div>
+                            <label className="mb-1 block text-[11px] font-semibold uppercase tracking-[0.16em] wedding-muted">
+                                备注
+                            </label>
+                            <Textarea
+                                className="wedding-input min-h-[112px] resize-none"
+                                rows={3}
+                                placeholder="记录红包来源、回礼情况或补充说明"
+                                {...register("note")}
+                            />
+                        </div>
+                    </div>
                 </div>
-            </DialogPortal>
-        </Dialog>
+            </form>
+        </FormDialog>
     );
 }

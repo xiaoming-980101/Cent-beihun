@@ -356,6 +356,7 @@ export function BudgetDetailForm({
                 right={<Portal.Slot className="px-2" />}
                 onBack={onCancel}
                 className="h-full overflow-hidden"
+                dialogMode
             >
                 {budget && <BudgetDetail budget={budget} />}
             </PopupLayout>

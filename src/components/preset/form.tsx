@@ -1,10 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/shallow";
-import createConfirmProvider from "@/components/confirm";
+import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import { showFilePicker } from "@/components/file-picker";
-import modal from "@/components/modal";
-import PopupLayout from "@/layouts/popup-layout";
+import { alert } from "@/components/ui/dialog/utils";
 import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
 import { useLedgerStore } from "@/store/ledger";
@@ -31,13 +30,17 @@ const DEFAULT_EXPORT_SECTIONS: PresetExportSection[] = [
     "customCSS",
 ];
 
-function PresetExportDialogForm({
-    onCancel,
-    onConfirm,
-}: {
-    onCancel?: () => void;
+interface PresetExportDialogFormProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
     onConfirm?: (sections: PresetExportSection[]) => void;
-}) {
+}
+
+function PresetExportDialogForm({
+    open,
+    onOpenChange,
+    onConfirm,
+}: PresetExportDialogFormProps) {
     const t = useIntl();
     const [exportSections, setExportSections] = useState<PresetExportSection[]>(
         () => [...DEFAULT_EXPORT_SECTIONS],
@@ -61,14 +64,17 @@ function PresetExportDialogForm({
             return;
         }
         onConfirm?.(exportSections);
-    }, [exportSections, onConfirm, t]);
+        onOpenChange(false);
+    }, [exportSections, onConfirm, onOpenChange, t]);
 
     return (
-        <div className="w-full h-full p-4">
-            <DialogHeader>
-                <DialogTitle>{t("preset-export-dialog-title")}</DialogTitle>
-            </DialogHeader>
-            <div className="flex flex-col gap-3 py-2">
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title={t("preset-export-dialog-title")}
+            maxWidth="sm"
+        >
+            <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-2 text-sm">
                     <Checkbox
                         checked={exportSections.includes("tags")}
@@ -106,36 +112,99 @@ function PresetExportDialogForm({
                     <span>{t("preset-export-section-custom-css")}</span>
                 </div>
             </div>
-            <DialogFooter className="gap-2 sm:gap-0 flex justify-end">
+            <div className="flex justify-end gap-2 mt-4">
                 <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    onClick={onCancel}
+                    onClick={() => onOpenChange(false)}
                 >
                     {t("cancel")}
                 </Button>
                 <Button type="button" size="sm" onClick={handleConfirm}>
                     {t("preset-export-confirm")}
                 </Button>
-            </DialogFooter>
-        </div>
+            </div>
+        </FormDialog>
     );
 }
 
-const [PresetExportProvider, showPresetExport] = createConfirmProvider(
-    PresetExportDialogForm,
-    {
-        dialogTitle: "preset-export",
-        dialogModalClose: true,
-        contentClassName: "max-w-[min(100%,420px)]",
-        fade: true,
-    },
-);
+// PresetExportProvider 和 showPresetExport
+function PresetExportProviderComponent() {
+    const [open, setOpen] = useState(false);
+    const [resolveRef, setResolveRef] = useState<{
+        resolve: (value?: PresetExportSection[]) => void;
+    } | null>(null);
 
-export { PresetExportProvider, showPresetExport };
+    useEffect(() => {
+        const handleShow = () => {
+            setOpen(true);
+        };
+        const handleStoreResolve = ((
+            e: CustomEvent<{ resolve: (value?: PresetExportSection[]) => void }>,
+        ) => {
+            setResolveRef({ resolve: e.detail.resolve });
+        }) as EventListener;
 
-export default function PresetForm({ onCancel }: { onCancel?: () => void }) {
+        window.addEventListener("show-preset-export", handleShow);
+        window.addEventListener(
+            "store-preset-export-resolve",
+            handleStoreResolve,
+        );
+
+        return () => {
+            window.removeEventListener("show-preset-export", handleShow);
+            window.removeEventListener(
+                "store-preset-export-resolve",
+                handleStoreResolve,
+            );
+        };
+    }, []);
+
+    const handleConfirm = (sections?: PresetExportSection[]) => {
+        resolveRef?.resolve(sections);
+        setOpen(false);
+        setResolveRef(null);
+    };
+
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen) {
+            resolveRef?.resolve(undefined);
+            setResolveRef(null);
+        }
+        setOpen(newOpen);
+    };
+
+    return (
+        <PresetExportDialogForm
+            open={open}
+            onOpenChange={handleOpenChange}
+            onConfirm={handleConfirm}
+        />
+    );
+}
+
+export const PresetExportProvider = PresetExportProviderComponent;
+
+export function showPresetExport(): Promise<PresetExportSection[] | undefined> {
+    return new Promise((resolve) => {
+        window.dispatchEvent(new CustomEvent("show-preset-export"));
+        setTimeout(() => {
+            window.dispatchEvent(
+                new CustomEvent("store-preset-export-resolve", {
+                    detail: { resolve },
+                }),
+            );
+        }, 0);
+    });
+}
+
+interface PresetFormProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}
+
+export default function PresetForm({ open, onOpenChange }: PresetFormProps) {
     const t = useIntl();
     const { id: userId } = useUserStore();
     const bookId = useBookStore((s) => s.currentBookId);
@@ -224,17 +293,10 @@ export default function PresetForm({ onCancel }: { onCancel?: () => void }) {
                 ),
             };
             try {
-                await modal.prompt({
-                    title: (
-                        <div className="flex flex-col gap-2 text-left text-sm font-normal">
-                            <p>{t("preset-merge-risk-intro")}</p>
-                            <ul className="list-disc pl-4 space-y-1">
-                                {risks.map((r) => (
-                                    <li key={r}>{lines[r]}</li>
-                                ))}
-                            </ul>
-                        </div>
-                    ),
+                const riskMessages = risks.map((r) => lines[r]).join("\n• ");
+                await alert({
+                    title: t("preset-merge-risk-intro"),
+                    description: `• ${riskMessages}`,
                 });
             } catch {
                 return;
@@ -249,19 +311,21 @@ export default function PresetForm({ onCancel }: { onCancel?: () => void }) {
     }, [t]);
 
     return (
-        <PopupLayout
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
             title={t("preset")}
-            onBack={onCancel}
-            className="h-full overflow-hidden"
+            maxWidth="md"
+            fullScreenOnMobile={true}
         >
-            <div className="flex-1 flex flex-col overflow-y-auto py-4">
-                <div className="px-4 pb-4">
+            <div className="flex flex-col gap-4">
+                <div>
                     <p className="text-xs opacity-60">
                         {t("preset-description")}
                     </p>
                 </div>
 
-                <div className="px-4 pb-4 flex gap-2">
+                <div className="flex gap-2">
                     <Button
                         type="button"
                         variant="outline"
@@ -284,7 +348,7 @@ export default function PresetForm({ onCancel }: { onCancel?: () => void }) {
 
                 <PresetExportProvider />
 
-                <div className="px-4 pb-4">
+                <div>
                     <div className="text-sm py-1">{t("theme-market")}</div>
                     <div className="w-full border rounded-md p-4 flex flex-col items-center justify-center gap-2 bg-muted/30">
                         <i className="icon-[mdi--store-outline] size-8 opacity-40"></i>
@@ -294,9 +358,9 @@ export default function PresetForm({ onCancel }: { onCancel?: () => void }) {
                     </div>
                 </div>
 
-                <div className="px-4 pb-4">
+                <div>
                     <div className="text-sm py-1">{t("custom-css")}</div>
-                    <div className="pb-2">
+                    <div>
                         <div className="text-xs opacity-60 mb-2">
                             {t("custom-css-description")}
                         </div>
@@ -329,6 +393,6 @@ export default function PresetForm({ onCancel }: { onCancel?: () => void }) {
                     </div>
                 </div>
             </div>
-        </PopupLayout>
+        </FormDialog>
     );
 }

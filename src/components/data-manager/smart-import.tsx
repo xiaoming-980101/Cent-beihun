@@ -6,7 +6,7 @@ import { BillCategories } from "@/ledger/category";
 import type { ExportedJSON } from "@/ledger/type";
 import { t, useIntl } from "@/locale";
 import { readClipboard } from "@/utils/clipboard";
-import modal from "../modal";
+import { prompt } from "@/components/ui/dialog/utils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
@@ -76,10 +76,10 @@ export function SmartImport({ onCancel }: { onCancel?: () => void }) {
     };
 
     const toEditName = async () => {
-        const name = (await modal.prompt({
+        const name = await prompt({
             title: t("please-enter-a-new-schema-name"),
-            input: { type: "text" },
-        })) as string;
+            inputType: "text",
+        });
         if (!name) {
             return;
         }
@@ -147,6 +147,7 @@ export function SmartImport({ onCancel }: { onCancel?: () => void }) {
             title={t("smart-import")}
             onBack={onCancel}
             className="h-full overflow-hidden"
+            dialogMode
             right={
                 <Button
                     disabled={loading}

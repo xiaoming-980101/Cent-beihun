@@ -62,9 +62,12 @@ const rebaseRates = (dailyData: DailyRate, newBase: string): Rate => {
     const baseRate = dailyData.rates[newBase];
 
     if (!baseRate) {
-        throw new Error(
-            `Currency code '${newBase}' not found in exchange rates.`,
+        console.warn(
+            `Currency code '${newBase}' not found in exchange rates. Available currencies:`,
+            Object.keys(dailyData.rates)
         );
+        // 如果找不到货币，返回原始数据而不是抛出错误
+        return { ...dailyData };
     }
 
     // 重新计算所有汇率

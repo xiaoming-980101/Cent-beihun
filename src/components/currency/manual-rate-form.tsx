@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { useState, useEffect } from "react";
 import { useIntl } from "@/locale";
-import createConfirmProvider from "../confirm";
+import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import { Button } from "../ui/button";
 import RateInput from "./rate-input";
+import { toast } from "sonner";
 
 export type ManualRateEdit = {
     baseCurrencyLabel: string;
@@ -11,15 +11,19 @@ export type ManualRateEdit = {
     initialRate: number;
 };
 
-function ManualRateForm({
-    edit,
-    onCancel,
-    onConfirm,
-}: {
+interface ManualRateFormProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
     edit?: ManualRateEdit;
-    onCancel?: () => void;
     onConfirm?: (v: number | null) => void;
-}) {
+}
+
+function ManualRateForm({
+    open,
+    onOpenChange,
+    edit,
+    onConfirm,
+}: ManualRateFormProps) {
     const t = useIntl();
     const [rate, setRate] = useState<number | undefined>(edit?.initialRate);
 
@@ -34,6 +38,7 @@ function ManualRateForm({
     const handleConfirm = () => {
         if (rate === undefined) {
             onConfirm?.(null);
+            onOpenChange(false);
             return;
         }
         if (rate <= 0 || Number.isNaN(rate)) {
@@ -41,42 +46,104 @@ function ManualRateForm({
             return;
         }
         onConfirm?.(rate);
+        onOpenChange(false);
     };
 
     return (
-        <div className="w-full flex flex-col p-4 gap-3">
-            <div>
-                <h1 className="text-lg font-semibold">
-                    {t("manually-update-rate")}
-                </h1>
-                <p className="text-xs opacity-60">
-                    {t("manually-update-rate-desc")}
-                </p>
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title={t("manually-update-rate")}
+            description={t("manually-update-rate-desc")}
+            maxWidth="sm"
+        >
+            <div className="flex flex-col gap-3">
+                <RateInput
+                    baseCurrencyLabel={edit.baseCurrencyLabel}
+                    targetCurrencyLabel={edit.targetCurrencyLabel}
+                    value={rate}
+                    onChange={setRate}
+                />
+                <div className="flex gap-2 justify-end pt-1">
+                    <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
+                        {t("cancel")}
+                    </Button>
+                    <Button size="sm" onClick={handleConfirm}>
+                        {t("confirm")}
+                    </Button>
+                </div>
             </div>
-            <RateInput
-                baseCurrencyLabel={edit.baseCurrencyLabel}
-                targetCurrencyLabel={edit.targetCurrencyLabel}
-                value={rate}
-                onChange={setRate}
-            />
-            <div className="flex gap-2 justify-end pt-1">
-                <Button variant="ghost" size="sm" onClick={() => onCancel?.()}>
-                    {t("cancel")}
-                </Button>
-                <Button size="sm" onClick={handleConfirm}>
-                    {t("confirm")}
-                </Button>
-            </div>
-        </div>
+        </FormDialog>
     );
 }
 
-export const [ManualRateProvider, showManualRateUpdate] = createConfirmProvider<
-    ManualRateEdit,
-    number | null
->(ManualRateForm, {
-    dialogTitle: "Manually update rate",
-    dialogModalClose: false,
-    contentClassName: "w-[360px] h-fit max-w-[90vw]",
-    fade: true,
-});
+export function ManualRateProvider() {
+    const [open, setOpen] = useState(false);
+    const [edit, setEdit] = useState<ManualRateEdit | undefined>(undefined);
+    const [resolveRef, setResolveRef] = useState<{
+        resolve: (value: number | null | undefined) => void;
+    } | null>(null);
+
+    useEffect(() => {
+        const handleShow = ((e: CustomEvent<{ edit?: ManualRateEdit }>) => {
+            setEdit(e.detail.edit);
+            setOpen(true);
+        }) as EventListener;
+
+        const handleStoreResolve = ((
+            e: CustomEvent<{ resolve: (value: number | null | undefined) => void }>,
+        ) => {
+            setResolveRef({ resolve: e.detail.resolve });
+        }) as EventListener;
+
+        window.addEventListener("show-manual-rate-update", handleShow);
+        window.addEventListener("store-manual-rate-resolve", handleStoreResolve);
+
+        return () => {
+            window.removeEventListener("show-manual-rate-update", handleShow);
+            window.removeEventListener("store-manual-rate-resolve", handleStoreResolve);
+        };
+    }, []);
+
+    const handleConfirm = (value: number | null) => {
+        resolveRef?.resolve(value);
+        setOpen(false);
+        setEdit(undefined);
+        setResolveRef(null);
+    };
+
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen) {
+            resolveRef?.resolve(undefined);
+            setResolveRef(null);
+            setEdit(undefined);
+        }
+        setOpen(newOpen);
+    };
+
+    return (
+        <ManualRateForm
+            open={open}
+            onOpenChange={handleOpenChange}
+            edit={edit}
+            onConfirm={handleConfirm}
+        />
+    );
+}
+
+export function showManualRateUpdate(
+    edit?: ManualRateEdit,
+): Promise<number | null | undefined> {
+    return new Promise((resolve) => {
+        window.dispatchEvent(
+            new CustomEvent("show-manual-rate-update", { detail: { edit } }),
+        );
+        setTimeout(() => {
+            window.dispatchEvent(
+                new CustomEvent("store-manual-rate-resolve", {
+                    detail: { resolve },
+                }),
+            );
+        }, 0);
+    });
+}

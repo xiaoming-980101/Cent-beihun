@@ -34,11 +34,13 @@ export function useLongPress(options: UseLongPressOptions) {
 
     const isLongPress = useRef<{ x: number; y: number } | undefined>(undefined);
     const longPressTimeout = useRef<NodeJS.Timeout | undefined>(undefined);
+    const activePointerId = useRef<number | undefined>(undefined);
 
     const onPointerDown = useCallback((e: PointerEvent) => {
-        e.preventDefault();
         const el = e.currentTarget as HTMLElement;
+        if (isDown.current) return;
         isDown.current = true;
+        activePointerId.current = e.pointerId;
         el?.setPointerCapture(e.pointerId);
         longPressTimeout.current = setTimeout(() => {
             isLongPress.current = getCoords(e);
@@ -48,10 +50,12 @@ export function useLongPress(options: UseLongPressOptions) {
 
     const onPointerUp = useCallback((e: PointerEvent) => {
         const el = e.currentTarget as HTMLElement;
-
-        e.preventDefault();
-        e.stopPropagation();
-        el.releasePointerCapture(e.pointerId);
+        if (!isDown.current || activePointerId.current !== e.pointerId) {
+            return;
+        }
+        if (el?.hasPointerCapture(e.pointerId)) {
+            el.releasePointerCapture(e.pointerId);
+        }
 
         if (longPressTimeout.current) {
             clearTimeout(longPressTimeout.current);
@@ -73,14 +77,36 @@ export function useLongPress(options: UseLongPressOptions) {
         }
         isLongPress.current = undefined;
         isDown.current = false;
+        activePointerId.current = undefined;
+    }, []);
+
+    const onPointerCancel = useCallback((e: PointerEvent) => {
+        const el = e.currentTarget as HTMLElement;
+        if (activePointerId.current !== e.pointerId) {
+            return;
+        }
+        if (el?.hasPointerCapture(e.pointerId)) {
+            el.releasePointerCapture(e.pointerId);
+        }
+        if (longPressTimeout.current) {
+            clearTimeout(longPressTimeout.current);
+            longPressTimeout.current = undefined;
+        }
+        if (isLongPress.current) {
+            optionsRef.current.onLongPressCancel?.();
+        }
+        isLongPress.current = undefined;
+        isDown.current = false;
+        activePointerId.current = undefined;
     }, []);
 
     const bind = useCallback(() => {
         return {
             onPointerDown,
             onPointerUp,
+            onPointerCancel,
         } as unknown as HtmlHTMLAttributes<HTMLElement>;
-    }, [onPointerDown, onPointerUp]);
+    }, [onPointerDown, onPointerUp, onPointerCancel]);
 
     return options.disabled ? null : bind;
 }

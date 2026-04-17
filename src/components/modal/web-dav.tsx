@@ -1,9 +1,9 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod/mini";
 import { useIntl } from "@/locale";
-import createConfirmProvider from "../confirm";
+import { FormDialog } from "../ui/dialog/form-dialog";
 import { Button } from "../ui/button";
 import {
     Form,
@@ -38,10 +38,14 @@ export const createFormSchema = (t: any) =>
     });
 
 const LoadingForm = ({
+    open,
+    onOpenChange,
     edit,
     onConfirm,
     onCancel,
 }: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
     edit?: LoadingState;
     onCancel?: () => void;
     onConfirm?: (v?: LoadingState) => void;
@@ -67,18 +71,16 @@ const LoadingForm = ({
         }
     };
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center overflow-hidden">
-            <a
-                className="flex py-4 items-center gap-1"
-                href="https://glink25.github.io/post/%E9%80%9A%E8%BF%87Web-DAV%E8%BF%9B%E8%A1%8CCent%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5/"
-                target="_blank"
-                rel="noopener"
-            >
-                {t("sync-with-web-dav")}
-                <i className="icon-[mdi--question-mark-circle-outline]"></i>
-            </a>
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title={t("sync-with-web-dav")}
+            maxWidth="sm"
+            fullScreenOnMobile={true}
+            className="sm:h-[480px]"
+        >
             <Form {...form}>
-                <div className="w-full flex-1 flex flex-col gap-4 px-4 overflow-y-auto">
+                <div className="w-full flex flex-col gap-4">
                     <FormField
                         control={form.control}
                         name="remote"
@@ -216,11 +218,11 @@ const LoadingForm = ({
                     </div>
                 </div>
 
-                <div className="p-4 w-full flex justify-end gap-2">
+                <div className="mt-6 flex justify-end gap-2">
                     <Button
                         variant={"ghost"}
                         className="sm:w-fit w-full"
-                        onClick={onCancel}
+                        onClick={() => onOpenChange(false)}
                     >
                         {t("cancel")}
                     </Button>
@@ -236,16 +238,65 @@ const LoadingForm = ({
                     </Button>
                 </div>
             </Form>
-        </div>
+        </FormDialog>
     );
 };
 
-export const [WebDAVAuthProvider, showWebDAVAuth] = createConfirmProvider(
-    LoadingForm,
-    {
-        dialogTitle: "loading",
-        dialogModalClose: true,
-        contentClassName: "w-[350px] h-[480px] z-[2]",
-        fade: true,
-    },
-);
+// 事件驱动的弹窗管理
+let resolveCallback: ((value: WebDAVEdit | null) => void) | null = null;
+
+export const WebDAVAuthProvider = () => {
+    const [open, setOpen] = useState(false);
+    const [editData, setEditData] = useState<LoadingState | undefined>();
+
+    useEffect(() => {
+        const handleShow = (event: CustomEvent<LoadingState>) => {
+            setEditData(event.detail);
+            setOpen(true);
+        };
+
+        window.addEventListener("show-webdav-auth" as any, handleShow);
+        return () => {
+            window.removeEventListener("show-webdav-auth" as any, handleShow);
+        };
+    }, []);
+
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen) {
+            resolveCallback?.(null);
+            resolveCallback = null;
+        }
+        setOpen(newOpen);
+    };
+
+    const handleConfirm = (value?: LoadingState) => {
+        resolveCallback?.(value as WebDAVEdit);
+        resolveCallback = null;
+        setOpen(false);
+    };
+
+    const handleCancel = () => {
+        resolveCallback?.(null);
+        resolveCallback = null;
+        setOpen(false);
+    };
+
+    return (
+        <LoadingForm
+            open={open}
+            onOpenChange={handleOpenChange}
+            edit={editData}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+        />
+    );
+};
+
+export const showWebDAVAuth = (edit?: LoadingState): Promise<WebDAVEdit | null> => {
+    return new Promise((resolve) => {
+        resolveCallback = resolve;
+        window.dispatchEvent(
+            new CustomEvent("show-webdav-auth", { detail: edit })
+        );
+    });
+};

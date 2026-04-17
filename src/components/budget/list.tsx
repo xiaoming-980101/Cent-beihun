@@ -2,7 +2,7 @@ import dayjs from "dayjs";
 import { useBudget } from "@/hooks/use-budget";
 import PopupLayout from "@/layouts/popup-layout";
 import { useIntl } from "@/locale";
-import modal from "../modal";
+import { confirm } from "@/components/ui/dialog/utils";
 import { showSortableList } from "../sortable";
 import { Button } from "../ui/button";
 import { showBudgetEdit } from ".";
@@ -19,7 +19,7 @@ export default function BudgetListForm({
     const t = useIntl();
     const { budgets, add, update, reorder } = useBudget();
     return (
-        <PopupLayout onBack={onCancel} title={t("budget-manager")}>
+        <PopupLayout onBack={onCancel} title={t("budget-manager")} dialogMode>
             <div className="flex items-center justify-between px-2">
                 <div className="px-2 text-xs text-foreground/80">
                     {t("budget-description")}
@@ -123,11 +123,15 @@ export default function BudgetListForm({
                                                 variant="destructive"
                                                 className="w-[24px] h-[24px] p-0"
                                                 onClick={async () => {
-                                                    await modal.prompt({
+                                                    const confirmed = await confirm({
                                                         title: t(
                                                             "are-you-sure-to-delete-this-budget",
                                                         ),
+                                                        variant: "destructive",
                                                     });
+                                                    if (!confirmed) {
+                                                        return;
+                                                    }
                                                     const id = budget.id;
                                                     await update(id);
                                                 }}

@@ -1,9 +1,8 @@
-import createConfirmProvider from "../confirm";
-import SettingsForm from "./form";
+export function Settings() {
+    // Settings page is route-driven (`/settings`), keep legacy provider inert.
+    return null;
+}
 
-export const [Settings, showSettings] = createConfirmProvider(SettingsForm, {
-    dialogTitle: "Settings",
-    dialogModalClose: false,
-    contentClassName:
-        "h-full w-full max-h-full max-w-full rounded-none sm:rounded-md sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]",
-});
+export function showSettings(): Promise<void> {
+    return Promise.resolve();
+}

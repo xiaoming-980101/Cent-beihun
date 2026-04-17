@@ -165,6 +165,7 @@ export default function BudgetEditForm({
                 <PopupLayout
                     className="h-full sm:h-[55vh] gap-2"
                     onBack={onCancel}
+                    dialogMode
                     title={
                         <FormField
                             control={form.control}

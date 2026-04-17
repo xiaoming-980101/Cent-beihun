@@ -6,14 +6,7 @@ import dayjs from "dayjs";
 import { Solar } from "lunar-javascript";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
-import {
-    Dialog,
-    DialogContent,
-    DialogHeader,
-    DialogOverlay,
-    DialogPortal,
-    DialogTitle,
-} from "@/components/ui/dialog";
+import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import {
     WeddingBadge,
     WeddingFloatingActionButton,
@@ -522,38 +515,23 @@ export default function TaskCalendar() {
                 <i className="icon-[mdi--plus] size-7" />
             </WeddingFloatingActionButton>
 
-            <Dialog open={showForm} onOpenChange={setShowForm}>
-                <DialogPortal>
-                    <DialogOverlay className="fixed inset-0 z-[80] bg-[rgba(15,12,18,0.56)]" />
-                    <div className="fixed inset-0 z-[81] flex items-end justify-center px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-[max(0.75rem,env(safe-area-inset-top))] sm:items-center sm:px-4 sm:py-6">
-                        <DialogContent
-                            fade
-                            className="z-[82] flex max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] w-full max-w-[560px] flex-col overflow-hidden rounded-[30px] border border-[#edd6df] bg-[#fffdfd] shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)] dark:border-[#302631] dark:bg-[#181419] sm:max-h-[min(84vh,760px)]"
-                            onInteractOutside={() => setShowForm(false)}
-                        >
-                            <DialogHeader className="border-b border-[color:var(--wedding-line)] px-5 pb-4 pt-5">
-                                <div className="mb-3 flex justify-center sm:hidden">
-                                    <div className="h-1.5 w-12 rounded-full bg-[color:var(--wedding-line-strong)]" />
-                                </div>
-                                <DialogTitle className="wedding-topbar-title pl-1 text-[24px] text-[color:var(--wedding-text)]">
-                                    添加任务
-                                </DialogTitle>
-                                <p className="mt-2 pl-1 text-sm wedding-muted">
-                                    默认截止日期会带入{" "}
-                                    {selectedDate.format("M月D日")}
-                                    ，你也可以在表单里修改。
-                                </p>
-                            </DialogHeader>
-                            <div className="min-h-0 flex-1 overflow-y-auto px-5 pb-5 pt-4">
-                                <TaskForm
-                                    initialDeadline={selectedDate.valueOf()}
-                                    onClose={() => setShowForm(false)}
-                                />
-                            </div>
-                        </DialogContent>
-                    </div>
-                </DialogPortal>
-            </Dialog>
+            <FormDialog
+                open={showForm}
+                onOpenChange={setShowForm}
+                title="添加任务"
+                maxWidth="md"
+                fullScreenOnMobile={true}
+            >
+                <div className="mb-3 text-sm wedding-muted">
+                    默认截止日期会带入{" "}
+                    {selectedDate.format("M月D日")}
+                    ，你也可以在表单里修改。
+                </div>
+                <TaskForm
+                    initialDeadline={selectedDate.valueOf()}
+                    onClose={() => setShowForm(false)}
+                />
+            </FormDialog>
         </WeddingPageShell>
     );
 }

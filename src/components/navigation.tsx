@@ -226,7 +226,7 @@ export default function Navigation() {
                         <div className="absolute inset-0 rounded-full bg-[color:var(--wedding-app-bg)] shadow-[0_-8px_24px_-20px_rgba(15,23,42,0.65)]"></div>
                         <div className="absolute inset-[8px] rounded-full bg-gradient-to-r from-[#ef5cab] to-[#cb4dc8] shadow-[0_16px_28px_-16px_rgba(239,92,171,0.95)]"></div>
                         <ComplexAddButton
-                            className="relative z-[1] !m-0 !h-14 !w-14 !rounded-full !bg-transparent [&_i]:!text-white"
+                            className="relative z-[1] !m-0 !h-14 !w-14 !rounded-full !bg-transparent !transform-none hover:!scale-100 active:!scale-100 [&_i]:!text-white"
                             onClick={() => {
                                 goAddBill();
                                 afterAddBillPromotion();

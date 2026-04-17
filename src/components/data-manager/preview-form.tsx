@@ -10,18 +10,74 @@ import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
 import { useLedgerStore } from "@/store/ledger";
 import { useUserStore } from "@/store/user";
-import createConfirmProvider from "../confirm";
+import { FormDialog } from "../ui/dialog/form-dialog";
 import { PreviewForm, type PreviewState } from "./preview";
 
-export const [ImportPreviewProvider, showImportPreview] = createConfirmProvider(
-    PreviewForm,
-    {
-        dialogTitle: "experimental-functions",
-        dialogModalClose: true,
-        contentClassName:
-            "h-full w-full max-h-full max-w-full rounded-none sm:rounded-md sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]",
-    },
-);
+// 事件驱动的弹窗管理
+let resolveCallback: ((value: PreviewState | null) => void) | null = null;
+
+export const ImportPreviewProvider = () => {
+    const [open, setOpen] = useState(false);
+    const [editData, setEditData] = useState<PreviewState | undefined>();
+
+    useEffect(() => {
+        const handleShow = (event: CustomEvent<PreviewState>) => {
+            setEditData(event.detail);
+            setOpen(true);
+        };
+
+        window.addEventListener("show-import-preview" as any, handleShow);
+        return () => {
+            window.removeEventListener("show-import-preview" as any, handleShow);
+        };
+    }, []);
+
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen) {
+            resolveCallback?.(null);
+            resolveCallback = null;
+        }
+        setOpen(newOpen);
+    };
+
+    const handleConfirm = (value?: PreviewState) => {
+        resolveCallback?.(value ?? null);
+        resolveCallback = null;
+        setOpen(false);
+    };
+
+    const handleCancel = () => {
+        resolveCallback?.(null);
+        resolveCallback = null;
+        setOpen(false);
+    };
+
+    return (
+        <FormDialog
+            open={open}
+            onOpenChange={handleOpenChange}
+            title="导入预览"
+            maxWidth="md"
+            fullScreenOnMobile={true}
+            bodyClassName="max-sm:px-4 max-sm:py-4"
+        >
+            <PreviewForm
+                edit={editData}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />
+        </FormDialog>
+    );
+};
+
+export const showImportPreview = (edit?: PreviewState): Promise<PreviewState | null> => {
+    return new Promise((resolve) => {
+        resolveCallback = resolve;
+        window.dispatchEvent(
+            new CustomEvent("show-import-preview", { detail: edit })
+        );
+    });
+};
 
 export const importFromPreviewResult = async (res: PreviewState) => {
     const { strategy, asMine, ...rest } = res;

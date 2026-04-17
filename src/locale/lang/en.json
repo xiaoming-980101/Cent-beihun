@@ -469,6 +469,8 @@
   "budget-promotion-label": "🧮 Start to use Budget",
   "whats-new-1.1-promotion-label": "✨ Multi-Currency & Auto-Record now available, and more!",
   "quick-add-when-reduce-motion-changed": "Quick add a bill when Reduce Motion changed",
+  "disable-android-hash-mode": "Disable route-back handling in Android PWA mode",
+  "disable-android-hash-mode-description": "On devices with system-level back navigation (Android), the back button can be used to close popups",
   "read-bill-from-clipboard": "Read bill from clipboard",
   "read-clipboard": "Read",
   "comment-cloud": "Comment Cloud",

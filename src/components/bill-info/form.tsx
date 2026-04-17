@@ -127,8 +127,8 @@ export default function BillInfo({
         ? scheduleds.find((v) => v.id === edit.extra?.scheduledId)
         : undefined;
     return (
-        <div>
-            <div className="min-h-[320px] p-4 flex flex-col w-full h-full">
+        <div className="flex h-full min-h-[320px] w-full flex-col rounded-[20px] bg-transparent p-0">
+            <div className="flex h-full w-full flex-col rounded-[18px] bg-transparent px-1 py-1">
                 <div className="flex-1 flex flex-col">
                     {/* header */}
                     <div className="flex items-center justify-between">
@@ -224,7 +224,7 @@ export default function BillInfo({
                 </div>
 
                 {/* footer */}
-                <div className="footer flex justify-between items-center">
+                <div className="footer flex items-center justify-between">
                     <div className="flex">
                         {canEdit && (
                             <MoreAction
@@ -234,22 +234,23 @@ export default function BillInfo({
                             />
                         )}
                     </div>
-                    <div className="flex">
-                        <button
+                    <div className="flex items-center gap-2">
+                        <Button
                             type="button"
-                            className="buttoned px-2 rounded-md cursor-pointer"
+                            variant="ghost"
+                            size="sm"
                             onClick={toClose}
                         >
                             {t("cancel")}
-                        </button>
+                        </Button>
                         {canEdit && (
-                            <button
+                            <Button
                                 type="button"
-                                className="buttoned ml-2 px-2 rounded-md font-semibold cursor-pointer"
+                                size="sm"
                                 onClick={toEdit}
                             >
                                 {t("edit")}
-                            </button>
+                            </Button>
                         )}
                     </div>
                 </div>

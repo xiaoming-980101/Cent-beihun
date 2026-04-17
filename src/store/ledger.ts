@@ -281,7 +281,7 @@ export const useLedgerStore = create<LedgerStore>()((set, get) => {
         const creatorId = useUserStore.getState().id;
         StorageAPI.batch(
             repo,
-            entries.map((v) => {
+            entries.filter(v => v != null).map((v) => {
                 return {
                     type: "update",
                     value: {

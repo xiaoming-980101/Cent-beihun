@@ -7,7 +7,7 @@ import type { BillCategory, BillType } from "@/ledger/type";
 import { categoriesGridClassName, treeCategories } from "@/ledger/utils";
 import { useIntl } from "@/locale";
 import { cn } from "@/utils";
-import modal from "../modal";
+import { confirm } from "@/components/ui/dialog/utils";
 import { showSortableList } from "../sortable";
 import { Button } from "../ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
@@ -59,12 +59,16 @@ export default function CategoryList({
             className="overflow-hidden h-full"
             onBack={onCancel}
             title={t("edit-categories")}
+            dialogMode
             right={
                 <Button
                     onClick={async () => {
-                        await modal.prompt({
+                        const confirmed = await confirm({
                             title: t("sure-to-reset-categories"),
                         });
+                        if (!confirmed) {
+                            return;
+                        }
                         try {
                             await reset();
                             toast.success(t("reset-success"));

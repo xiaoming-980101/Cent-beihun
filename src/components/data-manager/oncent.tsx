@@ -4,7 +4,7 @@ import {
     SelectViewport,
 } from "@radix-ui/react-select";
 import { RadioGroup } from "radix-ui";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { v4 } from "uuid";
 import {
@@ -19,7 +19,7 @@ import { BillCategories } from "@/ledger/category";
 import type { Bill } from "@/ledger/type";
 import { useIntl } from "@/locale";
 import { useLedgerStore } from "@/store/ledger";
-import createConfirmProvider from "../confirm";
+import { FormDialog } from "../ui/dialog/form-dialog";
 import Loading from "../loading";
 import { Button } from "../ui/button";
 
@@ -90,10 +90,14 @@ const transferToBill = (row: BillRow): Omit<Bill, "creatorId"> => {
 };
 
 function OncentImportForm({
+    open,
+    onOpenChange,
     edit,
     onCancel,
     onConfirm,
 }: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
     edit?: OncentDatabaseData;
     onCancel?: () => void;
     onConfirm?: (v: any) => void;
@@ -148,8 +152,15 @@ function OncentImportForm({
         }
     };
     return (
-        <PopupLayout onBack={onCancel} title="Oncent">
-            <div className="flex flex-col p-4 gap-4 h-full">
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title="Oncent"
+            maxWidth="md"
+            fullScreenOnMobile={true}
+            bodyClassName="max-sm:px-4 max-sm:py-4"
+        >
+            <div className="flex flex-col gap-4 h-full">
                 <div className="flex-1 flex flex-col gap-4">
                     <Select
                         value={selectedUserId}
@@ -213,7 +224,7 @@ function OncentImportForm({
                     </div>
                 </div>
                 <div className="flex justify-end gap-2 items-center">
-                    <Button variant="ghost" onClick={() => onCancel?.()}>
+                    <Button variant="ghost" onClick={() => onOpenChange(false)}>
                         {t("cancel")}
                     </Button>
                     <Button disabled={loading} onClick={toConfirm}>
@@ -221,21 +232,65 @@ function OncentImportForm({
                     </Button>
                 </div>
             </div>
-        </PopupLayout>
+        </FormDialog>
     );
 }
 
-function Title() {
-    const t = useIntl();
-    return t("import-from-oncent");
-}
+// 事件驱动的弹窗管理
+let resolveCallback: ((value: boolean | null) => void) | null = null;
 
-export const [OncentImport, showOncentImport] = createConfirmProvider(
-    OncentImportForm,
-    {
-        dialogTitle: <Title />,
-        dialogModalClose: false,
-        contentClassName:
-            "h-full w-full max-h-full max-w-full rounded-none sm:rounded-md sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]",
-    },
-);
+export const OncentImport = () => {
+    const [open, setOpen] = useState(false);
+    const [editData, setEditData] = useState<OncentDatabaseData | undefined>();
+
+    useEffect(() => {
+        const handleShow = (event: CustomEvent<OncentDatabaseData>) => {
+            setEditData(event.detail);
+            setOpen(true);
+        };
+
+        window.addEventListener("show-oncent-import" as any, handleShow);
+        return () => {
+            window.removeEventListener("show-oncent-import" as any, handleShow);
+        };
+    }, []);
+
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen) {
+            resolveCallback?.(null);
+            resolveCallback = null;
+        }
+        setOpen(newOpen);
+    };
+
+    const handleConfirm = (value: any) => {
+        resolveCallback?.(value);
+        resolveCallback = null;
+        setOpen(false);
+    };
+
+    const handleCancel = () => {
+        resolveCallback?.(null);
+        resolveCallback = null;
+        setOpen(false);
+    };
+
+    return (
+        <OncentImportForm
+            open={open}
+            onOpenChange={handleOpenChange}
+            edit={editData}
+            onConfirm={handleConfirm}
+            onCancel={handleCancel}
+        />
+    );
+};
+
+export const showOncentImport = (edit?: OncentDatabaseData): Promise<boolean | null> => {
+    return new Promise((resolve) => {
+        resolveCallback = resolve;
+        window.dispatchEvent(
+            new CustomEvent("show-oncent-import", { detail: edit })
+        );
+    });
+};

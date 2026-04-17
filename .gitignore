@@ -42,3 +42,32 @@ fix-oss-acl.cjs
 reupload-oss.cjs
 s.yaml
 dist.zip
+
+# AI Assistant directories
+.cursor/
+.claude/
+.codex/
+.agents/
+.kiro/
+.trellis/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# IDE
+.vscode/
+*.code-workspace
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Build files
+*.tsbuildinfo
+.cache/

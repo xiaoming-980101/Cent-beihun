@@ -7,17 +7,8 @@ import {
     AccordionItem,
     AccordionTrigger,
 } from "@/components/ui/accordion";
-import {
-    AlertDialog,
-    AlertDialogAction,
-    AlertDialogCancel,
-    AlertDialogContent,
-    AlertDialogDescription,
-    AlertDialogFooter,
-    AlertDialogHeader,
-    AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
+import { confirm } from "@/components/ui/dialog/utils";
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -47,7 +38,6 @@ export default function GiftBook() {
     const [editingRecord, setEditingRecord] = useState<
         undefined | (typeof records)[number]
     >(undefined);
-    const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
     const stats = useMemo(() => calculateGiftStats(records), [records]);
     const filtered = useMemo(() => {
@@ -295,9 +285,19 @@ export default function GiftBook() {
                                                         variant="outline"
                                                         size="sm"
                                                         className="flex-1 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                                                        onClick={() =>
-                                                            setDeleteConfirmId(record.id)
-                                                        }
+                                                        onClick={async () => {
+                                                            const confirmed = await confirm({
+                                                                title: "确认删除礼金记录？",
+                                                                description: "此操作无法撤销，删除后将永久移除该礼金记录。",
+                                                                variant: "destructive",
+                                                                confirmText: "确认删除",
+                                                                cancelText: "取消",
+                                                            });
+                                                            
+                                                            if (confirmed) {
+                                                                deleteGiftRecord(record.id);
+                                                            }
+                                                        }}
                                                     >
                                                         <i className="icon-[mdi--delete-outline] mr-1.5 size-4" />
                                                         删除
@@ -311,35 +311,6 @@ export default function GiftBook() {
                     </Accordion>
                 )}
             </section>
-
-            {/* 删除确认对话框 */}
-            <AlertDialog
-                open={deleteConfirmId !== null}
-                onOpenChange={(open) => !open && setDeleteConfirmId(null)}
-            >
-                <AlertDialogContent>
-                    <AlertDialogHeader>
-                        <AlertDialogTitle>确认删除礼金记录？</AlertDialogTitle>
-                        <AlertDialogDescription>
-                            此操作无法撤销，删除后将永久移除该礼金记录。
-                        </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                        <AlertDialogCancel>取消</AlertDialogCancel>
-                        <AlertDialogAction
-                            onClick={() => {
-                                if (deleteConfirmId) {
-                                    deleteGiftRecord(deleteConfirmId);
-                                    setDeleteConfirmId(null);
-                                }
-                            }}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                        >
-                            确认删除
-                        </AlertDialogAction>
-                    </AlertDialogFooter>
-                </AlertDialogContent>
-            </AlertDialog>
 
             <FloatingActionButton
                 onClick={() => {

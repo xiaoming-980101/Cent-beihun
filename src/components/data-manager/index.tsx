@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import PopupLayout from "@/layouts/popup-layout";
 import { useIntl } from "@/locale";
@@ -5,9 +6,10 @@ import { useBookStore } from "@/store/book";
 import { useLedgerStore } from "@/store/ledger";
 import { cn } from "@/utils";
 import { download } from "@/utils/download";
-import createConfirmProvider from "../confirm";
+import { FormDialog } from "../ui/dialog/form-dialog";
 import { FORMAT_BACKUP, showFilePicker } from "../file-picker";
-import modal from "../modal";
+import { alert } from "@/components/ui/dialog/utils";
+import { loading } from "@/components/modal/loading";
 import { Button } from "../ui/button";
 import { prepareExportFile, processImportFile } from "./exportable";
 import { showOncentImport } from "./oncent";
@@ -18,18 +20,65 @@ import {
 } from "./preview-form";
 import { SmartImport } from "./smart-import";
 
-const [SmartImportProvider, showSmartImport] = createConfirmProvider(
-    SmartImport,
-    {
-        dialogTitle: "Smart Import",
-        contentClassName:
-            "h-full w-full max-h-full max-w-full rounded-none sm:rounded-md sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]",
-    },
-);
+// SmartImportProvider - 事件驱动的弹窗管理
+let smartImportResolveCallback: (() => void) | null = null;
+
+export const SmartImportProvider = () => {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        const handleShow = () => {
+            setOpen(true);
+        };
+
+        window.addEventListener("show-smart-import" as any, handleShow);
+        return () => {
+            window.removeEventListener("show-smart-import" as any, handleShow);
+        };
+    }, []);
+
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen) {
+            smartImportResolveCallback?.();
+            smartImportResolveCallback = null;
+        }
+        setOpen(newOpen);
+    };
+
+    const handleCancel = () => {
+        smartImportResolveCallback?.();
+        smartImportResolveCallback = null;
+        setOpen(false);
+    };
+
+    return (
+        <FormDialog
+            open={open}
+            onOpenChange={handleOpenChange}
+            title="Smart Import"
+            maxWidth="md"
+            fullScreenOnMobile={true}
+            className="sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]"
+            bodyClassName="p-0 sm:pt-14"
+            fullscreenBodyClassName="max-sm:p-0"
+        >
+            <SmartImport onCancel={handleCancel} />
+        </FormDialog>
+    );
+};
+
+export const showSmartImport = (): Promise<void> => {
+    return new Promise((resolve) => {
+        smartImportResolveCallback = resolve;
+        requestAnimationFrame(() => {
+            window.dispatchEvent(new CustomEvent("show-smart-import"));
+        });
+    });
+};
 
 const betaClassName = `relative after:content-['beta'] after:rounded after:bg-yellow-400 after:px-[2px] after:text-[8px] after:block after:absolute after:top-0 after:right-0 after:translate-x-[calc(100%+4px)]`;
 
-function Form({ onCancel }: { onCancel?: () => void }) {
+function Form({ open, onOpenChange, onCancel }: { open: boolean; onOpenChange: (open: boolean) => void; onCancel?: () => void }) {
     const t = useIntl();
     const toImport = async () => {
         const bookid = useBookStore.getState().currentBookId;
@@ -37,7 +86,7 @@ function Form({ onCancel }: { onCancel?: () => void }) {
             return;
         }
         const [jsonFile] = await showFilePicker({ accept: FORMAT_BACKUP });
-        const [stopLoading] = modal.loading();
+        const [stopLoading] = loading();
         const data = await processImportFile(jsonFile).finally(() => {
             stopLoading();
         });
@@ -56,7 +105,7 @@ function Form({ onCancel }: { onCancel?: () => void }) {
         if (!bookId) {
             return;
         }
-        const [stopLoading] = modal.loading();
+        const [stopLoading] = loading();
         const { blob, ext } = await prepareExportFile(bookId);
         stopLoading();
         await download(
@@ -73,7 +122,7 @@ function Form({ onCancel }: { onCancel?: () => void }) {
     };
 
     const toShrinkData = async () => {
-        await modal.prompt({ title: t("bill-compression-tip") });
+        await alert({ title: t("bill-compression-tip") });
 
         const isSynced = useLedgerStore.getState().sync === "success";
         if (!isSynced) {
@@ -89,10 +138,14 @@ function Form({ onCancel }: { onCancel?: () => void }) {
         });
     };
     return (
-        <PopupLayout
-            title={<div className="">{t("data-manager")}</div>}
-            onBack={onCancel}
-            className="h-full overflow-hidden"
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title={t("data-manager")}
+            maxWidth="md"
+            fullScreenOnMobile={true}
+            className="sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]"
+            bodyClassName="max-sm:px-4 max-sm:py-4"
         >
             <div className="w-full h-[450px] flex flex-col justify-center items-center rounded">
                 <div className="flex-1 flex flex-col w-full gap-2 h-full overflow-hidden">
@@ -151,16 +204,58 @@ function Form({ onCancel }: { onCancel?: () => void }) {
             </div>
             <ImportPreviewProvider />
             <SmartImportProvider />
-        </PopupLayout>
+        </FormDialog>
     );
 }
 
-export const [DataManagerProvider, showDataManager] = createConfirmProvider(Form, {
-    dialogTitle: "data-manager",
-    dialogModalClose: true,
-    contentClassName:
-        "h-full w-full max-h-full max-w-full rounded-none sm:rounded-md sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]",
-});
+// DataManagerProvider - 事件驱动的弹窗管理
+let dataManagerResolveCallback: (() => void) | null = null;
+
+export const DataManagerProvider = () => {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        const handleShow = () => {
+            setOpen(true);
+        };
+
+        window.addEventListener("show-data-manager" as any, handleShow);
+        return () => {
+            window.removeEventListener("show-data-manager" as any, handleShow);
+        };
+    }, []);
+
+    const handleOpenChange = (newOpen: boolean) => {
+        if (!newOpen) {
+            dataManagerResolveCallback?.();
+            dataManagerResolveCallback = null;
+        }
+        setOpen(newOpen);
+    };
+
+    const handleCancel = () => {
+        dataManagerResolveCallback?.();
+        dataManagerResolveCallback = null;
+        setOpen(false);
+    };
+
+    return (
+        <Form
+            open={open}
+            onOpenChange={handleOpenChange}
+            onCancel={handleCancel}
+        />
+    );
+};
+
+export const showDataManager = (): Promise<void> => {
+    return new Promise((resolve) => {
+        dataManagerResolveCallback = resolve;
+        requestAnimationFrame(() => {
+            window.dispatchEvent(new CustomEvent("show-data-manager"));
+        });
+    });
+};
 
 export default function DataManagerSettingsItem() {
     const t = useIntl();

@@ -91,11 +91,78 @@ export const PreviewForm = ({
             ? availableAppend.length
             : (edit?.bills.length ?? 0);
     return (
-        <PopupLayout
-            title={"导入预览"}
-            onBack={onCancel}
-            className="h-full overflow-hidden rounded-md"
-            right={
+        <div className="relative flex flex-col w-full gap-4 h-[400px]">
+            <div className="flex flex-col gap-3">
+                <div className="opacity-60 text-sm">
+                    {t("import-strategy")}:
+                    <span>{`${t("import-description")}`}</span>
+                </div>
+                <RadioGroup
+                    value={importStrategy}
+                    className="flex flex-col gap-2"
+                    onValueChange={(v) =>
+                        setImportStrategy(
+                            v === "append" ? "append" : "overlap",
+                        )
+                    }
+                >
+                    <Label className="flex gap-2">
+                        <RadioGroupItem value="append" />
+                        {t("strategy-add")}
+                    </Label>
+                    <Label className="flex gap-2">
+                        <RadioGroupItem value="overlap" />
+                        {t("strategy-overlap")}
+                    </Label>
+                </RadioGroup>
+            </div>
+            <div className="flex flex-col gap-3">
+                <div>
+                    <div className="opacity-60 text-sm">
+                        {t("put-ledgers-on-me")}
+                    </div>
+                    <Switch checked={asMine} onCheckedChange={setAsMine} />
+                </div>
+                {!asMine && (
+                    <p className="text-xs text-red-700">
+                        {t("unkown-users-may-show-up-when-analyze")}
+                    </p>
+                )}
+            </div>
+            <div className="flex-1 flex flex-col gap-3 overflow-hidden">
+                <p className="opacity-60 text-sm">{t("preview")}:</p>
+
+                {importStrategy === "append" ? (
+                    <div>
+                        {t("append-preview-description", {
+                            n: (
+                                <span className="text-green-700">
+                                    {availableCount}
+                                </span>
+                            ),
+                        })}
+                    </div>
+                ) : (
+                    <div>
+                        <div className="text-red-700">
+                            {t("overlap-preview-description", {
+                                n: (
+                                    <span className="text-red-700">
+                                        {availableCount}
+                                    </span>
+                                ),
+                            })}
+                        </div>
+                    </div>
+                )}
+            </div>
+            <div className="flex justify-end gap-2">
+                <Button
+                    variant="ghost"
+                    onClick={onCancel}
+                >
+                    {t("cancel")}
+                </Button>
                 <Button
                     disabled={loading || availableCount <= 0}
                     onClick={() => {
@@ -118,82 +185,12 @@ export const PreviewForm = ({
                 >
                     {t("confirm")}
                 </Button>
-            }
-        >
-            <div className="relative flex-1 flex flex-col w-full gap-2 overflow-hidden">
-                <div className="flex flex-col px-4 gap-3">
-                    <div className="opacity-60 text-sm">
-                        {t("import-strategy")}:
-                        <span>{`${t("import-description")}`}</span>
-                    </div>
-                    <RadioGroup
-                        value={importStrategy}
-                        className="flex flex-col gap-2"
-                        onValueChange={(v) =>
-                            setImportStrategy(
-                                v === "append" ? "append" : "overlap",
-                            )
-                        }
-                    >
-                        <Label className="flex gap-2">
-                            <RadioGroupItem value="append" />
-                            {t("strategy-add")}
-                        </Label>
-                        <Label className="flex gap-2">
-                            <RadioGroupItem value="overlap" />
-                            {t("strategy-overlap")}
-                        </Label>
-                    </RadioGroup>
-                </div>
-                <div className="flex flex-col px-4 gap-3">
-                    <div>
-                        <div className="opacity-60 text-sm">
-                            {t("put-ledgers-on-me")}
-                        </div>
-                        <Switch checked={asMine} onCheckedChange={setAsMine} />
-                    </div>
-                    {!asMine && (
-                        <p className="text-xs text-red-700">
-                            {t("unkown-users-may-show-up-when-analyze")}
-                        </p>
-                    )}
-                </div>
-                <div className="flex-1 flex flex-col px-4 gap-3 overflow-hidden">
-                    <p className="opacity-60 text-sm">{t("preview")}:</p>
-
-                    {importStrategy === "append" ? (
-                        <div>
-                            {t("append-preview-description", {
-                                n: (
-                                    <span className="text-green-700">
-                                        {availableCount}
-                                    </span>
-                                ),
-                            })}
-                        </div>
-                    ) : (
-                        <div>
-                            <div className="text-red-700">
-                                {t("overlap-preview-description", {
-                                    n: (
-                                        <span className="text-red-700">
-                                            {availableCount}
-                                        </span>
-                                    ),
-                                })}
-                            </div>
-                            {/* <div className="opacity-60 text-xs">
-                                {t("overlap-github-tip")}
-                            </div> */}
-                        </div>
-                    )}
-                </div>
-                {loading && (
-                    <div className="absolute top-0 left-0 w-full h-full bg-background/60 flex items-center justify-center">
-                        <i className="icon-[mdi--loading] animate-spin"></i>
-                    </div>
-                )}
             </div>
-        </PopupLayout>
+            {loading && (
+                <div className="absolute top-0 left-0 w-full h-full bg-background/60 flex items-center justify-center">
+                    <i className="icon-[mdi--loading] animate-spin"></i>
+                </div>
+            )}
+        </div>
     );
 };

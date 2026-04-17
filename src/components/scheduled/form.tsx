@@ -15,7 +15,7 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { fillScheduledBills } from "@/hooks/use-scheduled";
-import PopupLayout from "@/layouts/popup-layout";
+import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import type { Bill } from "@/ledger/type";
 import { useIntl } from "@/locale";
 import type { EditBill } from "@/store/ledger";
@@ -23,7 +23,7 @@ import { useUserStore } from "@/store/user";
 import { cn } from "@/utils";
 import { showBillEditor } from "../bill-editor";
 import BillItem from "../ledger/item";
-import modal from "../modal";
+import { prompt } from "@/components/ui/dialog/utils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -62,15 +62,19 @@ const createFormSchema = (t: any) =>
 
 type EditScheduled = Omit<Scheduled, "id"> & { id?: string };
 
-export default function ScheduledEditForm({
-    edit,
-    onConfirm,
-    onCancel,
-}: {
+interface ScheduledEditFormProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
     edit?: EditScheduled;
     onConfirm?: (v?: EditScheduled & { needBills?: EditBill[] }) => void;
-    onCancel?: () => void;
-}) {
+}
+
+export default function ScheduledEditForm({
+    open,
+    onOpenChange,
+    edit,
+    onConfirm,
+}: ScheduledEditFormProps) {
     const t = useIntl();
     const formSchema = useMemo(() => createFormSchema(t), [t]);
     const form = useForm<z.infer<typeof formSchema>>({
@@ -110,7 +114,7 @@ export default function ScheduledEditForm({
         if (formatted.enabled) {
             const needBills = await fillScheduledBills(formatted);
             if (needBills.length > 0) {
-                await modal.prompt({
+                await prompt({
                     title: t("scheduled-lack-bills", {
                         n: needBills.length,
                     }),
@@ -120,20 +124,23 @@ export default function ScheduledEditForm({
             }
         }
         onConfirm?.(formatted);
+        onOpenChange(false);
     }
 
     return (
-        <Form {...form}>
-            <form
-                onSubmit={form.handleSubmit(onSubmit)}
-                className="h-full w-full"
-            >
-                <PopupLayout
-                    onBack={onCancel}
-                    title={t("scheduled-edit")}
-                    className="h-full sm:h-[55vh] gap-2"
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title={t("scheduled-edit")}
+            maxWidth="md"
+            fullScreenOnMobile={true}
+        >
+            <Form {...form}>
+                <form
+                    onSubmit={form.handleSubmit(onSubmit)}
+                    className="flex flex-col gap-4"
                 >
-                    <div className="flex-1 w-full overflow-y-auto flex flex-col px-4 gap-2 pb-20">
+                    <div className="flex-1 w-full overflow-y-auto flex flex-col gap-2">
                         <FormField
                             control={form.control}
                             name="title"
@@ -363,16 +370,14 @@ export default function ScheduledEditForm({
                             )}
                         />
                     </div>
-                    <div className="px-4 py-4 flex gap-2 justify-end">
-                        <div>
-                            <Button type="submit" className="flex-1">
-                                {t("confirm")}
-                            </Button>
-                        </div>
+                    <div className="flex gap-2 justify-end">
+                        <Button type="submit">
+                            {t("confirm")}
+                        </Button>
                     </div>
-                </PopupLayout>
-            </form>
-        </Form>
+                </form>
+            </Form>
+        </FormDialog>
     );
 }
 

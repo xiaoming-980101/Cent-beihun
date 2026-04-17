@@ -2,9 +2,13 @@
  * 任务表单组件
  */
 
-import { useId, useState } from "react";
+import { forwardRef, useId, useImperativeHandle, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { DatePicker } from "@/components/ui/date-picker";
 import { useWeddingStore } from "@/store/wedding";
 import { cn } from "@/utils";
 import { suggestDeadline, TASK_CATEGORIES, TASK_PRIORITIES } from "@/wedding";
@@ -30,11 +34,15 @@ interface TaskFormProps {
     };
 }
 
-export function TaskForm({
+export interface TaskFormHandle {
+    submit: () => Promise<void>;
+}
+
+export const TaskForm = forwardRef<TaskFormHandle, TaskFormProps>(function TaskForm({
     onClose,
     initialDeadline,
     editTask,
-}: TaskFormProps) {
+}, ref) {
     const { weddingData, addTask, updateTask } = useWeddingStore();
     const titleInputId = useId();
     const categorySelectId = useId();
@@ -43,12 +51,12 @@ export function TaskForm({
 
     const [title, setTitle] = useState(editTask?.title || "");
     const [category, setCategory] = useState(editTask?.category || "venue");
-    const [deadline, setDeadline] = useState(
+    const [deadline, setDeadline] = useState<Date | undefined>(
         editTask?.deadline
-            ? new Date(editTask.deadline).toISOString().split("T")[0]
+            ? new Date(editTask.deadline)
             : initialDeadline
-              ? new Date(initialDeadline).toISOString().split("T")[0]
-              : "",
+              ? new Date(initialDeadline)
+              : undefined,
     );
     const [priority, setPriority] = useState(editTask?.priority || "medium");
     const [status, setStatus] = useState(editTask?.status || "pending");
@@ -64,9 +72,7 @@ export function TaskForm({
 
     const handleSuggestDeadline = () => {
         if (suggestDeadlineDate) {
-            setDeadline(
-                new Date(suggestDeadlineDate).toISOString().split("T")[0],
-            );
+            setDeadline(new Date(suggestDeadlineDate));
         }
     };
 
@@ -79,7 +85,7 @@ export function TaskForm({
         const taskData = {
             title: title.trim(),
             category: category as TaskCategory,
-            deadline: deadline ? new Date(deadline).getTime() : undefined,
+            deadline: deadline ? deadline.getTime() : undefined,
             priority: priority as TaskPriority,
             status: status as TaskStatus,
             assignee,
@@ -100,6 +106,11 @@ export function TaskForm({
         }
     };
 
+    // 暴露 submit 方法给父组件
+    useImperativeHandle(ref, () => ({
+        submit: handleSubmit,
+    }));
+
     const baseFieldClassName =
         "w-full rounded-[18px] border border-[color:var(--wedding-line)] bg-white/85 px-4 py-3 text-sm text-[color:var(--wedding-text)] outline-none transition focus:border-pink-300 focus:ring-2 focus:ring-pink-200/70 dark:bg-white/6 dark:focus:border-pink-400/60 dark:focus:ring-pink-500/15";
 
@@ -113,10 +124,10 @@ export function TaskForm({
                     <label className="sr-only" htmlFor={titleInputId}>
                         任务标题
                     </label>
-                    <input
+                    <Input
                         id={titleInputId}
                         type="text"
-                        className={baseFieldClassName}
+                        className="wedding-input"
                         placeholder="例如：确认婚宴酒店档期"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
@@ -131,18 +142,21 @@ export function TaskForm({
                         <label className="sr-only" htmlFor={categorySelectId}>
                             分类
                         </label>
-                        <select
-                            id={categorySelectId}
-                            className={baseFieldClassName}
+                        <Select
                             value={category}
-                            onChange={(e) => setCategory(e.target.value)}
+                            onValueChange={setCategory}
                         >
-                            {TASK_CATEGORIES.map((c) => (
-                                <option key={c.id} value={c.id}>
-                                    {c.name}
-                                </option>
-                            ))}
-                        </select>
+                            <SelectTrigger id={categorySelectId} className="wedding-input">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {TASK_CATEGORIES.map((c) => (
+                                    <SelectItem key={c.id} value={c.id}>
+                                        {c.name}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
                     </div>
 
                     <div>
@@ -152,16 +166,19 @@ export function TaskForm({
                         <label className="sr-only" htmlFor={statusSelectId}>
                             状态
                         </label>
-                        <select
-                            id={statusSelectId}
-                            className={baseFieldClassName}
+                        <Select
                             value={status}
-                            onChange={(e) => setStatus(e.target.value)}
+                            onValueChange={setStatus}
                         >
-                            <option value="pending">待开始</option>
-                            <option value="in_progress">进行中</option>
-                            <option value="completed">已完成</option>
-                        </select>
+                            <SelectTrigger id={statusSelectId} className="wedding-input">
+                                <SelectValue />
+                            </SelectTrigger>
+                            <SelectContent>
+                                <SelectItem value="pending">待开始</SelectItem>
+                                <SelectItem value="in_progress">进行中</SelectItem>
+                                <SelectItem value="completed">已完成</SelectItem>
+                            </SelectContent>
+                        </Select>
                     </div>
                 </div>
             </div>
@@ -191,11 +208,10 @@ export function TaskForm({
                         </button>
                     ) : null}
                 </div>
-                <input
-                    type="date"
-                    className={baseFieldClassName}
-                    value={deadline}
-                    onChange={(e) => setDeadline(e.target.value)}
+                <DatePicker
+                    date={deadline}
+                    onDateChange={setDeadline}
+                    placeholder="选择截止日期"
                 />
             </div>
 
@@ -229,9 +245,9 @@ export function TaskForm({
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                         {[
-                            { value: undefined, label: "不指定" },
-                            { value: "groom" as const, label: "男方" },
-                            { value: "bride" as const, label: "女方" },
+                            { value: undefined, label: "不指定", activeClassName: "border-transparent bg-gradient-to-r from-slate-600 to-slate-700 text-white shadow-sm dark:from-slate-500 dark:to-slate-600" },
+                            { value: "groom" as const, label: "男方", activeClassName: "border-transparent bg-sky-500 text-white shadow-sm" },
+                            { value: "bride" as const, label: "女方", activeClassName: "border-transparent bg-pink-500 text-white shadow-sm" },
                         ].map((item) => {
                             const active = assignee === item.value;
                             return (
@@ -241,11 +257,7 @@ export function TaskForm({
                                     className={cn(
                                         "rounded-[18px] border px-3 py-3 text-sm font-medium transition",
                                         active
-                                            ? item.value === "groom"
-                                                ? "border-transparent bg-sky-500 text-white shadow-sm"
-                                                : item.value === "bride"
-                                                  ? "border-transparent bg-pink-500 text-white shadow-sm"
-                                                  : "border-transparent bg-[color:var(--wedding-text)] text-white shadow-sm"
+                                            ? item.activeClassName
                                             : "border-[color:var(--wedding-line)] bg-white/80 text-[color:var(--wedding-text-soft)] dark:bg-white/6",
                                     )}
                                     onClick={() => setAssignee(item.value)}
@@ -266,10 +278,10 @@ export function TaskForm({
                     <label className="sr-only" htmlFor={notesInputId}>
                         备注
                     </label>
-                    <textarea
+                    <Textarea
                         id={notesInputId}
                         className={cn(
-                            baseFieldClassName,
+                            "wedding-input",
                             "min-h-[112px] resize-none",
                         )}
                         placeholder="可以记录联系人、确认节点或补充说明"
@@ -284,10 +296,10 @@ export function TaskForm({
                 <Button
                     type="button"
                     variant="outline"
-                    className="h-12 flex-1 rounded-[18px] border-[color:var(--wedding-line)] bg-white/80 text-[color:var(--wedding-text)] hover:bg-white dark:bg-white/6 dark:hover:bg-white/10"
+                    className="h-12 flex-1 rounded-[18px] border-[color:var(--wedding-line)] bg-white/90 text-[color:var(--wedding-text)] hover:bg-white dark:border-white/20 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
                     onClick={onClose}
                 >
-                    取消
+                    关闭
                 </Button>
                 <Button
                     type="button"
@@ -299,4 +311,4 @@ export function TaskForm({
             </div>
         </div>
     );
-}
+});

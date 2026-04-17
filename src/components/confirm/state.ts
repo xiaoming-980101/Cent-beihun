@@ -26,7 +26,7 @@ type GlobalConfirmState = {
 
 type GlobalConfirmActions = {
     // 初始化或打开弹窗
-    open: <V, R>(id: string, value?: V) => [Promise<R>, () => void];
+    open: <V, R>(id: string, value?: V) => [Promise<R | undefined>, () => void];
     // 更新指定 ID 的状态
     update: (id: string, partial: Partial<InstanceState>) => void;
     // 清理/移除实例（防止内存泄漏）
@@ -51,7 +51,7 @@ export const useGlobalConfirmStore = create<
                 return;
             }
             cancelled = true;
-            reject();
+            resolve(undefined); // 改为 resolve undefined 而不是 reject
             get().update(id, {
                 visible: false,
                 controller: undefined,

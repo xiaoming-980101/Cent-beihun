@@ -24,10 +24,9 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type React from "react";
-import { type ReactNode, useCallback, useMemo, useState } from "react";
-import PopupLayout from "@/layouts/popup-layout";
+import { type ReactNode, useCallback, useMemo, useState, useEffect } from "react";
+import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import { useIntl } from "@/locale";
-import createConfirmProvider from "../confirm";
 import { Button } from "../ui/button";
 
 // --- 类型定义 ---
@@ -388,59 +387,109 @@ export const SortableGroup = ({
     );
 };
 
-function Form({
-    edit,
-    onCancel,
-    onConfirm,
-}: {
+interface SortableGroupFormProps {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
     edit?: { group: SortableGroupData[]; enableGroupSorting?: boolean };
     onConfirm?: (v: SortableGroupData[]) => void;
-    onCancel?: () => void;
-}) {
+}
+
+function Form({
+    open,
+    onOpenChange,
+    edit,
+    onConfirm,
+}: SortableGroupFormProps) {
     const [list, setList] = useState([...(edit?.group ?? [])]);
     const onReorder: typeof setList = useCallback((v) => {
         setList(v);
     }, []);
     const t = useIntl();
+    
+    const handleConfirm = () => {
+        onConfirm?.(list);
+        onOpenChange(false);
+    };
+    
     return (
-        <PopupLayout
+        <FormDialog
+            open={open}
+            onOpenChange={onOpenChange}
             title={t("sort")}
-            onBack={onCancel}
-            right={
-                <Button
-                    onClick={() => {
-                        onConfirm?.(list);
-                    }}
-                >
-                    {t("confirm")}
-                </Button>
-            }
-            className="h-full overflow-hidden"
+            maxWidth="md"
+            fullScreenOnMobile={true}
         >
-            <div className="flex-1 w-full overflow-y-auto py-2">
-                <SortableGroup
-                    groups={list}
-                    onGroupsChange={onReorder}
-                    enableGroupSorting={edit?.enableGroupSorting}
-                    className="h-full max-h-full px-2"
-                />
+            <div className="flex flex-col gap-4">
+                <div className="w-full overflow-y-auto max-h-[400px]">
+                    <SortableGroup
+                        groups={list}
+                        onGroupsChange={onReorder}
+                        enableGroupSorting={edit?.enableGroupSorting}
+                        className="h-full"
+                    />
+                </div>
+                <div className="flex justify-end">
+                    <Button onClick={handleConfirm}>
+                        {t("confirm")}
+                    </Button>
+                </div>
             </div>
-        </PopupLayout>
+        </FormDialog>
     );
 }
 
-export const [SortableGroupProvider, showSortableGroup] = createConfirmProvider(
-    Form as any,
-    {
-        dialogTitle: "Sort Group",
-        dialogModalClose: true,
-        contentClassName:
-            "h-full w-full max-h-full max-w-full rounded-none sm:rounded-md sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]",
-    },
-) as unknown as [
-    () => ReactNode,
-    <T extends SortableGroupData>(value?: {
-        group: T[];
-        enableGroupSorting?: boolean;
-    }) => Promise<T[]>,
-];
+let sortableGroupResolveCallback: ((list: any[] | null) => void) | null = null;
+let sortableGroupEditData: { group: any[]; enableGroupSorting?: boolean } | undefined = undefined;
+
+export function showSortableGroup<T extends SortableGroupData>(value?: {
+    group: T[];
+    enableGroupSorting?: boolean;
+}): Promise<T[]> {
+    return new Promise((resolve) => {
+        sortableGroupResolveCallback = resolve as any;
+        sortableGroupEditData = value;
+        window.dispatchEvent(new CustomEvent("open-sortable-group"));
+    });
+}
+
+export function SortableGroupProvider() {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        const handleOpen = () => {
+            setOpen(true);
+        };
+        window.addEventListener("open-sortable-group", handleOpen);
+        return () => {
+            window.removeEventListener("open-sortable-group", handleOpen);
+        };
+    }, []);
+
+    const handleConfirm = (list: any[]) => {
+        if (sortableGroupResolveCallback) {
+            sortableGroupResolveCallback(list);
+            sortableGroupResolveCallback = null;
+        }
+        sortableGroupEditData = undefined;
+    };
+
+    const handleOpenChange = (newOpen: boolean) => {
+        setOpen(newOpen);
+        if (!newOpen && sortableGroupResolveCallback) {
+            sortableGroupResolveCallback(null);
+            sortableGroupResolveCallback = null;
+        }
+        if (!newOpen) {
+            sortableGroupEditData = undefined;
+        }
+    };
+
+    return (
+        <Form
+            open={open}
+            onOpenChange={handleOpenChange}
+            onConfirm={handleConfirm}
+            edit={sortableGroupEditData}
+        />
+    );
+}

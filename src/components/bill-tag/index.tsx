@@ -1,14 +1,56 @@
+import { useEffect, useState } from "react";
 import { useIntl } from "@/locale";
-import createConfirmProvider from "../confirm";
 import { Button } from "../ui/button";
+import { FormDialog } from "../ui/dialog/form-dialog";
 import TagList from "./list";
 
-export const [TagListProvider, showTagList] = createConfirmProvider(TagList, {
-    dialogTitle: "Edit Tag",
-    dialogModalClose: true,
-    contentClassName:
-        "h-full w-full max-h-full max-w-full rounded-none sm:rounded-md sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px] overflow-hidden",
-});
+export function TagListProvider() {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        const handleShow = () => setOpen(true);
+        window.addEventListener("show-tag-list", handleShow);
+        return () => {
+            window.removeEventListener("show-tag-list", handleShow);
+        };
+    }, []);
+
+    return (
+        <FormDialog
+            open={open}
+            onOpenChange={(nextOpen) => {
+                setOpen(nextOpen);
+                if (!nextOpen) {
+                    window.dispatchEvent(new CustomEvent("tag-list-closed"));
+                }
+            }}
+            title="标签管理"
+            fullScreenOnMobile={true}
+            bodyClassName="p-0 sm:pt-14"
+            fullscreenBodyClassName="max-sm:p-0"
+        >
+            <TagList
+                onCancel={() => {
+                    setOpen(false);
+                    window.dispatchEvent(new CustomEvent("tag-list-closed"));
+                }}
+            />
+        </FormDialog>
+    );
+}
+
+export function showTagList(): Promise<void> {
+    return new Promise((resolve) => {
+        requestAnimationFrame(() => {
+            window.dispatchEvent(new CustomEvent("show-tag-list"));
+        });
+        const handleClose = () => {
+            window.removeEventListener("tag-list-closed", handleClose);
+            resolve();
+        };
+        window.addEventListener("tag-list-closed", handleClose);
+    });
+}
 
 export default function TagSettingsItem() {
     const t = useIntl();

@@ -6,8 +6,6 @@ import {
     Dialog,
     DialogContent,
     DialogDescription,
-    DialogOverlay,
-    DialogPortal,
     DialogTitle,
 } from "../ui/dialog";
 import { useGlobalConfirmStore } from "./state"; // 引入上面创建的全局 store
@@ -25,6 +23,7 @@ export default function createConfirmProvider<Value, Returned = Value>(
         contentClassName,
         fade,
         swipe,
+        hideClose,
     }: {
         dialogTitle: string | ReactNode;
         dialogDescription?: string | ReactNode;
@@ -32,6 +31,7 @@ export default function createConfirmProvider<Value, Returned = Value>(
         contentClassName?: string;
         fade?: boolean;
         swipe?: boolean;
+        hideClose?: boolean;
     },
 ) {
     // 1. 为每个 Provider 实例生成一个唯一的 ID (在闭包中唯一)
@@ -45,8 +45,8 @@ export default function createConfirmProvider<Value, Returned = Value>(
         const layerStyle = useMemo(
             () =>
                 state?.zIndex != null
-                    ? { zIndex: `${state.zIndex}` }
-                    : { zIndex: "60" },
+                    ? { zIndex: `${Math.max(state.zIndex, 80) + 1}` }
+                    : { zIndex: "81" },
             [state?.zIndex],
         );
         // 3. 组件卸载时清理全局 Store 中的数据，避免内存泄漏
@@ -78,46 +78,39 @@ export default function createConfirmProvider<Value, Returned = Value>(
                     if (!v) onCancel();
                 }}
             >
-                <DialogPortal>
-                    <DialogOverlay
-                        className="fixed inset-0 bg-black/50"
-                        style={layerStyle}
+                <DialogContent
+                    fade={fade}
+                    swipe={swipe}
+                    hideClose={hideClose}
+                    className={cn(
+                        "max-h-[55vh] w-[90vw] max-w-[500px] overflow-y-auto rounded-[28px]",
+                        "border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)]",
+                        "shadow-[0_24px_46px_-30px_rgba(15,23,42,0.5)]",
+                        contentClassName,
+                    )}
+                    style={layerStyle}
+                    onOpenAutoFocus={(e) => {
+                        (
+                            document.activeElement as HTMLElement
+                        )?.blur?.();
+                        e.preventDefault();
+                    }}
+                    onInteractOutside={(e) => {
+                        if (!dialogModalClose) e.preventDefault();
+                    }}
+                >
+                    <VisuallyHidden.Root>
+                        <DialogTitle>{dialogTitle}</DialogTitle>
+                        <DialogDescription>
+                            {dialogDescription}
+                        </DialogDescription>
+                    </VisuallyHidden.Root>
+                    <Form
+                        edit={edit}
+                        onCancel={onCancel}
+                        onConfirm={onConfirm}
                     />
-                    <div
-                        className="fixed top-0 left-0 w-full h-full flex justify-center items-center pointer-events-none"
-                        style={layerStyle}
-                    >
-                        <DialogContent
-                            fade={fade}
-                            swipe={swipe}
-                            className={cn(
-                                "pointer-events-auto bg-background max-h-[55vh] w-[90vw] max-w-[500px] rounded-md overflow-y-auto",
-                                contentClassName,
-                            )}
-                            onOpenAutoFocus={(e) => {
-                                (
-                                    document.activeElement as HTMLElement
-                                )?.blur?.();
-                                e.preventDefault();
-                            }}
-                            onInteractOutside={(e) => {
-                                if (!dialogModalClose) e.preventDefault();
-                            }}
-                        >
-                            <VisuallyHidden.Root>
-                                <DialogTitle>{dialogTitle}</DialogTitle>
-                                <DialogDescription>
-                                    {dialogDescription}
-                                </DialogDescription>
-                            </VisuallyHidden.Root>
-                            <Form
-                                edit={edit}
-                                onCancel={onCancel}
-                                onConfirm={onConfirm}
-                            />
-                        </DialogContent>
-                    </div>
-                </DialogPortal>
+                </DialogContent>
             </Dialog>
         );
     }
