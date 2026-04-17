@@ -2,7 +2,7 @@
  * 预算表单弹窗组件 - 使用统一 FormDialog
  */
 
-import { useId, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { toast } from "sonner";
 import type { WeddingBudget, BudgetStatus } from "@/wedding/type";
 import { FormDialog } from "@/components/ui/dialog/form-dialog";
@@ -37,24 +37,46 @@ export function BudgetFormDialog({
     const dueDateInputId = useId();
     const notesInputId = useId();
 
-    const [category, setCategory] = useState(editBudget?.category || "");
-    const [budget, setBudget] = useState(editBudget?.budget?.toString() || "");
-    const [spent, setSpent] = useState(editBudget?.spent?.toString() || "0");
-    const [deposit, setDeposit] = useState(
-        editBudget?.deposit?.toString() || "",
-    );
-    const [balance, setBalance] = useState(
-        editBudget?.balance?.toString() || "",
-    );
-    const [vendor, setVendor] = useState(editBudget?.vendor || "");
-    const [vendorPhone, setVendorPhone] = useState(
-        editBudget?.vendorPhone || "",
-    );
-    const [status, setStatus] = useState(editBudget?.status || "planned");
-    const [dueDate, setDueDate] = useState<Date | undefined>(
-        editBudget?.dueDate ? new Date(editBudget.dueDate) : undefined,
-    );
-    const [notes, setNotes] = useState(editBudget?.notes || "");
+    const [category, setCategory] = useState("");
+    const [budget, setBudget] = useState("");
+    const [spent, setSpent] = useState("0");
+    const [deposit, setDeposit] = useState("");
+    const [balance, setBalance] = useState("");
+    const [vendor, setVendor] = useState("");
+    const [vendorPhone, setVendorPhone] = useState("");
+    const [status, setStatus] = useState<BudgetStatus>("planned");
+    const [dueDate, setDueDate] = useState<Date | undefined>(undefined);
+    const [notes, setNotes] = useState("");
+
+    // 当弹窗打开或 editBudget 变化时，重置表单
+    useEffect(() => {
+        if (open) {
+            if (editBudget) {
+                setCategory(editBudget.category || "");
+                setBudget(editBudget.budget?.toString() || "");
+                setSpent(editBudget.spent?.toString() || "0");
+                setDeposit(editBudget.deposit?.toString() || "");
+                setBalance(editBudget.balance?.toString() || "");
+                setVendor(editBudget.vendor || "");
+                setVendorPhone(editBudget.vendorPhone || "");
+                setStatus(editBudget.status || "planned");
+                setDueDate(editBudget.dueDate ? new Date(editBudget.dueDate) : undefined);
+                setNotes(editBudget.notes || "");
+            } else {
+                // 重置为空表单
+                setCategory("");
+                setBudget("");
+                setSpent("0");
+                setDeposit("");
+                setBalance("");
+                setVendor("");
+                setVendorPhone("");
+                setStatus("planned");
+                setDueDate(undefined);
+                setNotes("");
+            }
+        }
+    }, [open, editBudget]);
 
     const handleSubmit = async () => {
         const budgetNum = parseFloat(budget);
