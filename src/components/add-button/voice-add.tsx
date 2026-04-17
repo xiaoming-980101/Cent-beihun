@@ -83,7 +83,8 @@ export function VoiceAddButton({
 
     const presses = useLongPress({
         onClick,
-        onLongPressStart: useCallback(async () => {
+        onLongPressStart: useCallback(() => {
+            // 长按开始：显示弹窗并开始录音
             const { promise: dialogClosed, cancel: closeDialog } =
                 showVoiceForm();
             const {
@@ -94,6 +95,7 @@ export function VoiceAddButton({
                 setFormState((prev) => ({ ...prev, text }));
             });
 
+            // 如果弹窗被关闭，取消录音
             dialogClosed.catch((error) => {
                 console.warn(error);
                 cancelRecognizing();
@@ -102,48 +104,66 @@ export function VoiceAddButton({
             cancelRef.current = closeDialog;
             stopRef.current = stopRecognizing;
 
-            try {
-                const value = await finished;
-                const text = value.trim();
-                if (text.length === 0) {
-                    return;
+            // 处理识别结果
+            finished.then(async (value) => {
+                try {
+                    const text = value.trim();
+                    if (text.length === 0) {
+                        closeDialog();
+                        setFormState({
+                            text: "",
+                            phase: "listening",
+                        });
+                        return;
+                    }
+                    setFormState((prev) => ({ ...prev, phase: "parsing" }));
+                    const bills = await parseTextToBill(text);
+                    if (bills.length === 0) {
+                        toast.error("无法识别账单信息");
+                        return;
+                    }
+                    await useLedgerStore.getState().addBills(bills);
+                    toast.success(t("voice-add-success", { count: bills.length }));
+                } catch (error) {
+                    console.error(error);
+                    const errorMessage =
+                        error instanceof Error ? error.message : "";
+                    if (errorMessage.includes("aborted")) {
+                        return;
+                    }
+                    toast.error(
+                        t("voice-recognition-failed", {
+                            error: error instanceof Error ? error.message : "",
+                        }),
+                    );
+                } finally {
+                    closeDialog();
+                    setFormState({
+                        text: "",
+                        phase: "listening",
+                    });
                 }
-                setFormState((prev) => ({ ...prev, phase: "parsing" }));
-                const bills = await parseTextToBill(text);
-                if (bills.length === 0) {
-                    return;
-                }
-                await useLedgerStore.getState().addBills(bills);
-                toast.success(t("voice-add-success", { count: bills.length }));
-            } catch (error) {
+            }).catch((error) => {
                 console.error(error);
-                const errorMessage =
-                    error instanceof Error ? error.message : "";
-                if (errorMessage.includes("aborted")) {
-                    return;
-                }
-                toast.error(
-                    t("voice-recognition-failed", {
-                        error: error instanceof Error ? error.message : "",
-                    }),
-                );
-            } finally {
                 closeDialog();
                 setFormState({
                     text: "",
                     phase: "listening",
                 });
-            }
+            });
         }, []),
         onLongPressEnd: useCallback(() => {
-            console.log("start parsing voice texts");
+            // 松手：停止录音并开始识别
+            console.log("松手，停止录音并开始识别");
             stopRef.current?.();
-            cancelRef.current = undefined;
             stopRef.current = undefined;
         }, []),
         onLongPressCancel: useCallback(() => {
+            // 取消（上滑或移开）：取消录音并关闭弹窗
+            console.log("取消录音");
             cancelRef.current?.();
             cancelRef.current = undefined;
+            stopRef.current = undefined;
         }, []),
     });
 
