@@ -6,6 +6,8 @@ import { v4 } from "uuid";
 import * as z from "zod/mini";
 import { useShallow } from "zustand/shallow";
 import { Calendar } from "@/components/ui/calendar";
+import { FormDialog } from "@/components/ui/dialog/form-dialog";
+import { prompt } from "@/components/ui/dialog/utils";
 import {
     Form,
     FormControl,
@@ -15,7 +17,6 @@ import {
     FormMessage,
 } from "@/components/ui/form";
 import { fillScheduledBills } from "@/hooks/use-scheduled";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import type { Bill } from "@/ledger/type";
 import { useIntl } from "@/locale";
 import type { EditBill } from "@/store/ledger";
@@ -23,7 +24,6 @@ import { useUserStore } from "@/store/user";
 import { cn } from "@/utils";
 import { showBillEditor } from "../bill-editor";
 import BillItem from "../ledger/item";
-import { prompt } from "@/components/ui/dialog/utils";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -371,9 +371,7 @@ export default function ScheduledEditForm({
                         />
                     </div>
                     <div className="flex gap-2 justify-end">
-                        <Button type="submit">
-                            {t("confirm")}
-                        </Button>
+                        <Button type="submit">{t("confirm")}</Button>
                     </div>
                 </form>
             </Form>
@@ -392,6 +390,9 @@ function BillTemplate({
 }) {
     const toUpdate = async (v?: Omit<Bill, "id">) => {
         const bill = await showBillEditor(v);
+        if (!bill) {
+            return;
+        }
         onChange?.(bill);
     };
 

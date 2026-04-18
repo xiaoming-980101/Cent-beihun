@@ -1,11 +1,5 @@
 import dayjs from "dayjs";
-import {
-    useEffect,
-    useLayoutEffect,
-    useMemo,
-    useRef,
-    useState,
-} from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router";
 import { useShallow } from "zustand/shallow";
 import { StorageAPI } from "@/api/storage";
@@ -119,6 +113,7 @@ export default function Page() {
         engagement: 0,
         wedding: 0,
     });
+    const weddingBudgets = weddingData?.weddingBudgets ?? [];
     const [finalCountdownSeconds, setFinalCountdownSeconds] = useState<
         number | null
     >(null);
@@ -224,7 +219,11 @@ export default function Page() {
     const homeActivities = useMemo(() => {
         const taskActivities = (weddingData?.tasks || [])
             .slice()
-            .sort((a, b) => (b.completedAt || b.createdAt) - (a.completedAt || a.createdAt))
+            .sort(
+                (a, b) =>
+                    (b.completedAt || b.createdAt) -
+                    (a.completedAt || a.createdAt),
+            )
             .slice(0, 2)
             .map((task) => ({
                 key: `task-${task.id}`,
@@ -336,11 +335,19 @@ export default function Page() {
     }, [latestBills]);
     const engagementDays = useMemo(() => {
         if (!weddingData?.engagementDate) return null;
-        return Math.abs(dayjs(weddingData.engagementDate).startOf("day").diff(dayjs().startOf("day"), "day"));
+        return Math.abs(
+            dayjs(weddingData.engagementDate)
+                .startOf("day")
+                .diff(dayjs().startOf("day"), "day"),
+        );
     }, [weddingData?.engagementDate]);
     const weddingDays = useMemo(() => {
         if (!weddingData?.weddingDate) return null;
-        return Math.abs(dayjs(weddingData.weddingDate).startOf("day").diff(dayjs().startOf("day"), "day"));
+        return Math.abs(
+            dayjs(weddingData.weddingDate)
+                .startOf("day")
+                .diff(dayjs().startOf("day"), "day"),
+        );
     }, [weddingData?.weddingDate]);
     const heartParticles = useMemo(() => {
         return Array.from({ length: 18 }, (_, index) => ({
@@ -432,9 +439,27 @@ export default function Page() {
                     </div>
                     <div className="grid grid-cols-3 gap-2.5">
                         {[
-                            ["任务完成", `${completedWeddingTaskCount}/${weddingTaskCount || 0}`, "已完成", "#F3E8FF", "#A855F7"],
-                            ["宾客人数", `${weddingGuestCount}`, "已登记", "#EFF6FF", "#3B82F6"],
-                            ["礼金记录", `${weddingGiftCount}`, "当前记录", "#FDE7F3", "#EC4899"],
+                            [
+                                "任务完成",
+                                `${completedWeddingTaskCount}/${weddingTaskCount || 0}`,
+                                "已完成",
+                                "#F3E8FF",
+                                "#A855F7",
+                            ],
+                            [
+                                "宾客人数",
+                                `${weddingGuestCount}`,
+                                "已登记",
+                                "#EFF6FF",
+                                "#3B82F6",
+                            ],
+                            [
+                                "礼金记录",
+                                `${weddingGiftCount}`,
+                                "当前记录",
+                                "#FDE7F3",
+                                "#EC4899",
+                            ],
                         ].map(([label, value, sub, bg, color]) => (
                             <div
                                 key={label}
@@ -504,7 +529,9 @@ export default function Page() {
                             {weddingData?.engagementDate ? (
                                 <div className="mt-2">
                                     <div className="mb-1 flex items-center justify-between text-[10px] text-cyan-50/90">
-                                        <span>彩蛋进度 {tapProgress.engagement}/5</span>
+                                        <span>
+                                            彩蛋进度 {tapProgress.engagement}/5
+                                        </span>
                                         <button
                                             type="button"
                                             className="rounded-full border border-cyan-100/35 bg-cyan-500/18 px-2 py-0.5 text-[10px] font-medium text-cyan-50 transition hover:bg-cyan-500/28"
@@ -513,8 +540,7 @@ export default function Page() {
                                                 setEggOpen({
                                                     kind: "engagement",
                                                     title: "订婚彩蛋",
-                                                    target:
-                                                        weddingData.engagementDate!,
+                                                    target: weddingData.engagementDate!,
                                                 });
                                             }}
                                         >
@@ -579,7 +605,9 @@ export default function Page() {
                             {weddingData?.weddingDate ? (
                                 <div className="mt-2">
                                     <div className="mb-1 flex items-center justify-between text-[10px] text-pink-50/90">
-                                        <span>彩蛋进度 {tapProgress.wedding}/5</span>
+                                        <span>
+                                            彩蛋进度 {tapProgress.wedding}/5
+                                        </span>
                                         <button
                                             type="button"
                                             className="rounded-full border border-pink-100/35 bg-pink-500/18 px-2 py-0.5 text-[10px] font-medium text-pink-50 transition hover:bg-pink-500/28"
@@ -809,7 +837,9 @@ export default function Page() {
                                 >
                                     <div
                                         className="flex h-8 w-8 items-center justify-center rounded-xl"
-                                        style={{ background: `${item.color}18` }}
+                                        style={{
+                                            background: `${item.color}18`,
+                                        }}
                                     >
                                         <i
                                             className={`${item.icon} size-4`}
@@ -894,7 +924,9 @@ export default function Page() {
                                 <button
                                     type="button"
                                     className="text-[11px] text-pink-500"
-                                    onClick={() => navigate("/tools/wedding-budget")}
+                                    onClick={() =>
+                                        navigate("/tools/wedding-budget")
+                                    }
                                 >
                                     详情
                                 </button>
@@ -904,7 +936,7 @@ export default function Page() {
                                     [
                                         "总预算",
                                         formatAmount(
-                                            budgets.reduce(
+                                            weddingBudgets.reduce(
                                                 (sum, item) =>
                                                     sum + item.budget,
                                                 0,
@@ -914,14 +946,13 @@ export default function Page() {
                                     [
                                         "已支付",
                                         formatAmount(
-                                            budgets.reduce(
-                                                (sum, item) =>
-                                                    sum + item.spent,
+                                            weddingBudgets.reduce(
+                                                (sum, item) => sum + item.spent,
                                                 0,
                                             ),
                                         ),
                                     ],
-                                    ["项目数", `${budgets.length} 项`],
+                                    ["项目数", `${weddingBudgets.length} 项`],
                                 ].map(([label, value]) => (
                                     <div
                                         key={label}
@@ -940,7 +971,7 @@ export default function Page() {
                         <div className="grid grid-cols-2 gap-3">
                             <WeddingStat
                                 label="进行中预算"
-                                value={`${budgets.length} 项`}
+                                value={`${weddingBudgets.length} 项`}
                                 hint={`${bookLabel}相关项目`}
                             />
                             <HintTooltip
@@ -1038,7 +1069,9 @@ export default function Page() {
                         <input
                             type="text"
                             value={partnerNameDraft}
-                            onChange={(e) => setPartnerNameDraft(e.target.value)}
+                            onChange={(e) =>
+                                setPartnerNameDraft(e.target.value)
+                            }
                             placeholder="例如：宝贝、佳佳"
                             className="w-full rounded-xl border border-rose-200/70 bg-[linear-gradient(145deg,rgba(255,255,255,0.92),rgba(255,241,247,0.9))] px-3 py-2 text-sm text-rose-700 outline-none transition focus:border-rose-400 focus:ring-2 focus:ring-rose-200 dark:border-rose-800/50 dark:bg-[linear-gradient(145deg,rgba(255,255,255,0.06),rgba(244,114,182,0.08))] dark:text-rose-300"
                         />

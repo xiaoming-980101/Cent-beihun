@@ -1,5 +1,5 @@
-import { throttle } from "echarts/core";
 import { useEffect } from "react";
+import { throttle } from "@/utils/timing";
 
 type Size = {
     width: number;

@@ -34,11 +34,30 @@ vi.mock("@/store/book", () => ({
 }));
 
 vi.mock("@/store/ledger", () => ({
-    useLedgerStore: () => ({ infos: { meta: {} }, removeBills: vi.fn(), updateBills: vi.fn() }),
+    useLedgerStore: Object.assign(
+        (selector?: (state: any) => unknown) => {
+            const state = {
+                infos: { meta: { tags: [], personal: {} } },
+                bills: [],
+                removeBills: vi.fn(),
+                updateBills: vi.fn(),
+            };
+            return selector ? selector(state) : state;
+        },
+        {
+            getState: () => ({
+                infos: { meta: { tags: [], personal: {} } },
+                bills: [],
+                removeBills: vi.fn(),
+                updateBills: vi.fn(),
+            }),
+        },
+    ),
 }));
 
 vi.mock("@/locale", () => ({
-    useIntl: () => ((key: string) => key),
+    useIntl: () => (key: string) => key,
+    t: (key: string) => key,
 }));
 
 vi.mock("@/hooks/use-currency", () => ({
@@ -50,7 +69,9 @@ vi.mock("@/hooks/use-category", () => ({
 }));
 
 vi.mock("@/hooks/use-custom-filters", () => ({
-    useCustomFilters: () => ({ addFilter: vi.fn().mockResolvedValue("mock-filter-id") }),
+    useCustomFilters: () => ({
+        addFilter: vi.fn().mockResolvedValue("mock-filter-id"),
+    }),
 }));
 
 vi.mock("@/store/preference", () => ({
@@ -71,7 +92,9 @@ describe("Search Page", () => {
                 <SearchPage />
             </MemoryRouter>,
         );
-        const input = screen.getByPlaceholderText("搜索备注、分类、金额和标签...");
+        const input = screen.getByPlaceholderText(
+            "搜索备注、分类、金额和标签...",
+        );
         fireEvent.change(input, { target: { value: "婚礼" } });
         expect((input as HTMLInputElement).value).toBe("婚礼");
     });

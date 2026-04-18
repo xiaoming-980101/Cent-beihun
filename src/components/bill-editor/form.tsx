@@ -1,4 +1,4 @@
-import { Switch } from "radix-ui";
+import * as Switch from "@radix-ui/react-switch";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import useCategory from "@/hooks/use-category";
 import { useCurrency } from "@/hooks/use-currency";

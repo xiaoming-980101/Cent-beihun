@@ -70,21 +70,27 @@ export default function GuestManagement() {
 
             <section className="grid grid-cols-4 gap-2">
                 {[
-                    ["总人数", seatEstimate, "#3B82F6"],
-                    ["已确认", confirmedSeats, "#22C55E"],
-                    [
-                        "已邀请",
-                        guests.filter((item) => item.inviteStatus === "invited")
-                            .length,
-                        "#A855F7",
-                    ],
-                    [
-                        "待回复",
-                        guests.filter((item) => item.inviteStatus === "pending")
-                            .length,
-                        "#F97316",
-                    ],
-                ].map(([label, value, color]) => (
+                    { label: "总人数", value: seatEstimate, color: "#3B82F6" },
+                    {
+                        label: "已确认",
+                        value: confirmedSeats,
+                        color: "#22C55E",
+                    },
+                    {
+                        label: "已邀请",
+                        value: guests.filter(
+                            (item) => item.inviteStatus === "invited",
+                        ).length,
+                        color: "#A855F7",
+                    },
+                    {
+                        label: "待回复",
+                        value: guests.filter(
+                            (item) => item.inviteStatus === "pending",
+                        ).length,
+                        color: "#F97316",
+                    },
+                ].map(({ label, value, color }) => (
                     <div
                         key={label}
                         className="rounded-[18px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] px-2.5 py-3 text-center shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]"
@@ -124,10 +130,7 @@ export default function GuestManagement() {
                                     activeSide === item
                                         ? "#3B82F6"
                                         : "var(--wedding-surface-muted)",
-                                color:
-                                    activeSide === item
-                                        ? "#fff"
-                                        : "#3B82F6",
+                                color: activeSide === item ? "#fff" : "#3B82F6",
                             }}
                         >
                             {item}
@@ -182,7 +185,8 @@ export default function GuestManagement() {
                                                 <Badge
                                                     className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-medium"
                                                     style={{
-                                                        background: statusStyle.bg,
+                                                        background:
+                                                            statusStyle.bg,
                                                         color: statusStyle.color,
                                                     }}
                                                 >

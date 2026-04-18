@@ -1,4 +1,3 @@
-import { cloneDeep, isEqual, merge } from "lodash-es";
 import { useEffect, useRef, useState } from "react";
 import { StorageAPI } from "@/api/storage";
 import type { Full, MetaUpdate, Update } from "@/database/stash";
@@ -10,6 +9,7 @@ import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
 import { useLedgerStore } from "@/store/ledger";
 import { useUserStore } from "@/store/user";
+import { deepClone, deepEqual, deepMerge } from "@/utils/object";
 import { FormDialog } from "../ui/dialog/form-dialog";
 import { PreviewForm, type PreviewState } from "./preview";
 
@@ -81,7 +81,7 @@ export const showImportPreview = (edit?: PreviewState): Promise<PreviewState | n
 
 export const importFromPreviewResult = async (res: PreviewState) => {
     const { strategy, asMine, ...rest } = res;
-    const currentMeta = cloneDeep(
+    const currentMeta = deepClone(
         useLedgerStore.getState().infos?.meta ?? ({} as GlobalMeta),
     );
     const newMeta =
@@ -89,7 +89,7 @@ export const importFromPreviewResult = async (res: PreviewState) => {
             ? rest.meta
             : (() => {
                   if (!rest.meta?.categories) {
-                      const merged = merge(currentMeta, rest.meta);
+                      const merged = deepMerge(currentMeta, rest.meta);
                       return merged;
                   }
                   const currentCategories =
@@ -98,11 +98,11 @@ export const importFromPreviewResult = async (res: PreviewState) => {
                           : currentMeta.categories!;
                   const incomingCategories = [...(rest.meta?.categories ?? [])];
                   // 必须用深拷贝否则会被merge改变
-                  const appended = cloneDeep(
+                  const appended = deepClone(
                       appendCategories(currentCategories, incomingCategories),
                   );
-                  const merged = merge(currentMeta, rest.meta);
-                  if (isEqual(BillCategories, appended)) {
+                  const merged = deepMerge(currentMeta, rest.meta);
+                  if (deepEqual(BillCategories, appended)) {
                       merged.categories = undefined;
                   } else {
                       merged.categories = appended;

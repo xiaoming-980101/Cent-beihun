@@ -1,4 +1,4 @@
-import { VisuallyHidden } from "radix-ui";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { type ReactNode, useEffect, useMemo } from "react";
 import { useShallow } from "zustand/shallow";
 import { cn } from "@/utils";

@@ -1,5 +1,4 @@
 import { produce } from "immer";
-import { merge } from "lodash-es";
 import { v4 } from "uuid";
 import { create } from "zustand";
 import type { UserInfo } from "@/api/endpoints/type";
@@ -9,6 +8,7 @@ import modal from "@/components/modal";
 import type { Action, Full, OutputType, Update } from "@/database/stash";
 import type { Bill, GlobalMeta, PersonalMeta } from "@/ledger/type";
 import { t } from "@/locale";
+import { deepMerge } from "@/utils/object";
 import { useBookStore } from "./book";
 import { useUserStore } from "./user";
 
@@ -320,7 +320,7 @@ export const useLedgerStore = create<LedgerStore>()((set, get) => {
             const repo = getCurrentFullRepoName();
             const prevMeta = await StorageAPI.getMeta(repo);
             const newMeta =
-                typeof v === "function" ? v(prevMeta) : merge(prevMeta, v);
+                typeof v === "function" ? v(prevMeta) : deepMerge(prevMeta, v);
             await StorageAPI.batch(repo, [
                 {
                     type: "meta",

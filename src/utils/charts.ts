@@ -1,8 +1,8 @@
 import dayjs, { type OpUnitType } from "dayjs";
-import { merge, sortBy } from "lodash-es";
 import type { ECOption } from "@/components/chart";
 import { amountToNumber } from "@/ledger/bill";
 import type { Bill, BillType } from "@/ledger/type";
+import { deepMerge } from "@/utils/object";
 import {
     categoryColors,
     collaboratorColors,
@@ -426,7 +426,7 @@ export const overallTrendOption = (
     dataset: { source: any[] },
     options?: ECOption,
 ) =>
-    merge(
+    deepMerge(
         {
             // 提示框，'axis' 表示鼠标悬浮在x轴上时触发
             tooltip: {
@@ -531,20 +531,22 @@ export const userTrendOption = (
         })),
     };
 
-    return merge(baseOption, options);
+    return deepMerge(baseOption, options);
 };
 
 export const structureOption = (dataset: any[], options?: ECOption) => {
     // 处理数据，为每一项注入基于 name 的固定颜色
-    const coloredData = sortBy(dataset, (v) => v.value).map((item) => ({
-        ...item,
-        itemStyle: {
-            // 根据 name 生成/获取固定颜色
-            color: categoryColors(item.id),
-        },
-    }));
+    const coloredData = [...dataset]
+        .sort((a, b) => a.value - b.value)
+        .map((item) => ({
+            ...item,
+            itemStyle: {
+                // 根据 name 生成/获取固定颜色
+                color: categoryColors(item.id),
+            },
+        }));
 
-    return merge(
+    return deepMerge(
         {
             title: {
                 text: "支出结构",

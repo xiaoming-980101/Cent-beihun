@@ -68,10 +68,90 @@ export default defineConfig(({ mode }) => {
 
     if (shouldAnalyze) {
         // 只有在环境变量 ANALYZE=true 时才添加分析插件
-        plugins.push(analyzer());
+        plugins.push(
+            analyzer({
+                analyzerMode: "static",
+                fileName: "reports/bundle-stats.html",
+                openAnalyzer: false,
+                summary: true,
+            }),
+        );
     }
     return {
         plugins,
+        build: {
+            rollupOptions: {
+                output: {
+                    manualChunks(id) {
+                        if (!id.includes("node_modules")) {
+                            return;
+                        }
+                        if (id.includes("/tslib/")) {
+                            return "vendor-tslib";
+                        }
+                        if (id.includes("/react-router")) {
+                            return "vendor-router";
+                        }
+                        if (
+                            id.includes("/@aws-sdk/") ||
+                            id.includes("/@smithy/") ||
+                            id.includes("/@aws-crypto/")
+                        ) {
+                            return "vendor-aws";
+                        }
+                        if (
+                            id.includes("/react-intl/") ||
+                            id.includes("/@formatjs/") ||
+                            id.includes("/intl-messageformat/")
+                        ) {
+                            return "vendor-intl";
+                        }
+                        if (id.includes("/tailwind-merge/")) {
+                            return "vendor-twmerge";
+                        }
+                        if (id.includes("/lunar-javascript/")) {
+                            return "vendor-lunar";
+                        }
+                        if (id.includes("/@dnd-kit/")) {
+                            return "vendor-dndkit";
+                        }
+                        if (
+                            id.includes("/framer-motion/") ||
+                            id.includes("/motion-dom/") ||
+                            id.includes("/motion/")
+                        ) {
+                            return "vendor-motion";
+                        }
+                        if (
+                            id.includes("/date-fns/") ||
+                            id.includes("/@date-fns/") ||
+                            id.includes("/react-day-picker/") ||
+                            id.includes("/dayjs/")
+                        ) {
+                            return "vendor-date";
+                        }
+                        if (id.includes("/zrender")) {
+                            return "vendor-zrender";
+                        }
+                        if (
+                            id.includes("/echarts") ||
+                            id.includes("/wordcloud")
+                        ) {
+                            if (id.includes("/wordcloud")) {
+                                return "vendor-wordcloud";
+                            }
+                            return "vendor-echarts";
+                        }
+                        if (
+                            id.includes("@radix-ui") ||
+                            id.includes("/radix-ui")
+                        ) {
+                            return "vendor-radix";
+                        }
+                    },
+                },
+            },
+        },
         resolve: {
             alias: {
                 "@": resolve("./src"),

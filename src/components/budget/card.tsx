@@ -2,7 +2,7 @@
 /** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 
 import dayjs from "dayjs";
-import { Collapsible } from "radix-ui";
+import * as Collapsible from "@radix-ui/react-collapsible";
 import { useMemo } from "react";
 import useCategory from "@/hooks/use-category";
 import { useIntl } from "@/locale";

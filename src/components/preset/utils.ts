@@ -1,4 +1,3 @@
-import { cloneDeep } from "lodash-es";
 import type { BillFilterView } from "@/ledger/extra-type";
 import type {
     BillCategory,
@@ -8,6 +7,7 @@ import type {
 } from "@/ledger/type";
 import { useLedgerStore } from "@/store/ledger";
 import { useUserStore } from "@/store/user";
+import { deepClone } from "@/utils/object";
 import { version } from "~build/package";
 import {
     PRESET_MERGE_RISK,
@@ -231,7 +231,7 @@ export async function applyPreset(preset: PresetConfig): Promise<void> {
 
     if (hasMetaChange) {
         await useLedgerStore.getState().updateGlobalMeta((prev) => {
-            const next: GlobalMeta = cloneDeep(prev);
+            const next: GlobalMeta = deepClone(prev);
 
             if (incTags !== undefined && incTags.length > 0) {
                 next.tags = mergeBillTags(prev.tags ?? [], incTags);

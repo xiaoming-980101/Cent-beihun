@@ -20,3 +20,8 @@ If you're using Codex, project-scoped helpers may also live in:
 Keep this managed block so 'trellis update' can refresh the instructions.
 
 <!-- TRELLIS:END -->
+
+## Project Note
+
+- This repository currently does not include a `.trellis/` directory or a runnable `/trellis:start` command in local shell environments.
+- If Trellis tooling is needed later, run `trellis update` (or re-bootstrap Trellis) before relying on those instructions.

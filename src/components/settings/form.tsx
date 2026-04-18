@@ -1,18 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { StorageAPI } from "@/api/storage";
+import { confirm } from "@/components/ui/dialog/utils";
 import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
+import { useLedgerStore } from "@/store/ledger";
 import { useUserStore } from "@/store/user";
 import { useWeddingStore } from "@/store/wedding";
-import { useLedgerStore } from "@/store/ledger";
-import { confirm } from "@/components/ui/dialog/utils";
-import { Button } from "../ui/button";
-import {
-    Collapsible,
-    CollapsibleContent,
-    CollapsibleTrigger,
-} from "../ui/collapsible";
-import { Separator } from "../ui/separator";
 import TagSettingsItem from "../bill-tag";
 import { BookSettings } from "../book";
 import Budget from "../budget";
@@ -20,30 +13,44 @@ import CategorySettingsItem from "../category";
 import CurrencySettingsItem from "../currency";
 import DataManagerSettingsItem from "../data-manager";
 import ScheduledSettingsItems from "../scheduled/settings-item";
+import { Button } from "../ui/button";
+import {
+    Collapsible,
+    CollapsibleContent,
+    CollapsibleTrigger,
+} from "../ui/collapsible";
+import { Separator } from "../ui/separator";
 import AboutSettingsItem, { AdvancedGuideItem } from "./about";
 import AssistantSettingsItem from "./assistant";
 import LabSettingsItem from "./lab";
 import LanguageSettingsItem from "./language";
 import MapSettingsItem from "./map-settings";
 import PresetSettingsItem from "./preset";
+import { showProfileEditor } from "./profile-editor";
 import QuickEntrySettingsItem from "./quick-entry";
 import ThemeSettingsItem from "./theme";
 import UserSettingsItem from "./user";
 import VoiceSettingsItem from "./voice";
 import WeddingDateSettingsItem from "./wedding-date";
-import { showProfileEditor } from "./profile-editor";
-import { useEffect } from "react";
 
 function UserInfo() {
     const t = useIntl();
-    const { id, avatar_url: defaultAvatar, name: defaultName, expired, updateProfile } = useUserStore();
+    const {
+        id,
+        avatar_url: defaultAvatar,
+        name: defaultName,
+        expired,
+        updateProfile,
+    } = useUserStore();
     const [displayAvatar, setDisplayAvatar] = useState(defaultAvatar);
     const [displayName, setDisplayName] = useState(defaultName);
 
     // 从个人元数据加载头像和昵称
     useEffect(() => {
         const loadProfile = async () => {
-            const personalMeta = useLedgerStore.getState().infos?.personalMeta;
+            const userId = useUserStore.getState().id;
+            const personalMeta =
+                useLedgerStore.getState().infos?.meta.personal?.[userId];
             if (personalMeta?.userProfile) {
                 if (personalMeta.userProfile.avatar) {
                     setDisplayAvatar(personalMeta.userProfile.avatar);
@@ -66,7 +73,7 @@ function UserInfo() {
             if (result.nickname) {
                 setDisplayName(result.nickname);
             }
-            
+
             // 同时更新本地 store (用于其他地方显示)
             updateProfile({
                 avatar: result.avatar as string,
@@ -81,7 +88,7 @@ function UserInfo() {
             description: t("logout-warning"),
             variant: "destructive",
             confirmText: "确认退出",
-            cancelText: "取消"
+            cancelText: "取消",
         });
 
         if (confirmed) {
@@ -241,7 +248,7 @@ export default function SettingsForm({
             description: t("logout-warning"),
             variant: "destructive",
             confirmText: "确认退出",
-            cancelText: "取消"
+            cancelText: "取消",
         });
 
         if (confirmed) {
@@ -263,131 +270,131 @@ export default function SettingsForm({
         <div className="flex h-full flex-col overflow-hidden bg-[color:var(--wedding-app-bg)]">
             <UserInfo />
             <SettingsSummary />
-            
+
             <div className="flex flex-1 flex-col overflow-y-auto pb-24">
                 {/* 账本设置 */}
                 <div className="px-4 pb-4">
-                        <Collapsible
-                            open={openSections.book}
-                            onOpenChange={(open) =>
-                                setOpenSections({ ...openSections, book: open })
-                            }
-                        >
-                            <CollapsibleTrigger className="mb-2 flex w-full items-center justify-between pl-1">
-                                <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
-                                    <i className="icon-[mdi--book-open-variant] mr-1.5 inline-block size-3.5" />
-                                    {t("book-settings")}
-                                </div>
-                                <i
-                                    className={`icon-[mdi--chevron-down] size-4 text-[color:var(--wedding-text-mute)] transition-transform ${openSections.book ? "rotate-180" : ""}`}
-                                />
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                                <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
-                                    <WeddingDateSettingsItem />
-                                    <BookSettings />
-                                    <PresetSettingsItem />
-                                    <UserSettingsItem />
-                                    <DataManagerSettingsItem />
-                                </div>
-                            </CollapsibleContent>
-                        </Collapsible>
-                    </div>
+                    <Collapsible
+                        open={openSections.book}
+                        onOpenChange={(open) =>
+                            setOpenSections({ ...openSections, book: open })
+                        }
+                    >
+                        <CollapsibleTrigger className="mb-2 flex w-full items-center justify-between pl-1">
+                            <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
+                                <i className="icon-[mdi--book-open-variant] mr-1.5 inline-block size-3.5" />
+                                {t("book-settings")}
+                            </div>
+                            <i
+                                className={`icon-[mdi--chevron-down] size-4 text-[color:var(--wedding-text-mute)] transition-transform ${openSections.book ? "rotate-180" : ""}`}
+                            />
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                            <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
+                                <WeddingDateSettingsItem />
+                                <BookSettings />
+                                <PresetSettingsItem />
+                                <UserSettingsItem />
+                                <DataManagerSettingsItem />
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
+                </div>
 
                 {/* AI 设置 */}
                 <div className="px-4 pb-4">
-                        <Collapsible
-                            open={openSections.ai}
-                            onOpenChange={(open) =>
-                                setOpenSections({ ...openSections, ai: open })
-                            }
-                        >
-                            <CollapsibleTrigger className="mb-2 flex w-full items-center justify-between pl-1">
-                                <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
-                                    <i className="icon-[mdi--robot-outline] mr-1.5 inline-block size-3.5" />
-                                    {t("ai")}
-                                </div>
-                                <i
-                                    className={`icon-[mdi--chevron-down] size-4 text-[color:var(--wedding-text-mute)] transition-transform ${openSections.ai ? "rotate-180" : ""}`}
-                                />
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                                <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
-                                    <AssistantSettingsItem />
-                                    {showRelyr && <QuickEntrySettingsItem />}
-                                    <VoiceSettingsItem />
-                                </div>
-                            </CollapsibleContent>
-                        </Collapsible>
-                    </div>
+                    <Collapsible
+                        open={openSections.ai}
+                        onOpenChange={(open) =>
+                            setOpenSections({ ...openSections, ai: open })
+                        }
+                    >
+                        <CollapsibleTrigger className="mb-2 flex w-full items-center justify-between pl-1">
+                            <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
+                                <i className="icon-[mdi--robot-outline] mr-1.5 inline-block size-3.5" />
+                                {t("ai")}
+                            </div>
+                            <i
+                                className={`icon-[mdi--chevron-down] size-4 text-[color:var(--wedding-text-mute)] transition-transform ${openSections.ai ? "rotate-180" : ""}`}
+                            />
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                            <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
+                                <AssistantSettingsItem />
+                                {showRelyr && <QuickEntrySettingsItem />}
+                                <VoiceSettingsItem />
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
+                </div>
 
                 {/* 记账功能 */}
                 <div className="px-4 pb-4">
-                        <Collapsible
-                            open={openSections.billing}
-                            onOpenChange={(open) =>
-                                setOpenSections({ ...openSections, billing: open })
-                            }
-                        >
-                            <CollapsibleTrigger className="mb-2 flex w-full items-center justify-between pl-1">
-                                <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
-                                    <i className="icon-[mdi--receipt-text-outline] mr-1.5 inline-block size-3.5" />
-                                    {t("billing-functions")}
-                                </div>
-                                <i
-                                    className={`icon-[mdi--chevron-down] size-4 text-[color:var(--wedding-text-mute)] transition-transform ${openSections.billing ? "rotate-180" : ""}`}
-                                />
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                                <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
-                                    <CategorySettingsItem />
-                                    <TagSettingsItem />
-                                    <Budget />
-                                    <ScheduledSettingsItems />
-                                    <CurrencySettingsItem />
-                                </div>
-                            </CollapsibleContent>
-                        </Collapsible>
-                    </div>
+                    <Collapsible
+                        open={openSections.billing}
+                        onOpenChange={(open) =>
+                            setOpenSections({ ...openSections, billing: open })
+                        }
+                    >
+                        <CollapsibleTrigger className="mb-2 flex w-full items-center justify-between pl-1">
+                            <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
+                                <i className="icon-[mdi--receipt-text-outline] mr-1.5 inline-block size-3.5" />
+                                {t("billing-functions")}
+                            </div>
+                            <i
+                                className={`icon-[mdi--chevron-down] size-4 text-[color:var(--wedding-text-mute)] transition-transform ${openSections.billing ? "rotate-180" : ""}`}
+                            />
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                            <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
+                                <CategorySettingsItem />
+                                <TagSettingsItem />
+                                <Budget />
+                                <ScheduledSettingsItems />
+                                <CurrencySettingsItem />
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
+                </div>
 
                 {/* 其他设置 */}
                 <div className="px-4 pb-4">
-                        <Collapsible
-                            open={openSections.other}
-                            onOpenChange={(open) =>
-                                setOpenSections({ ...openSections, other: open })
-                            }
-                        >
-                            <CollapsibleTrigger className="mb-2 flex w-full items-center justify-between pl-1">
-                                <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
-                                    <i className="icon-[mdi--cog-outline] mr-1.5 inline-block size-3.5" />
-                                    {t("other-settings")}
-                                </div>
-                                <i
-                                    className={`icon-[mdi--chevron-down] size-4 text-[color:var(--wedding-text-mute)] transition-transform ${openSections.other ? "rotate-180" : ""}`}
-                                />
-                            </CollapsibleTrigger>
-                            <CollapsibleContent>
-                                <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
-                                    <MapSettingsItem />
-                                    <LabSettingsItem />
-                                    <AboutSettingsItem />
-                                    <ThemeSettingsItem />
-                                    <LanguageSettingsItem />
-                                    <AdvancedGuideItem />
-                                </div>
-                            </CollapsibleContent>
-                        </Collapsible>
-                    </div>
+                    <Collapsible
+                        open={openSections.other}
+                        onOpenChange={(open) =>
+                            setOpenSections({ ...openSections, other: open })
+                        }
+                    >
+                        <CollapsibleTrigger className="mb-2 flex w-full items-center justify-between pl-1">
+                            <div className="text-[11px] font-semibold uppercase tracking-[0.08em] text-[color:var(--wedding-text-mute)]">
+                                <i className="icon-[mdi--cog-outline] mr-1.5 inline-block size-3.5" />
+                                {t("other-settings")}
+                            </div>
+                            <i
+                                className={`icon-[mdi--chevron-down] size-4 text-[color:var(--wedding-text-mute)] transition-transform ${openSections.other ? "rotate-180" : ""}`}
+                            />
+                        </CollapsibleTrigger>
+                        <CollapsibleContent>
+                            <div className="flex flex-col divide-y rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_10px_24px_-24px_rgba(15,23,42,0.35)]">
+                                <MapSettingsItem />
+                                <LabSettingsItem />
+                                <AboutSettingsItem />
+                                <ThemeSettingsItem />
+                                <LanguageSettingsItem />
+                                <AdvancedGuideItem />
+                            </div>
+                        </CollapsibleContent>
+                    </Collapsible>
                 </div>
+            </div>
 
             {/* 退出登录按钮 - 固定在底部 */}
             <div className="border-t border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-4">
-                    <Button
-                        variant="destructive"
-                        className="w-full rounded-full"
-                        onClick={handleLogout}
-                    >
+                <Button
+                    variant="destructive"
+                    className="w-full rounded-full"
+                    onClick={handleLogout}
+                >
                     <i className="icon-[mdi--logout] mr-2 size-5" />
                     {t("logout")}
                 </Button>

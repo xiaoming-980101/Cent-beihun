@@ -9,10 +9,10 @@ import {
 import { PageTransition } from "@/components/layout/page-transition";
 import { LoadingSpinner } from "@/components/shared";
 import MainLayout from "@/layouts/main-layout";
-import Home from "@/pages/home";
 import { useLedgerStore } from "@/store/ledger";
 import { lazyWithReload } from "@/utils/lazy";
 
+const Home = lazyWithReload(() => import("@/pages/home"));
 const Stat = lazyWithReload(
     async () => {
         return import("@/pages/stat");

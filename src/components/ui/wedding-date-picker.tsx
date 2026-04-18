@@ -1,7 +1,6 @@
+import { zhCN } from "date-fns/locale/zh-CN";
 import dayjs from "dayjs";
-import { registerLocale } from "react-datepicker";
-import DatePicker from "react-datepicker";
-import zhCN from "date-fns/locale/zh-CN";
+import DatePicker, { registerLocale } from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import "@/styles/react-datepicker-wedding.css";
 
@@ -28,7 +27,7 @@ export default function WeddingDatePicker({
     return (
         <DatePicker
             selected={selectedDate}
-            onChange={(date) => {
+            onChange={(date: Date | null) => {
                 if (!date) {
                     onChange(undefined);
                     return;

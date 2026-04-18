@@ -1,9 +1,8 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { motion } from "motion/react";
+import { type HTMLMotionProps, motion } from "motion/react";
+import type { ReactNode } from "react";
 import { cn } from "@/utils";
 
-export interface FloatingActionButtonProps
-    extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface FloatingActionButtonProps extends HTMLMotionProps<"button"> {
     icon?: ReactNode;
 }
 
@@ -26,4 +25,3 @@ export function FloatingActionButton({
         </motion.button>
     );
 }
-

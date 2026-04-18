@@ -1,5 +1,4 @@
 // tidal/index.ts
-import { sortBy } from "lodash-es";
 import type { ChangeListener, UserInfo } from "@/api/endpoints/type";
 import { type FileEntry, transformAssets } from "@/database/assets";
 import { asyncSingleton } from "@/database/singleton";
@@ -307,9 +306,8 @@ export const createTidal = <Item extends BaseItem>({
                               }
                             : remoteStructure;
 
-                        const sortedChunk = sortBy(
-                            structure.chunks,
-                            (v) => v.startIndex,
+                        const sortedChunk = [...structure.chunks].sort(
+                            (a, b) => a.startIndex - b.startIndex,
                         );
                         const latestChunk = sortedChunk[sortedChunk.length - 1];
                         const latestChunkContent = latestChunk

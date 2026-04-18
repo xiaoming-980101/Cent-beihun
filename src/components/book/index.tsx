@@ -1,4 +1,5 @@
-import { Dialog, VisuallyHidden } from "radix-ui";
+import * as Dialog from "@radix-ui/react-dialog";
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
 import { useIsLogin } from "@/store/user";

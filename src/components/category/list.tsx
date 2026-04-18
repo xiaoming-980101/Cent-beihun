@@ -1,4 +1,4 @@
-import { Collapsible } from "radix-ui";
+import * as Collapsible from "@radix-ui/react-collapsible";
 import { useState } from "react";
 import { toast } from "sonner";
 import useCategory from "@/hooks/use-category";

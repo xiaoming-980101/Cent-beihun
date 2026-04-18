@@ -221,6 +221,20 @@ export default function YourFeatureSettingsItem() {
 - `fade`: 是否启用淡入淡出动画（可选）
 - `swipe`: 是否启用滑动关闭（可选）
 
+### 2.1 弹窗返回值契约（必须判空）
+
+弹窗类 API（如 `showBillEditor`、`showBillFilterView`、`showPresetExport`、`showBatchEdit`）允许返回 `null` 或 `undefined`。调用方必须先判空，再执行保存/删除等持久化操作。
+
+```typescript
+const value = await showBillEditor(editingBill);
+if (!value) {
+    return;
+}
+await updateBill(value);
+```
+
+不要把弹窗返回值直接传给要求非空参数的方法，否则在取消路径会触发运行时错误。
+
 ### 3. PopupLayout 使用
 
 `PopupLayout` 是弹窗内容的布局组件，提供统一的头部和返回按钮：

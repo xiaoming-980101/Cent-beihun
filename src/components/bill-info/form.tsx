@@ -63,6 +63,9 @@ export default function BillInfo({
     const toEdit = async () => {
         if (edit?.id) {
             const newBill = await showBillEditor(edit);
+            if (!newBill) {
+                return;
+            }
             await useLedgerStore.getState().updateBill(edit.id, newBill);
             onConfirm?.(true);
         }
@@ -87,6 +90,9 @@ export default function BillInfo({
                 }));
             }
             const newBill = await showBillEditor(edit);
+            if (!newBill) {
+                return;
+            }
             await Promise.all([
                 useLedgerStore.getState().addBill({ ...newBill }),
                 useLedgerStore.getState().updateBill(edit.id, {
@@ -244,11 +250,7 @@ export default function BillInfo({
                             {t("cancel")}
                         </Button>
                         {canEdit && (
-                            <Button
-                                type="button"
-                                size="sm"
-                                onClick={toEdit}
-                            >
+                            <Button type="button" size="sm" onClick={toEdit}>
                                 {t("edit")}
                             </Button>
                         )}

@@ -97,6 +97,11 @@ export type PersonalMeta = {
     names?: Record<string, string>;
     rates?: Record<string, number>;
     tagGroups?: BillTagGroup[];
+    userProfile?: {
+        avatar?: string;
+        nickname?: string;
+        updatedAt?: number;
+    };
     scheduleds?: Scheduled[];
     customCSS?: string;
     assistant?: {

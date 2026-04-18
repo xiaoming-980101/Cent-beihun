@@ -1,5 +1,3 @@
-import { uniqueId } from "lodash-es";
-
 // HashBack.ts
 export type OnHistoryBack = (meta?: { id: string }) => void;
 
@@ -19,7 +17,11 @@ export interface HashBackController {
 }
 
 function makeUniqueId(prefix = "hb"): string {
-    return `${prefix}_${uniqueId()}`;
+    const randomId =
+        typeof crypto !== "undefined" && "randomUUID" in crypto
+            ? crypto.randomUUID()
+            : `${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    return `${prefix}_${randomId}`;
 }
 
 export class HashBack {

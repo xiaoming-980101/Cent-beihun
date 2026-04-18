@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/shallow";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import { showFilePicker } from "@/components/file-picker";
+import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import { alert } from "@/components/ui/dialog/utils";
 import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
@@ -141,7 +141,9 @@ function PresetExportProviderComponent() {
             setOpen(true);
         };
         const handleStoreResolve = ((
-            e: CustomEvent<{ resolve: (value?: PresetExportSection[]) => void }>,
+            e: CustomEvent<{
+                resolve: (value?: PresetExportSection[]) => void;
+            }>,
         ) => {
             setResolveRef({ resolve: e.detail.resolve });
         }) as EventListener;
@@ -251,6 +253,9 @@ export default function PresetForm({ open, onOpenChange }: PresetFormProps) {
 
     const handleExport = useCallback(async () => {
         const sections = await showPresetExport();
+        if (!sections || sections.length === 0) {
+            return;
+        }
         await runExportWithSections(sections);
     }, [runExportWithSections]);
 

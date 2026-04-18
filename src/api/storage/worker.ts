@@ -2,19 +2,13 @@
 declare const self: DedicatedWorkerGlobalScope;
 
 import { expose, transfer } from "comlink";
-import {
-    clear as clearModels,
-    getPredictModelMeta,
-    learn,
-    predict,
-} from "@/api/predict/linear-predict";
 import { type Full, StashBucket } from "@/database/stash";
 import { BillIndexedDBStorage } from "@/database/storage";
 import type { Bill, BillFilter, ExportedJSON, GlobalMeta } from "@/ledger/type";
 import { isBillMatched } from "@/ledger/utils";
 import { blobToBase64 } from "@/utils/file";
 import { filterOrderedBillListByTimeRangeAnd } from "@/utils/filter";
-import { type AnalysisType, analysis as analysisBills } from "./analysis";
+import type { AnalysisType } from "./analysis";
 
 const storeMap = new Map<
     string,
@@ -75,6 +69,7 @@ const analysis = async (
     analysisUnit: "year" | "month" | "week" | "day",
     type: AnalysisType,
 ) => {
+    const { analysis: analysisBills } = await import("./analysis");
     const result = await analysisBills(dateRange, type, analysisUnit, (range) =>
         filter(storeFullName, { start: range[0], end: range[1] }),
     );
@@ -124,6 +119,9 @@ const startLearn = async (
     storeFullName: string,
     creators: BillFilter["creators"],
 ) => {
+    const { getPredictModelMeta, learn } = await import(
+        "@/api/predict/linear-predict"
+    );
     // 找到新增的账单数据，喂给模型学习
     const meta = await getPredictModelMeta(storeFullName);
     const newBills = await (async () => {
@@ -149,7 +147,13 @@ const startPredict = async (
     target: "category" | "comment",
     time = Date.now(),
 ) => {
+    const { predict } = await import("@/api/predict/linear-predict");
     return predict(storeFullName, target, time);
+};
+
+const clearPredictModels = async () => {
+    const { clear } = await import("@/api/predict/linear-predict");
+    return clear();
 };
 
 const exposed = {
@@ -160,7 +164,7 @@ const exposed = {
     exportToArrayBuffer,
     learn: startLearn,
     predict: startPredict,
-    clearModels,
+    clearModels: clearPredictModels,
     truncate,
 };
 

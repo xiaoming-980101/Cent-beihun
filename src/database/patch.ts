@@ -1,4 +1,4 @@
-import { cloneDeep, isEqual, isPlainObject } from "lodash-es";
+import { deepClone, deepEqual, isPlainObject } from "@/utils/object";
 
 type AnyObject = Record<string, any>;
 
@@ -19,7 +19,7 @@ export function diff<T extends AnyObject, U extends AnyObject>(
             const newValue = newObj[key];
 
             // 1. 如果新旧值相等，跳过
-            if (isEqual(oldValue, newValue)) {
+            if (deepEqual(oldValue, newValue)) {
                 continue;
             }
 
@@ -48,7 +48,7 @@ export function diff<T extends AnyObject, U extends AnyObject>(
 export function merge<T extends AnyObject>(target: T, patch: AnyObject): T {
     // 浅拷贝 target 防止污染原对象（根据需求可选）
     const result =
-        target === undefined || target === null ? ({} as T) : cloneDeep(target);
+        target === undefined || target === null ? ({} as T) : deepClone(target);
 
     for (const key in patch) {
         if (key === "$$patch") continue;

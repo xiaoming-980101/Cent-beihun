@@ -1,5 +1,6 @@
+import * as Switch from "@radix-ui/react-switch";
 import dayjs from "dayjs";
-import { Switch } from "radix-ui";
+import type { EChartsOption } from "echarts";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useShallow } from "zustand/shallow";
@@ -9,8 +10,8 @@ import {
     BillFilterViewProvider,
     showBillFilterView,
 } from "@/components/bill-filter";
-import { ChartWrapper } from "@/components/features/statistics/chart-wrapper";
 import { showBillInfo } from "@/components/bill-info";
+import { ChartWrapper } from "@/components/features/statistics/chart-wrapper";
 import BillItem from "@/components/ledger/item";
 import { showSortableList } from "@/components/sortable";
 import { AnalysisCloud } from "@/components/stat/analysic-cloud";
@@ -155,7 +156,7 @@ export default function Page() {
     });
 
     const totalMoneys = FocusTypes.map((t) => dataSources.total[t]);
-    const trendPreviewOption = useMemo(() => {
+    const trendPreviewOption = useMemo<EChartsOption>(() => {
         const dailyMap = new Map<
             string,
             { income: number; expense: number; net: number }
@@ -187,11 +188,11 @@ export default function Page() {
                 data: ["收入", "支出", "净收益"],
             },
             xAxis: {
-                type: "category",
+                type: "category" as const,
                 data: labels,
             },
             yAxis: {
-                type: "value",
+                type: "value" as const,
             },
             dataZoom: [
                 {
@@ -203,13 +204,17 @@ export default function Page() {
                     name: "收入",
                     type: "line",
                     smooth: true,
-                    data: labels.map((label) => dailyMap.get(label)?.income ?? 0),
+                    data: labels.map(
+                        (label) => dailyMap.get(label)?.income ?? 0,
+                    ),
                 },
                 {
                     name: "支出",
                     type: "line",
                     smooth: true,
-                    data: labels.map((label) => dailyMap.get(label)?.expense ?? 0),
+                    data: labels.map(
+                        (label) => dailyMap.get(label)?.expense ?? 0,
+                    ),
                 },
                 {
                     name: "净收益",
@@ -299,6 +304,9 @@ export default function Page() {
             setFilterViewId(allFilterViews[0].id);
             return;
         }
+        if (!action) {
+            return;
+        }
         await updateFilter(id, {
             ...action,
             name: action.name ?? selectedFilterView.name,
@@ -322,10 +330,13 @@ export default function Page() {
             filter: {},
             hideDelete: true,
         });
-        if (newFilter === "delete" || !newFilter.name) {
+        if (!newFilter || newFilter === "delete" || !newFilter.name) {
             return;
         }
-        const id = await addFilter(newFilter.name, newFilter);
+        const id = await addFilter(newFilter.name, {
+            filter: newFilter.filter,
+            displayCurrency: newFilter.displayCurrency,
+        });
         if (!id) {
             return;
         }

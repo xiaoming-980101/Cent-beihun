@@ -1,5 +1,4 @@
-import { orderBy } from "lodash-es";
-import { Collapsible } from "radix-ui";
+import * as Collapsible from "@radix-ui/react-collapsible";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { useShallow } from "zustand/shallow";
@@ -13,14 +12,11 @@ import {
     BatchEditProvider,
     showBatchEdit,
 } from "@/components/ledger/batch-edit";
-import { prompt } from "@/components/ui/dialog/utils";
+import { EmptyState } from "@/components/shared";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-    WeddingPageShell,
-    WeddingTopBar,
-} from "@/components/wedding-ui";
-import { EmptyState } from "@/components/shared";
+import { prompt } from "@/components/ui/dialog/utils";
+import { WeddingPageShell, WeddingTopBar } from "@/components/wedding-ui";
 import useCategory from "@/hooks/use-category";
 import { useCurrency } from "@/hooks/use-currency";
 import { useCustomFilters } from "@/hooks/use-custom-filters";
@@ -151,7 +147,17 @@ export default function Page() {
     const [sortIndex, setSortIndex] = useState(0);
     const sorted = useMemo(() => {
         const sort = SORTS[sortIndex] ?? SORTS[0];
-        return orderBy(list, [sort.by], [sort.order]);
+        return [...list].sort((a, b) => {
+            const left = a[sort.by];
+            const right = b[sort.by];
+            if (left === right) {
+                return 0;
+            }
+            if (sort.order === "asc") {
+                return left < right ? -1 : 1;
+            }
+            return left > right ? -1 : 1;
+        });
     }, [list, sortIndex]);
 
     const [enableSelect, setEnableSelect] = useState(false);
@@ -219,12 +225,16 @@ export default function Page() {
             } as BatchEditOptions,
         );
         const edit = await showBatchEdit(initial);
+        if (!edit) {
+            return;
+        }
         const updatedEntries = selectedIds
             .map((id) => {
-                const bill = { ...sorted.find((v) => v.id === id) } as Bill;
-                if (!bill) {
+                const current = sorted.find((v) => v.id === id);
+                if (!current) {
                     return undefined;
                 }
+                const bill: Bill = { ...current };
                 if (edit.type !== undefined) {
                     const isTypeChanged = bill.type !== edit.type;
                     bill.type = edit.type;
@@ -248,7 +258,9 @@ export default function Page() {
                     entry: bill,
                 };
             })
-            .filter((v) => v !== undefined);
+            .filter(
+                (v): v is { id: Bill["id"]; entry: Bill } => v !== undefined,
+            );
         await useLedgerStore.getState().updateBills(updatedEntries);
         await toSearch();
     };
@@ -270,7 +282,8 @@ export default function Page() {
                                     {sorted.length}
                                 </div>
                                 <div className="mt-1 text-xs opacity-75">
-                                    当前结果数 {searched ? "已更新" : "等待筛选"}
+                                    当前结果数{" "}
+                                    {searched ? "已更新" : "等待筛选"}
                                 </div>
                             </div>
                             <div className="grid grid-cols-2 gap-2 text-center">
@@ -279,7 +292,10 @@ export default function Page() {
                                         已筛选
                                     </div>
                                     <div className="text-sm font-semibold">
-                                        {Object.keys(form).filter(Boolean).length}
+                                        {
+                                            Object.keys(form).filter(Boolean)
+                                                .length
+                                        }
                                     </div>
                                 </div>
                                 <div className="rounded-2xl bg-white/40 px-3 py-2 dark:bg-white/10">
@@ -496,7 +512,9 @@ export default function Page() {
                     <div className="mb-3 flex items-center justify-between px-1">
                         <div>
                             <div className="text-sm font-semibold text-[color:var(--wedding-text)]">
-                                {form.comment ? `“${form.comment}” 的搜索结果` : "最近记录"}
+                                {form.comment
+                                    ? `“${form.comment}” 的搜索结果`
+                                    : "最近记录"}
                             </div>
                             <div className="mt-1 text-[11px] text-[color:var(--wedding-text-mute)]">
                                 共 {sorted.length} 条结果
@@ -508,23 +526,25 @@ export default function Page() {
                             </span>
                         ) : null}
                     </div>
-                <div className="min-h-[320px] overflow-hidden">
-                    {sorted.length > 0 ? (
-                        <Ledger
-                            bills={sorted}
-                            showTime
-                            selectedIds={enableSelect ? selectedIds : undefined}
-                            onSelectChange={onSelectChange}
-                            afterEdit={toSearch}
-                            showAssets={showAssets}
-                        />
-                    ) : (
-                        <EmptyState
-                            title="还没有搜索结果"
-                            description="输入关键字或展开筛选面板，账本记录会在这里展示。"
-                        />
-                    )}
-                </div>
+                    <div className="min-h-[320px] overflow-hidden">
+                        {sorted.length > 0 ? (
+                            <Ledger
+                                bills={sorted}
+                                showTime
+                                selectedIds={
+                                    enableSelect ? selectedIds : undefined
+                                }
+                                onSelectChange={onSelectChange}
+                                afterEdit={toSearch}
+                                showAssets={showAssets}
+                            />
+                        ) : (
+                            <EmptyState
+                                title="还没有搜索结果"
+                                description="输入关键字或展开筛选面板，账本记录会在这里展示。"
+                            />
+                        )}
+                    </div>
                 </div>
             </div>
             <BatchEditProvider />

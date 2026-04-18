@@ -1,4 +1,4 @@
-import { Collapsible } from "radix-ui";
+import * as Collapsible from "@radix-ui/react-collapsible";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { SnapDiv, type SnapDivInstance } from "@/hooks/use-snap";

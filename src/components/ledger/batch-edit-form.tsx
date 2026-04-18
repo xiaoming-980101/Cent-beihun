@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useCategory from "@/hooks/use-category";
 import { useTag } from "@/hooks/use-tag";
 import PopupLayout from "@/layouts/popup-layout";
@@ -21,10 +21,14 @@ export type BatchEditOptions = {
 };
 
 export default function BatchEditForm({
+    open,
+    onOpenChange,
     edit,
     onCancel,
     onConfirm,
 }: {
+    open: boolean;
+    onOpenChange?: (open: boolean) => void;
     edit?: BatchEditOptions;
     onConfirm?: (v: BatchEditOptions) => void;
     onCancel?: () => void;
@@ -32,6 +36,18 @@ export default function BatchEditForm({
     const t = useIntl();
     const [state, setState] = useState(edit ?? {});
     const { incomes, expenses } = useCategory();
+    const { tags } = useTag();
+
+    useEffect(() => {
+        if (!open) {
+            return;
+        }
+        setState(edit ?? {});
+    }, [edit, open]);
+
+    if (!open) {
+        return null;
+    }
 
     const type =
         state.type === undefined
@@ -49,7 +65,6 @@ export default function BatchEditForm({
         state.categoryId === undefined
             ? t("original-category")
             : categories.find((c) => c.id === state.categoryId)?.name;
-    const { tags } = useTag();
     const tag =
         state.tagIds === undefined
             ? t("original-tag")
@@ -71,7 +86,10 @@ export default function BatchEditForm({
                     {t("confirm")}
                 </Button>
             }
-            onBack={onCancel}
+            onBack={() => {
+                onCancel?.();
+                onOpenChange?.(false);
+            }}
             className="h-full overflow-hidden flex flex-col gap-2"
         >
             <div className="flex justify-between py-2 px-4 border-b">

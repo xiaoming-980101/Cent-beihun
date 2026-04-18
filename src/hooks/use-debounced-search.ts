@@ -1,5 +1,5 @@
-import { debounce } from "lodash-es";
 import { useEffect, useMemo, useState } from "react";
+import { debounce } from "@/utils/timing";
 
 export function useDebouncedSearch<T>(value: T, delay = 300) {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -21,4 +21,3 @@ export function useDebouncedSearch<T>(value: T, delay = 300) {
 
     return debouncedValue;
 }
-

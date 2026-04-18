@@ -3,7 +3,7 @@ import {
     SelectPortal,
     SelectViewport,
 } from "@radix-ui/react-select";
-import { RadioGroup } from "radix-ui";
+import * as RadioGroup from "@radix-ui/react-radio-group";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { v4 } from "uuid";

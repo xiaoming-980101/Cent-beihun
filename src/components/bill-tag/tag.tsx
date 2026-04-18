@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Collapsible } from "radix-ui";
+import * as Collapsible from "@radix-ui/react-collapsible";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod/mini";
@@ -82,7 +82,7 @@ export const EditTagForm = ({
                                 <i className="w-4 h-4 icon-[mdi--chevron-right] transition-all rotate-90 group-[[data-state=closed]]:rotate-0"></i>
                             </div>
                         </Collapsible.Trigger>
-                        <Collapsible.CollapsibleContent>
+                        <Collapsible.Content>
                             <FormField
                                 control={form.control}
                                 name="preferCurrency"
@@ -154,7 +154,7 @@ export const EditTagForm = ({
                                     );
                                 }}
                             ></FormField>
-                        </Collapsible.CollapsibleContent>
+                        </Collapsible.Content>
                     </Collapsible.Root>
                 </div>
                 <div className="flex justify-between items-center px-4">
