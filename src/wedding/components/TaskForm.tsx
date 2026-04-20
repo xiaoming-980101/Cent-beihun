@@ -323,24 +323,6 @@ export const TaskForm = forwardRef<TaskFormHandle, TaskFormProps>(
                         />
                     </div>
                 </div>
-
-                <div className="flex gap-3 pt-1">
-                    <Button
-                        type="button"
-                        variant="outline"
-                        className="h-12 flex-1 rounded-[18px] border-[color:var(--wedding-line)] bg-white/90 text-[color:var(--wedding-text)] hover:bg-white dark:border-white/20 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
-                        onClick={onClose}
-                    >
-                        关闭
-                    </Button>
-                    <Button
-                        type="button"
-                        className="h-12 flex-1 rounded-[18px] bg-gradient-to-r from-pink-500 via-fuchsia-500 to-violet-500 text-white shadow-[0_18px_30px_-18px_rgba(217,70,150,0.9)] hover:opacity-95"
-                        onClick={handleSubmit}
-                    >
-                        {editTask ? "保存更新" : "创建任务"}
-                    </Button>
-                </div>
             </div>
         );
     },

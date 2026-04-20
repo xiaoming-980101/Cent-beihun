@@ -49,7 +49,7 @@ export function useChartPart({
 
     const trendChart = useRef<ChartInstance>(undefined);
     // 是否以日历展示而非折线图
-    const [asCalendar, setAsCalendar] = useState(false);
+    const [asCalendar, setAsCalendar] = useState(true); // 默认显示日历
     // 是否以列表展示而非饼图
     const [asList, setAsList] = useState(false);
 

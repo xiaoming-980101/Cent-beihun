@@ -251,7 +251,6 @@ export default function Tasks() {
                 <TaskForm
                     ref={taskFormRef}
                     editTask={editingTask ?? undefined}
-                    onClose={() => setShowForm(false)}
                 />
             </ResponsiveDialog>
         </WeddingPageShell>

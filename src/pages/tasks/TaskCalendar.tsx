@@ -4,7 +4,7 @@
 
 import dayjs from "dayjs";
 import { Solar } from "lunar-javascript";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useShallow } from "zustand/shallow";
 import { ResponsiveDialog } from "@/components/ui/dialog/index";
 import {
@@ -17,7 +17,7 @@ import {
 import { useBookStore } from "@/store/book";
 import { useWeddingStore } from "@/store/wedding";
 import { cn } from "@/utils";
-import { TaskForm } from "@/wedding/components";
+import { TaskForm, type TaskFormHandle } from "@/wedding/components";
 import {
     getCategoryEmoji,
     getCategoryName,
@@ -125,6 +125,20 @@ export default function TaskCalendar() {
     const [showForm, setShowForm] = useState(false);
     const [formLoading, setFormLoading] = useState(false);
     const [monthHolidayMap, setMonthHolidayMap] = useState<HolidayInfoMap>({});
+    const taskFormRef = useRef<TaskFormHandle>(null);
+
+    // 处理任务表单提交
+    const handleTaskSubmit = async () => {
+        setFormLoading(true);
+        try {
+            await taskFormRef.current?.submit();
+            setShowForm(false);
+        } catch (error) {
+            console.error("Failed to submit task:", error);
+        } finally {
+            setFormLoading(false);
+        }
+    };
 
     useEffect(() => {
         if (!selectedDate.isSame(currentMonth, "month")) {
@@ -545,16 +559,13 @@ export default function TaskCalendar() {
                 actions={{
                     cancelText: "取消",
                     confirmText: "创建任务",
-                    onConfirm: async () => {
-                        // TaskForm组件会处理提交逻辑，这里只需要关闭弹窗
-                        setShowForm(false);
-                    },
+                    onConfirm: handleTaskSubmit,
                     loading: formLoading,
                 }}
             >
                 <TaskForm
+                    ref={taskFormRef}
                     initialDeadline={selectedDate.valueOf()}
-                    onClose={() => setShowForm(false)}
                 />
             </ResponsiveDialog>
         </WeddingPageShell>

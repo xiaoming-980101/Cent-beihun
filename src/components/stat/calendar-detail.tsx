@@ -148,20 +148,22 @@ function BaseCalendarDetail({
 
         return (
             <div className="w-full">
-                <div className="grid grid-cols-7 gap-1">
+                {/* 星期标题 */}
+                <div className="grid grid-cols-7 gap-1 mb-2">
                     {weeklyDays.map((day) => {
                         const weekdayIndex = day.day(); // 0=周日, 1=周一, ..., 6=周六
                         return (
                             <div
                                 key={`weekday-${day.format("YYYY-MM-DD")}`}
-                                className="text-center text-xs text-muted-foreground py-1"
+                                className="text-center text-xs font-medium text-[color:var(--wedding-text-soft)] py-2"
                             >
                                 {getWeekdayNames[weekdayIndex]}
                             </div>
                         );
                     })}
                 </div>
-                <div className="grid grid-cols-7 gap-1 mt-1">
+                {/* 日期网格 */}
+                <div className="grid grid-cols-7 gap-1">
                     {weeklyDays.map((day) => {
                         const inRange = isInRange(day);
                         const today = isToday(day);
@@ -170,13 +172,17 @@ function BaseCalendarDetail({
                             <div
                                 key={day.format("YYYY-MM-DD")}
                                 className={cn(
-                                    "aspect-square flex flex-col items-center justify-center text-sm rounded-md relative",
+                                    "min-h-[80px] flex flex-col items-center justify-start text-sm rounded-[12px] relative p-2",
+                                    "border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)]",
                                     today &&
-                                        isCurrentMonth &&
-                                        "bg-accent text-accent-foreground",
+                                        "bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200 dark:from-pink-900/20 dark:to-purple-900/20 dark:border-pink-400/30",
+                                    inRange && "shadow-sm"
                                 )}
                             >
-                                <span className="text-sm font-medium">
+                                <span className={cn(
+                                    "text-lg font-bold mb-2",
+                                    today ? "text-pink-600 dark:text-pink-400" : "text-[color:var(--wedding-text)]"
+                                )}>
                                     {day.date()}
                                 </span>
                                 {daySlot?.({
@@ -205,23 +211,25 @@ function BaseCalendarDetail({
 
         return (
             <div className="w-full">
-                <div className="grid grid-cols-7 gap-1">
+                {/* 星期标题 */}
+                <div className="grid grid-cols-7 gap-1 mb-2">
                     {firstWeek.map((day) => {
                         const weekdayIndex = day.day(); // 0=周日, 1=周一, ..., 6=周六
                         return (
                             <div
                                 key={`weekday-${day.format("YYYY-MM-DD")}`}
-                                className="text-center text-xs text-muted-foreground py-1"
+                                className="text-center text-xs font-medium text-[color:var(--wedding-text-soft)] py-2"
                             >
                                 {getWeekdayNames[weekdayIndex]}
                             </div>
                         );
                     })}
                 </div>
+                {/* 日期网格 */}
                 {weeks.map((week) => (
                     <div
                         key={week[0]?.format("YYYY-MM-DD")}
-                        className="grid grid-cols-7 gap-1 mt-1"
+                        className="grid grid-cols-7 gap-1 mb-1"
                     >
                         {week.map((day) => {
                             const isCurrentMonth = day.isSame(
@@ -235,13 +243,18 @@ function BaseCalendarDetail({
                                     key={day.format("YYYY-MM-DD")}
                                     data-in-range={isCurrentMonth}
                                     className={cn(
-                                        "aspect-square flex flex-col items-center justify-center text-sm rounded-md relative",
+                                        "min-h-[60px] flex flex-col items-center justify-start text-sm rounded-[12px] relative p-1",
+                                        "border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)]",
                                         today &&
-                                            "bg-accent text-accent-foreground",
+                                            "bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200 dark:from-pink-900/20 dark:to-purple-900/20 dark:border-pink-400/30",
                                         !isCurrentMonth && "opacity-40",
+                                        inRange && isCurrentMonth && "shadow-sm"
                                     )}
                                 >
-                                    <span className="text-sm font-medium">
+                                    <span className={cn(
+                                        "text-sm font-semibold mb-1",
+                                        today ? "text-pink-600 dark:text-pink-400" : "text-[color:var(--wedding-text)]"
+                                    )}>
                                         {day.date()}
                                     </span>
                                     {daySlot?.({
@@ -268,11 +281,11 @@ function BaseCalendarDetail({
         const currentYear = dayjs().year();
 
         return (
-            <div className="w-full">
+            <div className="w-full space-y-2">
                 {rows.map((row) => (
                     <div
                         key={row[0]?.format("YYYY-MM")}
-                        className="grid grid-cols-6 gap-1 mb-1"
+                        className="grid grid-cols-6 gap-2"
                     >
                         {row.map((month) => {
                             const monthIndexInYear = month.month();
@@ -294,13 +307,18 @@ function BaseCalendarDetail({
                                 <div
                                     key={month.format("YYYY-MM")}
                                     className={cn(
-                                        "aspect-square flex flex-col items-center justify-center text-sm rounded-md relative",
+                                        "min-h-[80px] flex flex-col items-center justify-start text-sm rounded-[12px] relative p-2",
+                                        "border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)]",
                                         isCurrentMonth &&
                                             isCurrentYear &&
-                                            "bg-accent text-accent-foreground",
+                                            "bg-gradient-to-br from-pink-50 to-purple-50 border-pink-200 dark:from-pink-900/20 dark:to-purple-900/20 dark:border-pink-400/30",
+                                        inRange && "shadow-sm"
                                     )}
                                 >
-                                    <span className="text-sm font-medium">
+                                    <span className={cn(
+                                        "text-sm font-semibold mb-1",
+                                        isCurrentMonth && isCurrentYear ? "text-pink-600 dark:text-pink-400" : "text-[color:var(--wedding-text)]"
+                                    )}>
                                         {getMonthNames[monthIndexInYear]}
                                     </span>
                                     {monthSlot?.({
@@ -323,7 +341,7 @@ function BaseCalendarDetail({
     }
 
     return (
-        <div className="p-2">
+        <div className="p-4">
             {viewType === "weekly" && renderWeeklyView()}
             {viewType === "monthly" && renderMonthlyView()}
             {viewType === "yearly" && renderYearlyView()}
@@ -440,17 +458,26 @@ export default function CalendarDetail({
         if (dimension === "category") {
             // category 维度：显示正负号
             if (index === 0) {
-                return <div className="text-semantic-income">+{m(value)}</div>;
+                return <div className="text-emerald-600 dark:text-emerald-400 font-semibold">+{m(value)}</div>;
             }
             if (index === 1) {
                 return (
-                    <div className="text-semantic-expense">
+                    <div className="text-rose-600 dark:text-rose-400 font-semibold">
                         -{m(Math.abs(value))}
                     </div>
                 );
             }
             const balance = data[0] - data[1];
-            return `${balance >= 0 ? "+" : "-"}${m(Math.abs(balance))}`;
+            return (
+                <div className={cn(
+                    "font-semibold",
+                    balance >= 0 
+                        ? "text-emerald-600 dark:text-emerald-400" 
+                        : "text-rose-600 dark:text-rose-400"
+                )}>
+                    {balance >= 0 ? "+" : "-"}{m(Math.abs(balance))}
+                </div>
+            );
         } else {
             // user 维度：显示加号
             const userName = dataset.source?.[0]?.[index + 1];
@@ -460,7 +487,10 @@ export default function CalendarDetail({
                     ? "+"
                     : "-";
             return (
-                <div style={{ color: collaboratorColors(`${userName}`) }}>
+                <div 
+                    className="font-semibold"
+                    style={{ color: collaboratorColors(`${userName}`) }}
+                >
                     {`${prefix}${m(Math.abs(value))}`}
                 </div>
             );
@@ -476,13 +506,13 @@ export default function CalendarDetail({
 
         const dateKey = props.date.format("YYYY-MM-DD");
         return (
-            <div className="p-0.5 space-y-0.5 max-w-full">
+            <div className="w-full space-y-1">
                 {data.map((value, index) => {
                     const columnName = columnNames[index] ?? `col-${index}`;
                     return (
                         <div
                             key={`${dateKey}-${columnName}`}
-                            className="text-[8px] sm:text-[10px] leading-tight text-center truncate"
+                            className="text-[10px] leading-tight text-center font-medium"
                         >
                             {formatValue(value, index, data)}
                         </div>
@@ -500,13 +530,13 @@ export default function CalendarDetail({
         }
         const monthKey = props.date.format("YYYY-MM");
         return (
-            <div className="p-0.5 space-y-0.5 max-w-full">
+            <div className="w-full space-y-1">
                 {data.map((value, index) => {
                     const columnName = columnNames[index] ?? `col-${index}`;
                     return (
                         <div
                             key={`${monthKey}-${columnName}`}
-                            className="text-[8px] sm:text-[10px] leading-tight text-center truncate"
+                            className="text-[10px] leading-tight text-center font-medium"
                         >
                             {formatValue(value, index, data)}
                         </div>

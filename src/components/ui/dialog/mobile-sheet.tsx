@@ -59,6 +59,8 @@ export interface MobileSheetProps {
         confirmVariant?: "default" | "destructive";
         /** 是否显示加载状态 */
         loading?: boolean;
+        /** 是否禁用确认按钮 */
+        confirmDisabled?: boolean;
     };
     /** 是否禁用拖拽关闭 */
     disableDragClose?: boolean;
@@ -297,7 +299,10 @@ export function MobileSheet({
                                         <Button
                                             type="button"
                                             onClick={handleConfirm}
-                                            disabled={actions.loading}
+                                            disabled={
+                                                actions.loading ||
+                                                actions.confirmDisabled
+                                            }
                                             className={cn(
                                                 "h-12 w-full rounded-full text-white shadow-lg",
                                                 actions.confirmVariant ===

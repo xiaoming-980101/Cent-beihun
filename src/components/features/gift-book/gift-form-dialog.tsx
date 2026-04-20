@@ -29,9 +29,12 @@ export function GiftFormDialog({
     } = useGiftForm(editRecord);
 
     const handleFormSubmit = async () => {
-        const success = await handleSubmit(onSubmit)();
-        if (success) {
+        try {
+            await handleSubmit(onSubmit)();
             onOpenChange(false);
+        } catch (error) {
+            // 表单验证失败或提交失败，不关闭弹窗
+            console.error("Form submission failed:", error);
         }
     };
 
