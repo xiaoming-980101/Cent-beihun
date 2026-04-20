@@ -286,7 +286,12 @@ function MoreAction({
                     {t("more-actions")}
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="start">
+            <DropdownMenuContent 
+                align="start" 
+                side="top"
+                sideOffset={8}
+                className="z-[120]" // 确保在弹窗之上显示
+            >
                 <DropdownMenuGroup>
                     <DropdownMenuItem onClick={onDuplicate}>
                         <i className="icon-[mdi--content-copy]"></i>
