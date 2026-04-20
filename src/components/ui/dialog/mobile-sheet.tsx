@@ -13,6 +13,7 @@
 import { X } from "lucide-react";
 import { AnimatePresence, motion, type PanInfo } from "motion/react";
 import * as React from "react";
+import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/index";
 import {
@@ -165,7 +166,12 @@ export function MobileSheet({
         }
     }, [open]);
 
-    return (
+    // 如果在服务端渲染或者弹窗未打开，不渲染任何内容
+    if (typeof document === "undefined" || !open) {
+        return null;
+    }
+
+    return createPortal(
         <AnimatePresence mode="wait">
             {open && (
                 <>
@@ -316,7 +322,8 @@ export function MobileSheet({
                     </motion.div>
                 </>
             )}
-        </AnimatePresence>
+        </AnimatePresence>,
+        document.body,
     );
 }
 
