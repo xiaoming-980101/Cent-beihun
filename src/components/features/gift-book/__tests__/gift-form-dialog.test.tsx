@@ -29,12 +29,11 @@ describe("GiftFormDialog", () => {
             const animationMock = {
                 commitStyles: vi.fn(),
                 cancel: vi.fn(),
-                finished: Promise.resolve(undefined),
-            } as any;
-            animationMock.finished = Promise.resolve(animationMock);
-            Element.prototype.animate = vi.fn().mockReturnValue({
-                ...animationMock,
-            } as any);
+                finished: Promise.resolve({} as Animation),
+            } as unknown as Animation;
+            Element.prototype.animate = vi
+                .fn()
+                .mockReturnValue(animationMock);
         }
     });
 

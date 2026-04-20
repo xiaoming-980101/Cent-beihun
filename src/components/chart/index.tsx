@@ -67,9 +67,13 @@ const Chart = forwardRef<ChartInstance | undefined, ChartProps>(function _Chart(
         }
         const chart = echarts.init(el);
         chartRef.current = chart;
-        chart.on("click", onClick as any);
+        if (onClick) {
+            chart.on("click", onClick);
+        }
         return () => {
-            chart.off("click", onClick as any);
+            if (onClick) {
+                chart.off("click", onClick);
+            }
             chart.dispose();
         };
     }, [onClick]);

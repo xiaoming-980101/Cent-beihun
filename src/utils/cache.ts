@@ -5,7 +5,7 @@ import { type DBSchema, deleteDB, openDB } from "idb";
  */
 interface CacheEntry {
     key: string; // 参数指纹
-    value: any; // 缓存数据
+    value: unknown; // 缓存数据
     timestamp: number; // LRU 排序时间戳
     size: number; // 数据大小
 }
@@ -22,7 +22,7 @@ interface CacheDB extends DBSchema {
 /**
  * 2. 辅助函数：计算数据大小
  */
-function calculateSize(value: any): number {
+function calculateSize(value: unknown): number {
     if (value instanceof Blob) return value.size;
     if (value instanceof ArrayBuffer) return value.byteLength;
     if (typeof value === "string") return value.length * 2;
@@ -40,11 +40,11 @@ function getDBKey(key: string) {
 /**
  * 3. 核心 Cache 函数
  */
-export function cacheInDB<T extends (...args: any[]) => Promise<any>>(
-    fn: T,
+export function cacheInDB<Args extends unknown[], Result>(
+    fn: (...args: Args) => Promise<Result>,
     key: string, // 这里的 key 作为数据库名称的一部分，相当于命名空间
     max = 100,
-): T {
+): (...args: Args) => Promise<Result> {
     const dbName = getDBKey(key);
 
     // 数据库初始化逻辑
@@ -60,7 +60,7 @@ export function cacheInDB<T extends (...args: any[]) => Promise<any>>(
             },
         });
 
-    const cachedFn = async (...args: Parameters<T>): Promise<ReturnType<T>> => {
+    const cachedFn = async (...args: Args): Promise<Result> => {
         const argsKey = JSON.stringify(args);
 
         // 打开数据库
@@ -78,7 +78,7 @@ export function cacheInDB<T extends (...args: any[]) => Promise<any>>(
                 await updateTx.store.put(record);
             })();
 
-            return cachedRecord.value;
+            return cachedRecord.value as Result;
         }
 
         // MISS: 执行原函数
@@ -113,7 +113,7 @@ export function cacheInDB<T extends (...args: any[]) => Promise<any>>(
         return result;
     };
 
-    return cachedFn as T;
+    return cachedFn;
 }
 
 /**

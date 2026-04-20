@@ -16,8 +16,9 @@ export const locales = [
 ] as const;
 
 export const getBrowserLang = (): LocaleName => {
+    const nav = navigator as Navigator & { browserLanguage?: string };
     const browserLang: string =
-        navigator.language || (navigator as any).browserLanguage;
+        navigator.language || nav.browserLanguage || "";
     const locale = locales.find((l) => l.matcher(browserLang));
     return (locale?.name ?? locales[0].name) as LocaleName;
 };

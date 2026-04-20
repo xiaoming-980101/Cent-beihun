@@ -19,8 +19,11 @@ async function freezeTime(page: import("@playwright/test").Page) {
             }
         }
         Object.setPrototypeOf(MockDate, NativeDate);
-        // @ts-expect-error override for deterministic screenshots
-        window.Date = MockDate;
+        Object.defineProperty(window, "Date", {
+            configurable: true,
+            writable: true,
+            value: MockDate,
+        });
     }, FIXED_TIME);
 }
 

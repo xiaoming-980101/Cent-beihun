@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
 import dayjs from "dayjs";
 import { useMemo, useRef, useState } from "react";
 import useCategory from "@/hooks/use-category";
@@ -68,6 +67,7 @@ function BudgetProgress({
                     return (
                         <div
                             data-budget-progress-all
+                            /* biome-ignore lint/suspicious/noArrayIndexKey: overs bars are synthetic fragments without stable ids */
                             key={i}
                             className={cn(
                                 "inner h-2 rounded-full absolute left-0 top-0 bg-fuchsia-700/80 budget-danger",
@@ -167,7 +167,6 @@ function BudgetDetail({
 }: {
     budget: Budget;
     onCancel?: () => void;
-    onConfirm?: (v?: any) => void;
 }) {
     const t = useIntl();
     const { bills } = useLedgerStore();
@@ -278,9 +277,10 @@ function BudgetDetail({
                     >
                         <div className="flex flex-col justify-center items-center">
                             {label}
-                            <div className="flex justify-center items-center gap-1 h-1">
+                                <div className="flex justify-center items-center gap-1 h-1">
                                 {reached?.map((r, i) => (
                                     <div
+                                        /* biome-ignore lint/suspicious/noArrayIndexKey: reached indicators are positional summaries */
                                         key={i}
                                         className={`w-1 h-1 rounded-full ${
                                             r ? "bg-green-700" : "bg-red-700"
@@ -347,7 +347,6 @@ export function BudgetDetailForm({
 }: {
     edit?: Budget;
     onCancel?: () => void;
-    onConfirm?: (v?: any) => void;
 }) {
     return (
         <Portal.Provider>

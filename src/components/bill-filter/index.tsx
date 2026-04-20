@@ -23,14 +23,14 @@ export const BillFilterViewProvider = () => {
     const [editData, setEditData] = useState<BillFilterEdit | undefined>();
 
     useEffect(() => {
-        const handleShow = (event: CustomEvent<BillFilterEdit>) => {
-            setEditData(event.detail);
+        const handleShow: EventListener = (event) => {
+            setEditData((event as CustomEvent<BillFilterEdit>).detail);
             setOpen(true);
         };
 
-        window.addEventListener("show-bill-filter-view" as any, handleShow);
+        window.addEventListener("show-bill-filter-view", handleShow);
         return () => {
-            window.removeEventListener("show-bill-filter-view" as any, handleShow);
+            window.removeEventListener("show-bill-filter-view", handleShow);
         };
     }, []);
 

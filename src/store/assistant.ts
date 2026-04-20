@@ -16,6 +16,11 @@ export interface PersistedChatCard {
     messages: Message[];
 }
 
+type LegacyAssistantStore = {
+    isCollapsed?: boolean;
+    [key: string]: unknown;
+};
+
 type AssistantStore = {
     records: Record<
         string,
@@ -32,8 +37,8 @@ type AssistantStore = {
 };
 
 type Persist<S> = (
-    config: StateCreator<S>,
-    options: PersistOptions<S>,
+    config: StateCreator<S, [], []>,
+    options: PersistOptions<S, Partial<S>>,
 ) => StateCreator<S>;
 
 export const useAssistantStore = create<AssistantStore>()(
@@ -52,18 +57,28 @@ export const useAssistantStore = create<AssistantStore>()(
             migrate(persistedState, version) {
                 if (version === 0) {
                     // 如果旧版本是 0，我们将其转换为版本 1 的格式
-                    const oldState = persistedState as any;
+                    const oldState =
+                        (persistedState as LegacyAssistantStore) ?? {};
                     const localBook = useBookStore.getState().currentBookId;
                     if (!localBook) {
-                        return {};
+                        return {
+                            records: {},
+                            isCollapsed: Boolean(oldState.isCollapsed),
+                        };
                     }
                     return {
-                        [localBook]: { records: oldState },
-                        isCollapsed: oldState.isCollapsed,
+                        records: {
+                            [localBook]: {
+                                cards: [],
+                                activeCardId: null,
+                                isCollapsed: Boolean(oldState.isCollapsed),
+                            },
+                        },
+                        isCollapsed: Boolean(oldState.isCollapsed),
                     };
                 }
 
-                return persistedState as any;
+                return (persistedState ?? {}) as AssistantStore;
             },
         },
     ),

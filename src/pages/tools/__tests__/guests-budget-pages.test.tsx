@@ -1,11 +1,14 @@
 import { render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import GuestManagement from "../GuestManagement";
 import WeddingBudget from "../WeddingBudget";
 
 vi.mock("@/components/wedding-ui", () => ({
-    WeddingPageShell: ({ children }: any) => <div>{children}</div>,
-    WeddingTopBar: ({ title }: any) => <h1>{title}</h1>,
+    WeddingPageShell: ({ children }: { children: ReactNode }) => (
+        <div>{children}</div>
+    ),
+    WeddingTopBar: ({ title }: { title?: string }) => <h1>{title}</h1>,
 }));
 
 vi.mock("@/store/wedding", () => ({

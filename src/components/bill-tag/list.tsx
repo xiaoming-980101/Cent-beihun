@@ -22,9 +22,7 @@ const ListTransition: Transition = {
 export default function TagList({
     onCancel,
 }: {
-    edit?: any;
     onCancel?: () => void;
-    onConfirm?: (v: any) => void;
 }) {
     const t = useIntl();
     const { updateTag, grouped, updateGroup, topUpGroup } = useTag();

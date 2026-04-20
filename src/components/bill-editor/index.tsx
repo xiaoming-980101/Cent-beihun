@@ -13,14 +13,14 @@ export const BillEditorProvider = () => {
     const [editData, setEditData] = useState<EditBill | undefined>();
 
     useEffect(() => {
-        const handleShow = (event: CustomEvent<EditBill | undefined>) => {
-            setEditData(event.detail);
+        const handleShow: EventListener = (event) => {
+            setEditData((event as CustomEvent<EditBill | undefined>).detail);
             setOpen(true);
         };
 
-        window.addEventListener("show-bill-editor" as any, handleShow);
+        window.addEventListener("show-bill-editor", handleShow);
         return () => {
-            window.removeEventListener("show-bill-editor" as any, handleShow);
+            window.removeEventListener("show-bill-editor", handleShow);
         };
     }, []);
 

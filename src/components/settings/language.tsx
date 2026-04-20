@@ -1,5 +1,5 @@
 import { useIntl, useLocale } from "@/locale";
-import { locales } from "@/locale/utils";
+import { type LocaleName, locales } from "@/locale/utils";
 import {
     Select,
     SelectContent,
@@ -30,7 +30,7 @@ export default function LanguageSettingsItem() {
                 <Select
                     value={locale}
                     onValueChange={(v) => {
-                        setLocale(v as any);
+                        setLocale(v as LocaleName);
                         setTimeout(() => {
                             location.reload();
                         }, 10);

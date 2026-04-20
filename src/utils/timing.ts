@@ -1,16 +1,14 @@
-type AnyFn = (...args: any[]) => void;
-
-export type Cancelable<T extends AnyFn> = T & {
+export type Cancelable<T> = T & {
     cancel: () => void;
 };
 
-export function debounce<T extends AnyFn>(
-    fn: T,
+export function debounce<TArgs extends unknown[]>(
+    fn: (...args: TArgs) => void,
     wait = 0,
-): Cancelable<(...args: Parameters<T>) => void> {
+): Cancelable<(...args: TArgs) => void> {
     let timer: ReturnType<typeof setTimeout> | undefined;
 
-    const debounced = ((...args: Parameters<T>) => {
+    const debounced = ((...args: TArgs) => {
         if (timer) {
             clearTimeout(timer);
         }
@@ -18,7 +16,7 @@ export function debounce<T extends AnyFn>(
             timer = undefined;
             fn(...args);
         }, wait);
-    }) as Cancelable<(...args: Parameters<T>) => void>;
+    }) as Cancelable<(...args: TArgs) => void>;
 
     debounced.cancel = () => {
         if (timer) {
@@ -30,14 +28,14 @@ export function debounce<T extends AnyFn>(
     return debounced;
 }
 
-export function throttle<T extends AnyFn>(
-    fn: T,
+export function throttle<TArgs extends unknown[]>(
+    fn: (...args: TArgs) => void,
     wait = 0,
-): Cancelable<(...args: Parameters<T>) => void> {
+): Cancelable<(...args: TArgs) => void> {
     let timer: ReturnType<typeof setTimeout> | undefined;
-    let trailingArgs: Parameters<T> | undefined;
+    let trailingArgs: TArgs | undefined;
 
-    const throttled = ((...args: Parameters<T>) => {
+    const throttled = ((...args: TArgs) => {
         if (!timer) {
             fn(...args);
             timer = setTimeout(() => {
@@ -52,7 +50,7 @@ export function throttle<T extends AnyFn>(
         }
 
         trailingArgs = args;
-    }) as Cancelable<(...args: Parameters<T>) => void>;
+    }) as Cancelable<(...args: TArgs) => void>;
 
     throttled.cancel = () => {
         if (timer) {

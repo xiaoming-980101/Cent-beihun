@@ -1,6 +1,3 @@
-/** biome-ignore-all lint/security/noDangerouslySetInnerHtml: <explanation> */
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 import { type ReactNode, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { type Currency, DefaultCurrencies } from "@/api/currency/currencies";
@@ -19,9 +16,9 @@ export default function CurrencyListForm({
     edit,
     onCancel,
 }: {
-    edit?: any;
+    edit?: unknown;
     onCancel?: () => void;
-    onConfirm?: (v: any) => void;
+    onConfirm?: (v: unknown) => void;
 }) {
     const t = useIntl();
     const {
@@ -136,6 +133,7 @@ export default function CurrencyListForm({
                         </div>
                     </PopoverTrigger>
                     <PopoverContent>
+                        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: translation may include inline markup */}
                         <div
                             className="text-sm [&>div]:text-xs [&>div]:opacity-60 [&>div]:py-2"
                             dangerouslySetInnerHTML={{
@@ -359,8 +357,16 @@ function CurrencyItem({
 }) {
     return (
         <div
+            role="button"
+            tabIndex={0}
             className="py-2 border-b w-full flex justify-between items-center cursor-pointer"
             onClick={onClick}
+            onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onClick?.();
+                }
+            }}
         >
             <div className="flex items-center gap-2">
                 {icon && <div className="text-xl">{icon}</div>}

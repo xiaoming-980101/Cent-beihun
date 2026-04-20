@@ -19,29 +19,29 @@ export type SyncEndpointConfig = {
 };
 
 export type SyncEndpoint = {
-    logout: () => Promise<any>;
+    logout: () => Promise<unknown>;
 
     fetchAllBooks: () => Promise<Book[]>;
     createBook: (name: string) => Promise<{
         id: string;
         name: string;
     }>;
-    initBook: (id: string) => Promise<any>;
-    inviteForBook?: (bookId: string) => any;
-    deleteBook: (bookId: string) => Promise<any>;
+    initBook: (id: string) => Promise<unknown>;
+    inviteForBook?: (bookId: string) => Promise<unknown>;
+    deleteBook: (bookId: string) => Promise<unknown>;
 
     batch: (
         bookId: string,
         actions: Action<Bill>[],
         overlap?: boolean,
     ) => Promise<void>;
-    getMeta: (bookId: string) => Promise<any>;
+    getMeta: (bookId: string) => Promise<unknown>;
     getAllItems: (bookId: string) => Promise<Full<Bill>[]>;
     onChange(listener: (args: { bookId: string }) => void): () => void;
 
     getIsNeedSync: () => Promise<boolean>;
     onSync: (processor: (finished: Promise<void>) => void) => () => void;
-    toSync: () => Promise<any>;
+    toSync: () => Promise<unknown>;
 
     getUserInfo: (id?: string) => Promise<UserInfo>;
     getCollaborators: (id: string) => Promise<UserInfo[]>;

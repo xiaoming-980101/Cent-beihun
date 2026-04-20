@@ -8,6 +8,15 @@ async function fetchAsBlob(url: string): Promise<Blob> {
     return await res.blob();
 }
 
+type ShareNavigator = Navigator & {
+    share?: (data: ShareData) => Promise<void>;
+    canShare?: (data?: ShareData) => boolean;
+};
+
+type LegacyMsNavigator = Navigator & {
+    msSaveOrOpenBlob?: (blob: Blob, defaultName?: string) => boolean;
+};
+
 function guessMimeFromName(name: string): string {
     const ext = (name.split(".").pop() || "").toLowerCase();
     switch (ext) {
@@ -44,7 +53,14 @@ export const download = async (
     name: string,
 ): Promise<void> => {
     // Normalize environment check
-    const nav: any = typeof navigator !== "undefined" ? navigator : undefined;
+    const nav: ShareNavigator | undefined =
+        typeof navigator !== "undefined"
+            ? (navigator as ShareNavigator)
+            : undefined;
+    const legacyNav: LegacyMsNavigator | undefined =
+        typeof navigator !== "undefined"
+            ? (navigator as LegacyMsNavigator)
+            : undefined;
     const supportsShare = !!(
         nav &&
         typeof nav.share === "function" &&
@@ -81,10 +97,9 @@ export const download = async (
         try {
             // IE / old Edge fallback
             if (
-                typeof navigator !== "undefined" &&
-                (navigator as any).msSaveOrOpenBlob
+                legacyNav?.msSaveOrOpenBlob
             ) {
-                (navigator as any).msSaveOrOpenBlob(source, name);
+                legacyNav.msSaveOrOpenBlob(source, name);
                 return;
             }
             const a = document.createElement("a");
@@ -112,10 +127,9 @@ export const download = async (
         const url = URL.createObjectURL(source);
         try {
             if (
-                typeof navigator !== "undefined" &&
-                (navigator as any).msSaveOrOpenBlob
+                legacyNav?.msSaveOrOpenBlob
             ) {
-                (navigator as any).msSaveOrOpenBlob(source, name);
+                legacyNav.msSaveOrOpenBlob(source, name);
                 return;
             }
             const a = document.createElement("a");
@@ -175,10 +189,9 @@ export const download = async (
         const urlObj = URL.createObjectURL(blob);
         try {
             if (
-                typeof navigator !== "undefined" &&
-                (navigator as any).msSaveOrOpenBlob
+                legacyNav?.msSaveOrOpenBlob
             ) {
-                (navigator as any).msSaveOrOpenBlob(blob, name);
+                legacyNav.msSaveOrOpenBlob(blob, name);
                 return;
             }
             const a = document.createElement("a");

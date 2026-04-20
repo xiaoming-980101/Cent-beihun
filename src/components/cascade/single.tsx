@@ -1,6 +1,3 @@
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
-
 import { Check, ChevronRight } from "lucide-react"; // 引入 Check 图标
 import type { ReactNode } from "react";
 import { Button } from "@/components/ui/button";

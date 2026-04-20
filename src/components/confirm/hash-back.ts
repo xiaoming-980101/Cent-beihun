@@ -16,6 +16,11 @@ export interface HashBackController {
     dispose(): void;
 }
 
+type HashBackState = {
+    hb?: number;
+    id?: string;
+};
+
 function makeUniqueId(prefix = "hb"): string {
     const randomId =
         typeof crypto !== "undefined" && "randomUUID" in crypto
@@ -169,7 +174,7 @@ export class HashBack {
         if (!this.enabled) return;
 
         // Only handle our own states (we set {hb: ...}).
-        const state = (ev.state ?? {}) as any;
+        const state = (ev.state ?? {}) as HashBackState;
         if (state && state.hb === undefined) {
             // 非 HashBack 的历史操作 — 忽略
             return;

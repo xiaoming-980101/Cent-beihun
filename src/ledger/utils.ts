@@ -7,8 +7,11 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
 import { DefaultCurrencyId as DefaultBaseCurrencyId } from "@/api/currency/currencies";
+import { useIntl } from "@/locale";
 import { BillCategories } from "./category";
 import type { Bill, BillCategory, BillFilter, BillType } from "./type";
+
+type Translator = ReturnType<typeof useIntl>;
 
 const isTypeMatched = (bill: Bill, type?: BillType) => {
     if (type === undefined) return true;
@@ -181,7 +184,7 @@ export const intlCategory = <
     T extends Pick<BillCategory, "customName" | "name"> | undefined,
 >(
     c: T,
-    t: any,
+    t: Translator,
 ): T => {
     if (c === undefined) {
         return c;
@@ -198,11 +201,10 @@ export const categoriesGridClassName = (cs: BillCategory[] | undefined) =>
  * 属性合并辅助函数：处理 A, B, Default 三者之间的冲突
  */
 function mergeProperties(
-    key: keyof BillCategory,
-    valA: any,
-    valB: any,
-    valD: any,
-): any {
+    valA: unknown,
+    valB: unknown,
+    valD: unknown,
+): unknown {
     // 1. 如果 B 中没有该属性，或者值完全一样，保留 A 的值（或者 B 的值，反正一样）
     if (valB === undefined || valA === valB) {
         return valA;
@@ -273,7 +275,9 @@ export function appendCategories(
             // 注意：如果 default 中没有这个元素，valD 为 undefined
             const valD = itemDefault ? itemDefault[key] : undefined;
 
-            (finalItem as any)[key] = mergeProperties(key, valA, valB, valD);
+            Object.assign(finalItem, {
+                [key]: mergeProperties(valA, valB, valD),
+            } as Partial<BillCategory>);
         });
 
         return finalItem;

@@ -1,5 +1,3 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
-
 import { type ReactNode, useEffect, useState } from "react";
 import { useIntl } from "@/locale";
 import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
@@ -15,6 +13,7 @@ export function RemarkHint({
 }) {
     const t = useIntl();
     const [open, setOpen] = useState(false);
+    const keyMap = new Map<string, number>();
     useEffect(() => {
         if (recommends?.length) {
             setTimeout(() => {
@@ -39,16 +38,21 @@ export function RemarkHint({
             >
                 <div className="opacity-60">{t("recommend-comments")}</div>
                 <div className="flex gap-2">
-                    {recommends.map((comment, i) => (
+                    {recommends.map((comment) => {
+                        const count = (keyMap.get(comment) ?? 0) + 1;
+                        keyMap.set(comment, count);
+                        const key = count > 1 ? `${comment}-${count}` : comment;
+                        return (
                         <button
-                            key={i}
+                            key={key}
                             type="button"
                             className="cursor-pointer border rounded-sm px-1 flex items-center active:bg-foreground/20"
                             onClick={() => onSelect?.(comment)}
                         >
                             {comment}
                         </button>
-                    ))}
+                        );
+                    })}
                 </div>
                 {/* <button
                     type="button"

@@ -438,16 +438,23 @@ function Form({
     );
 }
 
-let sortableGroupResolveCallback: ((list: any[] | null) => void) | null = null;
-let sortableGroupEditData: { group: any[]; enableGroupSorting?: boolean } | undefined = undefined;
+let sortableGroupResolveCallback: ((list: SortableGroupData[]) => void) | null =
+    null;
+let sortableGroupEditData:
+    | { group: SortableGroupData[]; enableGroupSorting?: boolean }
+    | undefined = undefined;
 
 export function showSortableGroup<T extends SortableGroupData>(value?: {
     group: T[];
     enableGroupSorting?: boolean;
 }): Promise<T[]> {
     return new Promise((resolve) => {
-        sortableGroupResolveCallback = resolve as any;
-        sortableGroupEditData = value;
+        sortableGroupResolveCallback = (list) => {
+            resolve(list as T[]);
+        };
+        sortableGroupEditData = value as
+            | { group: SortableGroupData[]; enableGroupSorting?: boolean }
+            | undefined;
         window.dispatchEvent(new CustomEvent("open-sortable-group"));
     });
 }
@@ -465,7 +472,7 @@ export function SortableGroupProvider() {
         };
     }, []);
 
-    const handleConfirm = (list: any[]) => {
+    const handleConfirm = (list: SortableGroupData[]) => {
         if (sortableGroupResolveCallback) {
             sortableGroupResolveCallback(list);
             sortableGroupResolveCallback = null;
@@ -476,7 +483,7 @@ export function SortableGroupProvider() {
     const handleOpenChange = (newOpen: boolean) => {
         setOpen(newOpen);
         if (!newOpen && sortableGroupResolveCallback) {
-            sortableGroupResolveCallback(null);
+            sortableGroupResolveCallback(sortableGroupEditData?.group ?? []);
             sortableGroupResolveCallback = null;
         }
         if (!newOpen) {

@@ -32,8 +32,13 @@ import CategoryIcon from "./icon";
 import { ICONS } from "./icons";
 
 const NO_PARENT = "__noparent";
+type CategoryEditInput =
+    | BillCategory
+    | { id: undefined; parent?: string; type: BillType };
+type CategoryEditResult = string | undefined;
+type Translator = (key: string, params?: Record<string, unknown>) => string;
 
-const createFormSchema = (t: any) =>
+const createFormSchema = (t: Translator) =>
     z.object({
         name: z.string().check(
             z.maxLength(50, {
@@ -55,9 +60,9 @@ export default function CategoryEditForm({
     onConfirm,
     edit,
 }: {
-    edit?: BillCategory | { id: undefined; parent?: string; type: BillType };
+    edit?: CategoryEditInput;
     onCancel?: () => void;
-    onConfirm?: (v: any) => void;
+    onConfirm?: (v: CategoryEditResult) => void;
 }) {
     const t = useIntl();
     const [category, setCategory] = useState<Omit<BillCategory, "id">>(() => {
@@ -77,7 +82,7 @@ export default function CategoryEditForm({
 
     const formSchema = useMemo(() => createFormSchema(t), [t]);
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema) as any,
+        resolver: zodResolver(formSchema),
         defaultValues: category
             ? {
                   name: category.name,
@@ -366,11 +371,10 @@ export default function CategoryEditForm({
                                                 type="button"
                                                 onClick={() => {
                                                     setCategory(
-                                                        (v) =>
-                                                            ({
-                                                                ...v,
-                                                                icon: icon.className,
-                                                            }) as any,
+                                                        (v) => ({
+                                                            ...v,
+                                                            icon: icon.className,
+                                                        }),
                                                     );
                                                 }}
                                                 className="size-12 p-2 rounded-full border flex justify-center items-center cursor-pointer"
@@ -413,20 +417,18 @@ export default function CategoryEditForm({
                                             !validSvgText(svgText)
                                         ) {
                                             setCategory(
-                                                (v) =>
-                                                    ({
-                                                        ...v,
-                                                        icon: v?.icon,
-                                                    }) as any,
+                                                (v) => ({
+                                                    ...v,
+                                                    icon: v?.icon,
+                                                }),
                                             );
                                             return;
                                         }
                                         setCategory(
-                                            (v) =>
-                                                ({
-                                                    ...v,
-                                                    icon: svgText,
-                                                }) as any,
+                                            (v) => ({
+                                                ...v,
+                                                icon: svgText,
+                                            }),
                                         );
                                     }}
                                 />

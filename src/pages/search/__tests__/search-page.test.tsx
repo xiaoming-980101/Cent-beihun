@@ -1,12 +1,15 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import SearchPage from "../index";
 
 vi.mock("@/components/wedding-ui", () => ({
-    WeddingPageShell: ({ children }: any) => <div>{children}</div>,
-    WeddingTopBar: ({ title }: any) => <h1>{title}</h1>,
-    WeddingEmptyState: ({ title }: any) => <div>{title}</div>,
+    WeddingPageShell: ({ children }: { children: ReactNode }) => (
+        <div>{children}</div>
+    ),
+    WeddingTopBar: ({ title }: { title?: string }) => <h1>{title}</h1>,
+    WeddingEmptyState: ({ title }: { title?: string }) => <div>{title}</div>,
 }));
 
 vi.mock("@/api/storage", () => ({
@@ -35,7 +38,14 @@ vi.mock("@/store/book", () => ({
 
 vi.mock("@/store/ledger", () => ({
     useLedgerStore: Object.assign(
-        (selector?: (state: any) => unknown) => {
+        (
+            selector?: (state: {
+                infos: { meta: { tags: unknown[]; personal: Record<string, unknown> } };
+                bills: unknown[];
+                removeBills: () => void;
+                updateBills: () => void;
+            }) => unknown,
+        ) => {
             const state = {
                 infos: { meta: { tags: [], personal: {} } },
                 bills: [],

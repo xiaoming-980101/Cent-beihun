@@ -24,8 +24,8 @@ type BookStoreActions = {
 type BookStore = BookStoreState & BookStoreActions;
 
 type Persist<S> = (
-    config: StateCreator<S>,
-    options: PersistOptions<S>,
+    config: StateCreator<S, [], []>,
+    options: PersistOptions<S, Partial<S>>,
 ) => StateCreator<S>;
 
 export const useBookStore = create<BookStore>()(
@@ -95,7 +95,7 @@ export const useBookStore = create<BookStore>()(
                 return {
                     books: state.books,
                     currentBookId: state.currentBookId,
-                } as any;
+                };
             },
         },
     ),

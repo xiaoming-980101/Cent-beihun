@@ -57,7 +57,7 @@ const truncate = async (storeFullName: string, limit: number) => {
 
 const getInfo = async (storeFullName: string) => {
     const bucket = getDB(storeFullName).itemBucket;
-    const globalMeta: GlobalMeta = (await bucket.getMeta()) ?? {};
+    const globalMeta = ((await bucket.getMeta()) ?? {}) as GlobalMeta;
     return {
         meta: globalMeta,
     };
@@ -157,7 +157,7 @@ const clearPredictModels = async () => {
 };
 
 const exposed = {
-    init: (v: any) => {},
+    init: (_v: unknown) => {},
     getInfo,
     filter,
     analysis,

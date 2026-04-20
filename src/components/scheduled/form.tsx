@@ -37,7 +37,9 @@ import {
 import { Switch } from "../ui/switch";
 import type { Scheduled } from "./type";
 
-const createFormSchema = (t: any) =>
+type IntlFn = ReturnType<typeof useIntl>;
+
+const createFormSchema = (t: IntlFn) =>
     z.object({
         title: z.string(),
         start: z.date({ error: t("please-select-start-date") }),
@@ -78,7 +80,7 @@ export default function ScheduledEditForm({
     const t = useIntl();
     const formSchema = useMemo(() => createFormSchema(t), [t]);
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema) as any,
+        resolver: zodResolver(formSchema),
         defaultValues: edit
             ? {
                   ...edit,
@@ -261,7 +263,14 @@ export default function ScheduledEditForm({
                                         </FormLabel>
                                         <FormControl>
                                             <BillTemplate
-                                                value={field.value as any}
+                                                value={
+                                                    field.value as
+                                                        | Omit<
+                                                              Bill,
+                                                              "id" | "creatorId"
+                                                          >
+                                                        | undefined
+                                                }
                                                 onChange={field.onChange}
                                             />
                                         </FormControl>

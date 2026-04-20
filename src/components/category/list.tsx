@@ -20,7 +20,6 @@ export default function CategoryList({
 }: {
     edit?: BillType;
     onCancel?: () => void;
-    onConfirm?: (v: any) => void;
 }) {
     const t = useIntl();
     const { categories, reorder, reset } = useCategory();

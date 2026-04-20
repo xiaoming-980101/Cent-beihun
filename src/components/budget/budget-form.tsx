@@ -1,24 +1,28 @@
 import { useState, useEffect } from "react";
 import { FormDialog } from "../ui/dialog/form-dialog";
 import BudgetEditForm from "./form";
+import type { EditBudget } from "./type";
+
+type ShowBudgetEditDetail = { edit?: EditBudget };
+type ResolveBudgetEditDetail = { resolve: (value?: EditBudget) => void };
 
 export function BudgetEditProvider() {
     const [open, setOpen] = useState(false);
-    const [edit, setEdit] = useState<any>(undefined);
+    const [edit, setEdit] = useState<EditBudget | undefined>(undefined);
     const [resolveRef, setResolveRef] = useState<{
-        resolve: (value?: any) => void;
+        resolve: (value?: EditBudget) => void;
     } | null>(null);
 
     useEffect(() => {
-        const handleShow = ((e: CustomEvent<{ edit?: any }>) => {
-            setEdit(e.detail.edit);
+        const handleShow = ((e: Event) => {
+            const event = e as CustomEvent<ShowBudgetEditDetail>;
+            setEdit(event.detail.edit);
             setOpen(true);
         }) as EventListener;
 
-        const handleStoreResolve = ((
-            e: CustomEvent<{ resolve: (value?: any) => void }>,
-        ) => {
-            setResolveRef({ resolve: e.detail.resolve });
+        const handleStoreResolve = ((e: Event) => {
+            const event = e as CustomEvent<ResolveBudgetEditDetail>;
+            setResolveRef({ resolve: event.detail.resolve });
         }) as EventListener;
 
         window.addEventListener("show-budget-edit", handleShow);
@@ -30,7 +34,7 @@ export function BudgetEditProvider() {
         };
     }, []);
 
-    const handleConfirm = (value?: any) => {
+    const handleConfirm = (value?: EditBudget) => {
         resolveRef?.resolve(value);
         setOpen(false);
         setEdit(undefined);
@@ -64,7 +68,7 @@ export function BudgetEditProvider() {
     );
 }
 
-export function showBudgetEdit(edit?: any): Promise<any | undefined> {
+export function showBudgetEdit(edit?: EditBudget): Promise<EditBudget | undefined> {
     return new Promise((resolve) => {
         window.dispatchEvent(
             new CustomEvent("show-budget-edit", { detail: { edit } }),

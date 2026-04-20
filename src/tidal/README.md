@@ -56,7 +56,7 @@ type FileLike = {
 };
 
 type FileWithContent = FileLike & { 
-    content: any;   // 文件实际内容
+    content: unknown;   // 文件实际内容
 };
 ```
 
@@ -345,7 +345,7 @@ const fetchContent = async (storeFullName: string, files: FileLike[]) => {
 这是最复杂的操作，需要创建 blob → tree → commit → 更新引用：
 
 ```typescript
-const uploadContent = async (storeFullName: string, files: { path: string; content: any }[]) => {
+const uploadContent = async (storeFullName: string, files: { path: string; content: unknown }[]) => {
     const [owner, repo] = storeFullName.split("/");
     
     // 步骤1: 为每个文件创建 blob
@@ -595,7 +595,7 @@ const fetchContent = async (storeFullName: string, files: FileLike[], signal?: A
 ### 4. uploadContent - 上传内容
 
 ```typescript
-const uploadContent = async (storeFullName: string, files: { path: string; content: any }[], signal?: AbortSignal) => {
+const uploadContent = async (storeFullName: string, files: { path: string; content: unknown }[], signal?: AbortSignal) => {
     const client = await getS3Client();
     const storePath = `${config.baseDir}/${storeFullName}`;
     
@@ -612,7 +612,7 @@ const uploadContent = async (storeFullName: string, files: { path: string; conte
             await client.send(command, { abortSignal: signal });
         } else {
             // 上传文件
-            let body: any;
+            let body: unknown;
             let contentType: string;
             
             if (typeof f.content.arrayBuffer === "function") {
@@ -719,7 +719,7 @@ const fetchStructure = async (storeFullName: string, signal?: AbortSignal) => {
         
         // 转换为 StoreStructure
         return fileStatsToStructure(files, config.entryName, storePath);
-    } catch (e: any) {
+    } catch (e: unknown) {
         if (e?.status === 404) {
             // 目录不存在，返回空结构
             return { chunks: [], assets: [], meta: { path: "", sha: "", size: 0 } };
@@ -814,7 +814,7 @@ const fetchContent = async (storeFullName: string, files: FileLike[], signal?: A
 ### 4. uploadContent - 上传内容
 
 ```typescript
-const uploadContent = async (storeFullName: string, files: { path: string; content: any }[], signal?: AbortSignal) => {
+const uploadContent = async (storeFullName: string, files: { path: string; content: unknown }[], signal?: AbortSignal) => {
     const client = await getClient();
     const storePath = `${config.baseDir}/${storeFullName}`;
     
@@ -829,7 +829,7 @@ const uploadContent = async (storeFullName: string, files: { path: string; conte
             // 删除文件
             try {
                 await client.deleteFile(fullPath);
-            } catch (e: any) {
+            } catch (e: unknown) {
                 if (e?.status !== 404) throw e;
             }
         } else {
@@ -1300,7 +1300,7 @@ export const createS3Syncer = (cfg: S3Config): Syncer => {
     };
 
     // 4. 实现 uploadContent：上传文件
-    const uploadContent = async (storeFullName: string, files: any[], signal?: AbortSignal) => {
+    const uploadContent = async (storeFullName: string, files: { path: string; content: unknown }[], signal?: AbortSignal) => {
         const client = await getS3Client();
         const { PutObjectCommand, DeleteObjectCommand } = await import("@aws-sdk/client-s3");
         
@@ -1407,3 +1407,4 @@ Tidal 通过以下设计实现了高效的增量同步：
 - 支持离线优先的工作流
 - 适应不同的云存储平台
 - 随数据增长保持性能稳定
+

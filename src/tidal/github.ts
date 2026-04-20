@@ -9,6 +9,7 @@ import type {
     FileWithContent,
     StoreStructure,
     Syncer,
+    UploadContent,
 } from ".";
 
 const loadOctokit = () =>
@@ -92,7 +93,7 @@ async function blobToBase64(blob: Blob): Promise<string> {
  * args: { auth: ()=>Promise<{ accessToken, refreshToken? }>, repoPrefix?:string, entryName?:string }
  */
 export const createGithubSyncer = (config: {
-    auth: any;
+    auth: () => Promise<{ accessToken: string; refreshToken?: string }>;
     repoPrefix: string;
     entryName: string;
 }): Syncer => {
@@ -184,7 +185,7 @@ export const createGithubSyncer = (config: {
     // upload (array of FileWithContent) -> create blobs + tree + commit + update ref
     const uploadContent = async (
         storeFullName: string,
-        files: { path: string; content: any }[],
+        files: { path: string; content: UploadContent }[],
         signal?: AbortSignal,
     ) => {
         const octokit = await getOctokit();
@@ -194,7 +195,12 @@ export const createGithubSyncer = (config: {
             throw new Error(`invalid store name: ${storeFullName}`);
 
         // create blobs for each file, if content is null -> mark sha null (deletion)
-        const treePayload: any[] = await Promise.all(
+        const treePayload: {
+            path: string;
+            mode: "100644";
+            type: "blob";
+            sha: string | null;
+        }[] = await Promise.all(
             files.map(async (f) => {
                 if (f.content === null || f.content === undefined) {
                     return {

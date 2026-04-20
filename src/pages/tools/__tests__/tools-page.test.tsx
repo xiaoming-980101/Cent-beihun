@@ -35,7 +35,12 @@ vi.mock("@/components/wedding-ui", () => ({
 }));
 
 vi.mock("@/store/book", () => ({
-    useBookStore: (selector: (state: any) => any) =>
+    useBookStore: (
+        selector: (state: {
+            currentBookId: string;
+            books: { id: string; name: string }[];
+        }) => unknown,
+    ) =>
         selector({
             currentBookId: "book-1",
             books: [{ id: "book-1", name: "婚礼主账本" }],

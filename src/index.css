@@ -1,7 +1,7 @@
-/** biome-ignore-all lint/suspicious/noUnknownAtRules: Tailwind CSS directives */
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind @config directive */
 @config "../tailwind.config.mjs";
 
 /* Import Design Tokens - 导入设计令牌 */
@@ -9,10 +9,13 @@
 @import "./styles/tokens/typography.css";
 @import "./styles/tokens/spacing.css";
 
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind @custom-variant directive */
 @custom-variant dark (&:is(.dark *));
 
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind @plugin directive */
 @plugin "@iconify/tailwind4";
 
+/* biome-ignore lint/suspicious/noUnknownAtRules: Tailwind @plugin directive */
 @plugin "tailwindcss-animate";
 
 body {

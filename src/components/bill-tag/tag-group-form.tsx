@@ -1,24 +1,30 @@
 import { useState, useEffect } from "react";
 import { FormDialog } from "../ui/dialog/form-dialog";
-import { EditTagGroupForm } from "./tag-group";
+import { EditTagGroupForm, type EditTagGroup } from "./tag-group";
+
+type EditTagGroupResult = EditTagGroup | "delete";
+type ShowEditTagGroupDetail = { edit?: EditTagGroup };
+type ResolveEditTagGroupDetail = {
+    resolve: (value?: EditTagGroupResult) => void;
+};
 
 export function EditTagGroupProvider() {
     const [open, setOpen] = useState(false);
-    const [edit, setEdit] = useState<any>(undefined);
+    const [edit, setEdit] = useState<EditTagGroup | undefined>(undefined);
     const [resolveRef, setResolveRef] = useState<{
-        resolve: (value?: any) => void;
+        resolve: (value?: EditTagGroupResult) => void;
     } | null>(null);
 
     useEffect(() => {
-        const handleShow = ((e: CustomEvent<{ edit?: any }>) => {
-            setEdit(e.detail.edit);
+        const handleShow = ((e: Event) => {
+            const event = e as CustomEvent<ShowEditTagGroupDetail>;
+            setEdit(event.detail.edit);
             setOpen(true);
         }) as EventListener;
 
-        const handleStoreResolve = ((
-            e: CustomEvent<{ resolve: (value?: any) => void }>,
-        ) => {
-            setResolveRef({ resolve: e.detail.resolve });
+        const handleStoreResolve = ((e: Event) => {
+            const event = e as CustomEvent<ResolveEditTagGroupDetail>;
+            setResolveRef({ resolve: event.detail.resolve });
         }) as EventListener;
 
         window.addEventListener("show-edit-tag-group", handleShow);
@@ -30,7 +36,7 @@ export function EditTagGroupProvider() {
         };
     }, []);
 
-    const handleConfirm = (value?: any) => {
+    const handleConfirm = (value?: EditTagGroupResult) => {
         resolveRef?.resolve(value);
         setOpen(false);
         setEdit(undefined);
@@ -57,7 +63,9 @@ export function EditTagGroupProvider() {
     );
 }
 
-export function showEditTagGroup(edit?: any): Promise<any | undefined> {
+export function showEditTagGroup(
+    edit?: EditTagGroup,
+): Promise<EditTagGroupResult | undefined> {
     return new Promise((resolve) => {
         window.dispatchEvent(
             new CustomEvent("show-edit-tag-group", { detail: { edit } }),

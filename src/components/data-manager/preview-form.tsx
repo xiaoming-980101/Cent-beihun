@@ -21,14 +21,15 @@ export const ImportPreviewProvider = () => {
     const [editData, setEditData] = useState<PreviewState | undefined>();
 
     useEffect(() => {
-        const handleShow = (event: CustomEvent<PreviewState>) => {
-            setEditData(event.detail);
+        const handleShow = (event: Event) => {
+            const customEvent = event as CustomEvent<PreviewState>;
+            setEditData(customEvent.detail);
             setOpen(true);
         };
 
-        window.addEventListener("show-import-preview" as any, handleShow);
+        window.addEventListener("show-import-preview", handleShow);
         return () => {
-            window.removeEventListener("show-import-preview" as any, handleShow);
+            window.removeEventListener("show-import-preview", handleShow);
         };
     }, []);
 

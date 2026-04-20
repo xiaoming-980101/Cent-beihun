@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import dayjs from "dayjs";
 import { CalendarIcon, Plus, X } from "lucide-react";
 import { useMemo } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { type Resolver, useFieldArray, useForm } from "react-hook-form";
 import * as z from "zod/mini";
 import { Calendar } from "@/components/ui/calendar";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -44,7 +44,9 @@ import {
 } from "../ui/dropdown-menu";
 import type { Budget } from "./type";
 
-const createFormSchema = (t: any) =>
+type Translator = (key: string, params?: Record<string, unknown>) => string;
+
+const createFormSchema = (t: Translator) =>
     z.object({
         title: z.string(),
 
@@ -116,8 +118,9 @@ export default function BudgetEditForm({
     const { tags } = useTag();
     const categoryOption = expenses;
     const formSchema = useMemo(() => createFormSchema(t), [t]);
+    type BudgetFormValues = z.infer<typeof formSchema>;
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema) as any,
+        resolver: zodResolver(formSchema) as Resolver<BudgetFormValues>,
         defaultValues: edit
             ? {
                   ...edit,

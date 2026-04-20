@@ -45,7 +45,7 @@ interface BillRow {
 }
 
 // 每张表的数据
-interface TableData<T = any> {
+interface TableData<T = unknown> {
     tableName: string;
     inbound: boolean;
     rows: T[];
@@ -100,7 +100,7 @@ function OncentImportForm({
     onOpenChange: (open: boolean) => void;
     edit?: OncentDatabaseData;
     onCancel?: () => void;
-    onConfirm?: (v: any) => void;
+    onConfirm?: (v: boolean) => void;
 }) {
     const t = useIntl();
     const [selectedUserId, setSelectedUserId] = useState<string>();
@@ -195,7 +195,7 @@ function OncentImportForm({
                             className="flex items-center gap-4"
                             defaultValue={importStrategy}
                             onValueChange={(v) => {
-                                setImportStrategy(v as any);
+                                setImportStrategy(v === "overlap" ? "overlap" : "add");
                             }}
                         >
                             <div className="flex gap-2 items-center">
@@ -244,14 +244,15 @@ export const OncentImport = () => {
     const [editData, setEditData] = useState<OncentDatabaseData | undefined>();
 
     useEffect(() => {
-        const handleShow = (event: CustomEvent<OncentDatabaseData>) => {
-            setEditData(event.detail);
+        const handleShow = (event: Event) => {
+            const customEvent = event as CustomEvent<OncentDatabaseData>;
+            setEditData(customEvent.detail);
             setOpen(true);
         };
 
-        window.addEventListener("show-oncent-import" as any, handleShow);
+        window.addEventListener("show-oncent-import", handleShow);
         return () => {
-            window.removeEventListener("show-oncent-import" as any, handleShow);
+            window.removeEventListener("show-oncent-import", handleShow);
         };
     }, []);
 
@@ -263,7 +264,7 @@ export const OncentImport = () => {
         setOpen(newOpen);
     };
 
-    const handleConfirm = (value: any) => {
+    const handleConfirm = (value: boolean) => {
         resolveCallback?.(value);
         resolveCallback = null;
         setOpen(false);

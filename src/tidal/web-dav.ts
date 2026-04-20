@@ -3,7 +3,7 @@ import type { UserInfo } from "@/api/endpoints/type";
 import type { FileEntry } from "@/database/assets";
 import { shortId } from "@/database/id";
 import { registerProxy } from "@/utils/fetch-proxy";
-import type { AssetKey, FileLike, StoreStructure, Syncer } from ".";
+import type { AssetKey, FileLike, StoreStructure, Syncer, UploadContent } from ".";
 
 type WebDAVConfig = {
     remoteUrl: string;
@@ -13,6 +13,13 @@ type WebDAVConfig = {
     repoPrefix?: string;
     entryName?: string;
     baseDir?: string;
+};
+
+type WebDAVError = { status?: number; message?: string };
+type WebDAVFileLikeMeta = FileLike & {
+    etag?: string;
+    lastmod?: string;
+    size?: number;
 };
 
 const createClient = async (
@@ -164,8 +171,8 @@ export const createWebDAVSyncer = (cfg: WebDAVConfig): Syncer => {
                 storePath,
             );
             return structure;
-        } catch (e: any) {
-            if (e?.status === 404) {
+        } catch (e) {
+            if ((e as WebDAVError | null | undefined)?.status === 404) {
                 return {
                     chunks: [],
                     assets: [],
@@ -194,7 +201,8 @@ export const createWebDAVSyncer = (cfg: WebDAVConfig): Syncer => {
                     format: "text",
                     signal,
                 })) as string;
-                const sha = `${(file as any).etag ?? ""}:${(file as any).lastmod ?? ""}:${(file as any).size ?? 0}`;
+                const fileWithMeta = file as WebDAVFileLikeMeta;
+                const sha = `${fileWithMeta.etag ?? ""}:${fileWithMeta.lastmod ?? ""}:${fileWithMeta.size ?? 0}`;
                 // 返回 FileWithConentLike 结构，并加入结果数组
                 results.push({ ...file, sha, content: JSON.parse(content) });
             } catch (e) {
@@ -209,7 +217,7 @@ export const createWebDAVSyncer = (cfg: WebDAVConfig): Syncer => {
 
     const uploadContent = async (
         storeFullName: string,
-        files: { path: string; content: any }[],
+        files: { path: string; content: UploadContent }[],
         signal?: AbortSignal,
     ) => {
         const client = await getClient();
@@ -225,12 +233,18 @@ export const createWebDAVSyncer = (cfg: WebDAVConfig): Syncer => {
                 // delete if exists (some servers may return 404, ignore)
                 try {
                     await client.deleteFile(fullPath);
-                } catch (e: any) {
-                    if (e?.status !== 404) throw e;
+                } catch (e) {
+                    if ((e as WebDAVError | null | undefined)?.status !== 404) {
+                        throw e;
+                    }
                 }
             } else {
                 // if it's a File/Blob, upload as binary; otherwise stringify.
-                if (typeof (f.content as any).arrayBuffer === "function") {
+                if (
+                    f.content &&
+                    typeof (f.content as { arrayBuffer?: unknown }).arrayBuffer ===
+                        "function"
+                ) {
                     // Blob / File
                     const arr = await (f.content as Blob).arrayBuffer();
                     await client.putFileContents(fullPath, arr);
@@ -304,7 +318,7 @@ export const createWebDAVSyncer = (cfg: WebDAVConfig): Syncer => {
 
     const getCollaborators = async (_id: string) => {
         // No standard collaborator list in WebDAV
-        return [] as any[];
+        return [] as UserInfo[];
     };
 
     const fetchAllStore = async () => {
@@ -320,8 +334,10 @@ export const createWebDAVSyncer = (cfg: WebDAVConfig): Syncer => {
                         c.basename?.startsWith(config.repoPrefix!),
                 )
                 .map((c) => c.basename);
-        } catch (e: any) {
-            if (e?.status === 404) return [];
+        } catch (e) {
+            if ((e as WebDAVError | null | undefined)?.status === 404) {
+                return [];
+            }
             throw e;
         }
     };
@@ -359,19 +375,20 @@ export const checkWebDAVConfig = async (
 
         // 如果成功 (即使是 404)，说明认证和 URL 都通过了
         return true;
-    } catch (e: any) {
-        if (e.status === 404) {
+    } catch (e) {
+        const webdavError = e as WebDAVError | null | undefined;
+        if (webdavError?.status === 404) {
             // 404 Not Found 是一个有效的响应
             // 它意味着服务器已连接，认证成功，只是目录还未创建
             return true;
         }
 
         let errorMessage = "Unknown connection error.";
-        if (e.status === 401) {
+        if (webdavError?.status === 401) {
             errorMessage =
                 "Authentication failed (401 Unauthorized). Please check username/password or token.";
-        } else if (e.message) {
-            errorMessage = e.message;
+        } else if (webdavError?.message) {
+            errorMessage = webdavError.message;
         }
 
         throw new Error(errorMessage);

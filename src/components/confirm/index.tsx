@@ -106,7 +106,7 @@ export default function createConfirmProvider<Value, Returned = Value>(
                         </DialogDescription>
                     </VisuallyHidden.Root>
                     <Form
-                        edit={edit}
+                        edit={edit as Value | undefined}
                         onCancel={onCancel}
                         onConfirm={onConfirm}
                     />

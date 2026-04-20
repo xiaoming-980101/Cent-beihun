@@ -1,5 +1,3 @@
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
 import { ChevronRight } from "lucide-react";
 import { type ReactNode, useEffect, useMemo, useRef } from "react";
 import { Button } from "@/components/ui/button";

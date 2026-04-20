@@ -12,9 +12,7 @@ const toDay = (v: number) => dayjs.unix(v / 1000).format("YYYY-MM-DD");
 export default function BudgetListForm({
     onCancel,
 }: {
-    edit?: any;
     onCancel?: () => void;
-    onConfirm?: (v: any) => void;
 }) {
     const t = useIntl();
     const { budgets, add, update, reorder } = useBudget();

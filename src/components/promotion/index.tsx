@@ -1,6 +1,3 @@
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
-/** biome-ignore-all lint/security/noDangerouslySetInnerHtml: <explanation> */
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 import { useEffect, useRef } from "react";
 import { useShallow } from "zustand/shallow";
 import { useIntl } from "@/locale";
@@ -135,6 +132,8 @@ export function Promotion() {
                 {promotions.map((item, index) => (
                     <div
                         key={item.id}
+                        role="button"
+                        tabIndex={0}
                         className="relative cursor-pointer flex-shrink-0 snap-start rounded-lg border flex items-center justify-between w-full p-2 h-12"
                         onClick={() => {
                             item?.action?.();
@@ -142,7 +141,17 @@ export function Promotion() {
                                 closePromotion(item.id);
                             }, 1000);
                         }}
+                        onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                item?.action?.();
+                                setTimeout(() => {
+                                    closePromotion(item.id);
+                                }, 1000);
+                            }
+                        }}
                     >
+                        {/* biome-ignore lint/security/noDangerouslySetInnerHtml: localized rich text labels may include inline markup */}
                         <div
                             className="text-sm"
                             dangerouslySetInnerHTML={{ __html: t(item.label) }}

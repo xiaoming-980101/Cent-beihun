@@ -3,7 +3,7 @@ import { diff, merge } from "./patch";
 
 export type BaseItem = {
     id: string;
-    [key: string]: any;
+    [key: string]: unknown;
 };
 
 export type Update<T extends BaseItem> = {
@@ -29,7 +29,7 @@ export type MetaUpdate = {
     timestamp: number;
     id: string;
     value?: undefined;
-    metaValue: any;
+    metaValue: unknown;
     overlap?: number;
 };
 
@@ -65,7 +65,7 @@ export type ArrayableStorageFactory = <T extends BaseItem>(
     name: FactoryNames,
 ) => Arrayable<T>;
 
-export type StorageFactory<V = any> = (
+export type StorageFactory<V = unknown> = (
     name: typeof StashBucket.META_NAME | typeof StashBucket.CONFIG_NAME,
 ) => {
     setValue: (v: V) => Promise<void>;
@@ -79,7 +79,7 @@ export interface StashStorage {
     dangerousClearAll: () => Promise<void>;
 }
 
-export class StashBucket<T extends BaseItem, Meta = any, Config = any> {
+export class StashBucket<T extends BaseItem, Meta = unknown, Config = unknown> {
     static STASH_NAME = "__stashes" as const;
     static ITEM_NAME = "__items" as const;
     static META_NAME = "__meta" as const;
@@ -113,7 +113,7 @@ export class StashBucket<T extends BaseItem, Meta = any, Config = any> {
         >;
     }
 
-    async init(items: FullAction<T>[], meta?: any) {
+    async init(items: FullAction<T>[], meta?: Meta) {
         if (meta !== undefined) {
             await this.metaStorage.setValue(meta);
         }
@@ -123,7 +123,7 @@ export class StashBucket<T extends BaseItem, Meta = any, Config = any> {
         await this.applyStash(localStashes);
     }
 
-    async patch(items: FullAction<T>[], meta?: any) {
+    async patch(items: FullAction<T>[], meta?: Meta) {
         if (meta !== undefined) {
             await this.metaStorage.setValue(meta);
         }
@@ -166,8 +166,8 @@ export class StashBucket<T extends BaseItem, Meta = any, Config = any> {
         if (metaOption) {
             const remoteMeta = await this.metaStorage.getValue();
             metaOption.metaValue = diffMeta(
-                remoteMeta ?? {},
-                metaOption.metaValue,
+                (remoteMeta ?? {}) as Record<string, unknown>,
+                (metaOption.metaValue ?? {}) as Record<string, unknown>,
             );
         }
         const prevActions = await this.getStashes();
@@ -244,17 +244,33 @@ function denseStashes<T extends BaseItem>(stashes: FullAction<T>[]) {
     });
 }
 
-const diffMeta = (prev: any, current: any) => {
+const diffMeta = (
+    prev: Record<string, unknown>,
+    current: Record<string, unknown>,
+) => {
     const diffs = diff(prev, current, { timestamp: Date.now() });
     return diffs;
 };
 
-export const mergeMeta = (prev: any, diff: any) => {
-    if (diff.$$patch) {
-        const result = merge(prev, diff);
-        result.__updated_at = diff.$$patch.timestamp;
-        delete result.$$patch;
+export const mergeMeta = (
+    prev: unknown,
+    patch: unknown,
+) => {
+    if (
+        patch &&
+        typeof patch === "object" &&
+        "$$patch" in patch &&
+        patch.$$patch
+    ) {
+        const base =
+            prev && typeof prev === "object"
+                ? (prev as Record<string, unknown>)
+                : {};
+        const result = merge(base, patch as Record<string, unknown>);
+        const patchMeta = (patch as { $$patch?: { timestamp?: number } }).$$patch;
+        (result as Record<string, unknown>).__updated_at = patchMeta?.timestamp;
+        delete (result as Record<string, unknown>).$$patch;
         return result;
     }
-    return diff;
+    return patch;
 };

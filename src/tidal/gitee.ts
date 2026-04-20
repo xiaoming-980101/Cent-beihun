@@ -8,6 +8,7 @@ import type {
     FileWithContent,
     StoreStructure,
     Syncer,
+    UploadContent,
 } from ".";
 
 /**
@@ -26,6 +27,16 @@ export const createGiteeSyncer = (config: {
     } = config || {};
 
     const GITEE_API_BASE = "https://gitee.com/api/v5";
+    type GiteeRepoInfo = { default_branch?: string };
+    type GiteeContentEntry = {
+        path: string;
+        type: string;
+        sha: string;
+        size?: number;
+        url?: string;
+        content?: string;
+    };
+    type GiteeUser = { login: string; id: number | string; avatar_url?: string };
 
     const pathToName = (path: string) => {
         const splitted = path.split("/");
@@ -94,10 +105,10 @@ export const createGiteeSyncer = (config: {
     };
 
     // generic helper to call gitee API with token
-    const giteeRequest = async <T = any>(
+    const giteeRequest = async <T>(
         method: string,
         path: string,
-        body?: any,
+        body?: unknown,
         signal?: AbortSignal,
     ): Promise<T> => {
         const { accessToken } = await auth();
@@ -137,7 +148,7 @@ export const createGiteeSyncer = (config: {
         }
 
         const txt = await res.text();
-        return txt ? JSON.parse(txt) : ({} as any);
+        return txt ? (JSON.parse(txt) as T) : ({} as T);
     };
 
     // fetch repo tree/structure
@@ -149,7 +160,7 @@ export const createGiteeSyncer = (config: {
         if ([owner, repo].some((v) => v.length === 0))
             throw new Error(`invalid store name: ${storeFullName}`);
         // 1. repo info to get default branch
-        const repoData = await giteeRequest<any>(
+        const repoData = await giteeRequest<GiteeRepoInfo>(
             "GET",
             `/repos/${owner}/${repo}`,
             undefined,
@@ -158,7 +169,7 @@ export const createGiteeSyncer = (config: {
         const branch = repoData?.default_branch ?? "master";
 
         // 2. list root contents
-        const rootList = await giteeRequest<any[]>(
+        const rootList = await giteeRequest<GiteeContentEntry[]>(
             "GET",
             `/repos/${owner}/${repo}/contents?ref=${branch}`,
             undefined,
@@ -166,9 +177,9 @@ export const createGiteeSyncer = (config: {
         );
 
         // 3. list assets dir if exists
-        let assetsList: any[] = [];
+        let assetsList: GiteeContentEntry[] = [];
         try {
-            assetsList = await giteeRequest<any[]>(
+            assetsList = await giteeRequest<GiteeContentEntry[]>(
                 "GET",
                 `/repos/${owner}/${repo}/contents/assets?ref=${branch}`,
                 undefined,
@@ -182,7 +193,7 @@ export const createGiteeSyncer = (config: {
         const combined = [
             ...(Array.isArray(rootList) ? rootList : []),
             ...(Array.isArray(assetsList) ? assetsList : []),
-        ].map((f: any) => ({
+        ].map((f) => ({
             path: f.path,
             mode: "100644",
             type: f.type,
@@ -234,7 +245,7 @@ export const createGiteeSyncer = (config: {
     // files: { path, content } where content === null -> delete
     const uploadContent = async (
         storeFullName: string,
-        files: { path: string; content: any }[],
+        files: { path: string; content: UploadContent }[],
         signal?: AbortSignal,
     ) => {
         const [owner, repo] = storeFullName.split("/");
@@ -244,7 +255,7 @@ export const createGiteeSyncer = (config: {
         const { accessToken } = await auth();
 
         // get default branch
-        const repoData = await giteeRequest<any>(
+        const repoData = await giteeRequest<GiteeRepoInfo>(
             "GET",
             `/repos/${owner}/${repo}`,
         );
@@ -366,7 +377,7 @@ export const createGiteeSyncer = (config: {
     // createStore: create gitee repo and add meta.json
     const createStore = async (name: string) => {
         // get current user
-        const me = await giteeRequest<any>("GET", `/user`);
+        const me = await giteeRequest<GiteeUser>("GET", `/user`);
         const owner = me.login;
         const storeName = `${repoPrefix}-${name}`;
 
@@ -434,7 +445,7 @@ export const createGiteeSyncer = (config: {
         );
         if (!res.ok) throw new Error("Failed to fetch collaborators");
         const data = await res.json();
-        return data.map((v: any) => ({
+        return (data as GiteeUser[]).map((v) => ({
             avatar_url: v.avatar_url,
             name: v.login,
             id: v.id as unknown as string,
@@ -442,7 +453,10 @@ export const createGiteeSyncer = (config: {
     };
 
     const fetchAllStore = async () => {
-        const repos = await giteeRequest<any[]>("GET", `/user/repos`);
+        const repos = await giteeRequest<{ name: string; full_name: string }[]>(
+            "GET",
+            `/user/repos`,
+        );
         return (repos || [])
             .filter((repo) => repo.name.startsWith(repoPrefix))
             .map((repo) => repo.full_name);

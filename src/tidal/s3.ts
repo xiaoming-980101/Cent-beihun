@@ -1,7 +1,7 @@
 import type { UserInfo } from "@/api/endpoints/type";
 import type { FileEntry } from "@/database/assets";
 import { shortId } from "@/database/id";
-import type { AssetKey, FileLike, StoreStructure, Syncer } from ".";
+import type { AssetKey, FileLike, StoreStructure, Syncer, UploadContent } from ".";
 
 type S3Config = {
     /** S3服务端点URL（例如：https://s3.amazonaws.com 或自建S3服务地址） */
@@ -303,7 +303,7 @@ export const createS3Syncer = (cfg: S3Config): Syncer => {
 
     const uploadContent = async (
         storeFullName: string,
-        files: { path: string; content: any }[],
+        files: { path: string; content: UploadContent }[],
         signal?: AbortSignal,
     ) => {
         const { client, commands } = await getClient();

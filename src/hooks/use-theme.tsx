@@ -17,6 +17,11 @@ type ThemeContextValue = {
     toggle: () => void;
 };
 
+type LegacyMediaQueryList = MediaQueryList & {
+    addListener?: (listener: (this: MediaQueryList, ev: MediaQueryListEvent) => void) => void;
+    removeListener?: (listener: (this: MediaQueryList, ev: MediaQueryListEvent) => void) => void;
+};
+
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
 
 function applyThemeClass(theme: Theme) {
@@ -58,16 +63,17 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({
             window.matchMedia
         ) {
             const mq = window.matchMedia("(prefers-color-scheme: dark)");
+            const legacyMq = mq as LegacyMediaQueryList;
             const handler = () => applyThemeClass("system");
 
             if (mq.addEventListener) mq.addEventListener("change", handler);
-            else if ((mq as any).addListener) (mq as any).addListener(handler);
+            else if (legacyMq.addListener) legacyMq.addListener(handler);
 
             return () => {
                 if (mq.removeEventListener)
                     mq.removeEventListener("change", handler);
-                else if ((mq as any).removeListener)
-                    (mq as any).removeListener(handler);
+                else if (legacyMq.removeListener)
+                    legacyMq.removeListener(handler);
             };
         }
         return;

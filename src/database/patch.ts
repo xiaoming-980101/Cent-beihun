@@ -1,6 +1,6 @@
 import { deepClone, deepEqual, isPlainObject } from "@/utils/object";
 
-type AnyObject = Record<string, any>;
+type AnyObject = Record<string, unknown>;
 
 /**
  * Diff 算法：递归寻找变化
@@ -8,7 +8,7 @@ type AnyObject = Record<string, any>;
 export function diff<T extends AnyObject, U extends AnyObject>(
     oldObj: T,
     newObj: U,
-    meta?: any,
+    meta?: Record<string, unknown>,
 ): AnyObject {
     const patch: AnyObject = { $$patch: true, ...meta };
 
@@ -57,10 +57,13 @@ export function merge<T extends AnyObject>(target: T, patch: AnyObject): T {
 
         // 如果 patchValue 是带 $$patch 标志的对象，说明需要递归合并
         if (isPlainObject(patchValue) && patchValue.$$patch) {
-            (result as any)[key] = merge(result[key] || {}, patchValue);
+            (result as Record<string, unknown>)[key] = merge(
+                (result[key] as Record<string, unknown>) || {},
+                patchValue,
+            );
         } else {
             // 否则直接覆盖（包括数组和普通值）
-            (result as any)[key] = patchValue;
+            (result as Record<string, unknown>)[key] = patchValue;
         }
     }
 

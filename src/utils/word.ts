@@ -6,6 +6,8 @@ type JiebaLib = {
 };
 
 let jiebaModuleLoaded: Promise<JiebaLib> | undefined;
+const JIEBA_MODULE_URL =
+    "https://cdn.jsdelivr.net/npm/jieba-wasm@2.4.0/pkg/web/jieba_rs_wasm.js";
 
 // 中文停用词列表 (不变)
 export const STOP_WORDS = new Set([
@@ -82,10 +84,8 @@ export async function initializeWasm() {
 
     console.log("正在动态加载 jieba-wasm...");
     jiebaModuleLoaded = (async () => {
-        const module = await import(
-            // @ts-expect-error
-            "https://cdn.jsdelivr.net/npm/jieba-wasm@2.4.0/pkg/web/jieba_rs_wasm.js"
-        );
+        const module = (await import(/* @vite-ignore */ JIEBA_MODULE_URL)) as
+            JiebaLib & { default: (wasmUrl: string) => Promise<void> };
 
         // 2. 初始化 WASM，传入 WASM 文件的 URL
         await module.default(WASM_URL);

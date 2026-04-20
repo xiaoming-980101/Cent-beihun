@@ -67,7 +67,7 @@ export const useWeddingStore = create<WeddingStore>()((set, get) => {
         if (!meta) return null;
 
         // 从 GlobalMeta.wedding 字段获取婚礼数据
-        return (meta as any).wedding ?? null;
+        return meta.wedding ?? null;
     };
 
     // 更新婚礼数据（通过 updateGlobalMeta 写入 meta.wedding 字段）
@@ -149,8 +149,7 @@ export const useWeddingStore = create<WeddingStore>()((set, get) => {
     useLedgerStore.subscribe((state, prev) => {
         // 当 meta 变化时刷新婚礼数据
         if (state.infos?.meta !== prev.infos?.meta && get().initialized) {
-            const weddingData =
-                (state.infos?.meta as any)?.wedding ?? DEFAULT_WEDDING_DATA;
+            const weddingData = state.infos?.meta?.wedding ?? DEFAULT_WEDDING_DATA;
             set(
                 produce((s: WeddingStore) => {
                     s.weddingData = weddingData;

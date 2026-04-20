@@ -5,15 +5,17 @@ import { asyncSingleton } from "@/database/singleton";
 import {
     type Action,
     type BaseItem,
+    type FullAction,
     mergeMeta,
     StashBucket,
     type StashStorage,
 } from "@/database/stash";
 
 export type AssetKey = string;
+export type UploadContent = unknown;
 
 export type FileLike = { path: string; sha: string };
-export type FileWithContent = { path: string; sha: string; content: any };
+export type FileWithContent = { path: string; sha: string; content: unknown };
 
 export type StoreStructure<F = FileLike> = {
     chunks: (F & { startIndex: number })[];
@@ -41,7 +43,7 @@ export type Syncer = {
         storeFullName: string,
         files: {
             path: string;
-            content: string | undefined;
+            content: UploadContent;
         }[],
         signal?: AbortSignal,
     ) => Promise<StoreStructure>;
@@ -187,13 +189,23 @@ export const createTidal = <Item extends BaseItem>({
                         return [k, withContents];
                     }
                     const value = v as FileLike;
-                    (value as any).content = results.find(
-                        (c) => c.sha === value.sha,
-                    )?.content;
-                    return [k, value];
+                    return [
+                        k,
+                        {
+                            ...value,
+                            content: results.find((c) => c.sha === value.sha)
+                                ?.content,
+                        },
+                    ];
                 }),
         ) as StoreDetail;
         return { detail, remote: remoteStructure, patch };
+    };
+    const toFullActions = (content: unknown): FullAction<Item>[] => {
+        if (!Array.isArray(content)) {
+            return [];
+        }
+        return content as FullAction<Item>[];
     };
 
     // init single store: pull remote structure+content -> patch/init local stash
@@ -201,7 +213,9 @@ export const createTidal = <Item extends BaseItem>({
         const { itemBucket } = getStore(storeFullName);
 
         const { detail, remote, patch } = await fetchStoreDetail(storeFullName);
-        const remoteItems = detail.chunks.flatMap((v) => v.content);
+        const remoteItems = detail.chunks.flatMap((v) =>
+            toFullActions(v.content),
+        );
         if (patch) {
             await itemBucket.patch(remoteItems, detail.meta?.content);
         } else {
@@ -328,14 +342,14 @@ export const createTidal = <Item extends BaseItem>({
                         );
 
                         const newContent = [
-                            ...(latestChunkContent?.content ?? []),
+                            ...toFullActions(latestChunkContent?.content),
                             ...transformed,
                         ];
 
                         const startIndex = latestChunk?.startIndex ?? 0;
                         const chunks: {
                             path: string;
-                            content: any | null;
+                            content: UploadContent;
                             sha?: string;
                         }[] = [];
                         for (
@@ -382,7 +396,7 @@ export const createTidal = <Item extends BaseItem>({
                     // upload assets (actual upload of binary files) - the syncer.transformAsset above only transforms keys.
                     // For GitHub syncer we need to actually upload assets as blobs to assets/<name>
                     // We'll detect assets from itemResult.assets (transformAssets returns file list)
-                    const assetFiles: { path: string; content: any }[] = [];
+                    const assetFiles: { path: string; content: UploadContent }[] = [];
                     // itemResult.assets items are expected to have { file: File, formattedValue } shape (as transformAssets returns)
                     (itemResult.assets || []).forEach((a) => {
                         if (a.file) {
@@ -408,7 +422,7 @@ export const createTidal = <Item extends BaseItem>({
                     // after success, delete local stashes & update local meta
                     await Promise.all([
                         itemBucket.deleteStashes(
-                            ...stashes.map((s: any) => s.id),
+                            ...stashes.map((s) => s.id),
                         ),
                         itemBucket.configStorage.setValue({
                             structure: newStructure,

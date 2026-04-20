@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: image previews are read-only and can use index keys */
 import { useMemo } from "react";
 import useCategory from "@/hooks/use-category";
 import { useCreators } from "@/hooks/use-creator";
@@ -95,14 +94,20 @@ export default function BillItem({
                 </div>
                 <div className="flex-1 flex gap-2">
                     {showAssets &&
-                        bill.images?.map((img, i) => (
-                            <SmartImage
-                                key={i}
-                                source={img}
-                                alt=""
-                                className="w-8 h-8 object-cover rounded data-[state=loading]:animate-pulse bg-primary/10"
-                            />
-                        ))}
+                        bill.images?.map((img) => {
+                            const imageKey =
+                                typeof img === "string"
+                                    ? img
+                                    : `${img.name}-${img.lastModified}-${img.size}`;
+                            return (
+                                <SmartImage
+                                    key={imageKey}
+                                    source={img}
+                                    alt=""
+                                    className="w-8 h-8 object-cover rounded data-[state=loading]:animate-pulse bg-primary/10"
+                                />
+                            );
+                        })}
                 </div>
             </div>
 

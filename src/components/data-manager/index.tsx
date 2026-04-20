@@ -27,13 +27,13 @@ export const SmartImportProvider = () => {
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
-        const handleShow = () => {
+        const handleShow = (_event: Event) => {
             setOpen(true);
         };
 
-        window.addEventListener("show-smart-import" as any, handleShow);
+        window.addEventListener("show-smart-import", handleShow);
         return () => {
-            window.removeEventListener("show-smart-import" as any, handleShow);
+            window.removeEventListener("show-smart-import", handleShow);
         };
     }, []);
 
@@ -215,13 +215,13 @@ export const DataManagerProvider = () => {
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
-        const handleShow = () => {
+        const handleShow = (_event: Event) => {
             setOpen(true);
         };
 
-        window.addEventListener("show-data-manager" as any, handleShow);
+        window.addEventListener("show-data-manager", handleShow);
         return () => {
-            window.removeEventListener("show-data-manager" as any, handleShow);
+            window.removeEventListener("show-data-manager", handleShow);
         };
     }, []);
 

@@ -1,5 +1,3 @@
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
 import {
     type ReactNode,
     useCallback,
@@ -28,7 +26,8 @@ function TagTrigger({
     onClick?: () => void;
 }) {
     return (
-        <div
+        <button
+            type="button"
             onPointerDown={(e) => {
                 e.preventDefault();
             }}
@@ -49,7 +48,7 @@ function TagTrigger({
             >
                 {children}
             </div>
-        </div>
+        </button>
     );
 }
 

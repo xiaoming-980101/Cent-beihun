@@ -1,10 +1,11 @@
 import dayjs from "dayjs";
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
+import type { WeddingTask } from "@/wedding/type";
 import { TaskCalendarView } from "../task-calendar-view";
 import { TaskListView } from "../task-list-view";
 
-const tasks = [
+const tasks: WeddingTask[] = [
     {
         id: "task-1",
         title: "确认婚礼场地",
@@ -14,7 +15,7 @@ const tasks = [
         deadline: Date.now(),
         createdAt: Date.now(),
     },
-] as any;
+];
 
 describe("Task Views", () => {
     it("renders task list and triggers callbacks", () => {

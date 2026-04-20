@@ -31,12 +31,14 @@ export function GuestFormDialog({
 
     const [name, setName] = useState(editGuest?.name || "");
     const [phone, setPhone] = useState(editGuest?.phone || "");
-    const [relation, setRelation] = useState(editGuest?.relation || "friend");
+    const [relation, setRelation] = useState<Guest["relation"]>(
+        editGuest?.relation ?? "friend",
+    );
     const [group, setGroup] = useState<"groom" | "bride" | undefined>(
         editGuest?.group,
     );
-    const [inviteStatus, setInviteStatus] = useState(
-        editGuest?.inviteStatus || "pending",
+    const [inviteStatus, setInviteStatus] = useState<Guest["inviteStatus"]>(
+        editGuest?.inviteStatus ?? "pending",
     );
     const [note, setNote] = useState(editGuest?.note || "");
 
@@ -49,9 +51,9 @@ export function GuestFormDialog({
         const guestData = {
             name: name.trim(),
             phone: phone.trim() || undefined,
-            relation: relation as any,
+            relation,
             group,
-            inviteStatus: inviteStatus as any,
+            inviteStatus,
             note: note.trim() || undefined,
         };
 

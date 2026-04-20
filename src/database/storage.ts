@@ -29,11 +29,11 @@ export interface GitrayDBSchema extends DBSchema {
     };
     [StashBucket.META_NAME]: {
         key: string;
-        value: { id: "metaKey"; value: any };
+        value: { id: "metaKey"; value: unknown };
     };
     [StashBucket.CONFIG_NAME]: {
         key: string;
-        value: { id: "metaKey"; value: any };
+        value: { id: "metaKey"; value: unknown };
     };
 }
 
@@ -76,13 +76,21 @@ export class BillIndexedDBStorage implements StashStorage {
         });
     }
 
-    createArrayableStorage: ArrayableStorageFactory = (name) => {
+    createArrayableStorage: ArrayableStorageFactory = <T extends { id: string }>(
+        name: Parameters<ArrayableStorageFactory>[0],
+    ) => {
         return {
             put: async (...v) => {
                 const db = await this.getDB();
                 const tx = db.transaction(name, "readwrite");
                 const store = tx.objectStore(name);
-                await Promise.all(v.map((item) => store.put(item as any)));
+                await Promise.all(
+                    v.map((item) =>
+                        store.put(
+                            item as unknown as GitrayDBSchema[typeof name]["value"],
+                        ),
+                    ),
+                );
                 await tx.done;
                 db.close();
             },
@@ -123,11 +131,11 @@ export class BillIndexedDBStorage implements StashStorage {
                 })();
                 const direction = "prev";
 
-                const localItems: any[] = [];
+                const localItems: T[] = [];
                 const range = IDBKeyRange.bound(-Infinity, Infinity);
                 let cursor = await index.openCursor(range, direction);
                 while (cursor) {
-                    localItems.push(cursor.value);
+                    localItems.push(cursor.value as unknown as T);
                     if (limit !== undefined && localItems.length >= limit) {
                         break;
                     }

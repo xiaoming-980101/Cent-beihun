@@ -1,5 +1,3 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
-
 import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { toast } from "sonner";
 import useCategory from "@/hooks/use-category";
@@ -211,14 +209,20 @@ export default function BillInfo({
 
                     {edit.images && (
                         <div className="flex-1 py-2 flex gap-2 items-center justify-center max-w-full overflow-x-auto hidden-scrollbar">
-                            {edit.images.map((img, i) => (
-                                <SmartImage
-                                    key={i}
-                                    source={img}
-                                    alt=""
-                                    className="max-h-[200px] object-cover rounded min-w-24 min-h-24 data-[state=loading]:animate-pulse bg-primary/10"
-                                />
-                            ))}
+                            {edit.images.map((img) => {
+                                const imageKey =
+                                    typeof img === "string"
+                                        ? img
+                                        : `${img.name}-${img.lastModified}-${img.size}`;
+                                return (
+                                    <SmartImage
+                                        key={imageKey}
+                                        source={img}
+                                        alt=""
+                                        className="max-h-[200px] object-cover rounded min-w-24 min-h-24 data-[state=loading]:animate-pulse bg-primary/10"
+                                    />
+                                );
+                            })}
                         </div>
                     )}
 

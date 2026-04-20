@@ -10,7 +10,9 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "../ui/form";
 import { Input } from "../ui/input";
 import RateInput from "./rate-input";
 
-const createFormSchema = (t: any) =>
+type IntlFn = ReturnType<typeof useIntl>;
+
+const createFormSchema = (t: IntlFn) =>
     z.object({
         name: z.string().check(
             z.maxLength(50, {
@@ -42,14 +44,16 @@ export const EditCurrencyForm = ({
     const t = useIntl();
     const { baseCurrency } = useCurrency();
     const formSchema = useMemo(() => createFormSchema(t), [t]);
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema) as any,
+    type CurrencyFormInput = z.input<typeof formSchema>;
+    type CurrencyFormOutput = z.output<typeof formSchema>;
+    const form = useForm<CurrencyFormInput, unknown, CurrencyFormOutput>({
+        resolver: zodResolver(formSchema),
         defaultValues: edit,
     });
     const isCreate = edit === undefined;
 
     const toSubmit = () => {
-        const onSubmit = (data: z.infer<typeof formSchema>) => {
+        const onSubmit = (data: CurrencyFormOutput) => {
             onConfirm?.({ ...data, id: edit?.id });
         };
         form.handleSubmit(onSubmit)();
@@ -122,7 +126,7 @@ export const EditCurrencyForm = ({
                                             t("default-currency-name")
                                         }
                                         // 传入 Hook Form 的当前值
-                                        value={field.value}
+                                        value={Number(field.value ?? 0)}
                                         allowClear={false}
                                         // 当 RateInput 内部计算出新汇率时，直接更新 Hook Form
                                         onChange={(newRate) =>

@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo } from "react";
-import { useForm } from "react-hook-form";
+import { type Resolver, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod/mini";
 import { Button } from "@/components/ui/button";
@@ -68,7 +68,7 @@ export function GiftFormDialog({
     }, [editRecord]);
 
     const form = useForm<GiftFormValues>({
-        resolver: zodResolver(giftFormSchema) as any,
+        resolver: zodResolver(giftFormSchema) as Resolver<GiftFormValues>,
         defaultValues,
         values: defaultValues,
     });
@@ -200,7 +200,7 @@ export function GiftFormDialog({
                                     />
                                     <Select
                                         value={watch("relation")}
-                                        onValueChange={(value: any) =>
+                                        onValueChange={(value: GiftFormValues["relation"]) =>
                                             setValue("relation", value)
                                         }
                                     >
@@ -258,7 +258,9 @@ export function GiftFormDialog({
                                 </label>
                                 <Select
                                     value={watch("event")}
-                                    onValueChange={(value: any) => setValue("event", value)}
+                                    onValueChange={(value: GiftFormValues["event"]) =>
+                                        setValue("event", value)
+                                    }
                                 >
                                     <SelectTrigger className="wedding-input">
                                         <SelectValue />

@@ -1,5 +1,3 @@
-/** biome-ignore-all lint/suspicious/noArrayIndexKey: preset questions use index as key */
-/** biome-ignore-all lint/security/noDangerouslySetInnerHtml: markdown rendering requires innerHTML */
 import { useEffect, useRef, useState } from "react";
 import snarkdown from "snarkdown";
 import { Button } from "@/components/ui/button";
@@ -63,9 +61,13 @@ export function ChatCard({
         }
     }, [messages.length]);
 
-    const handleSend = async () => {
-        const input = inputRef.current?.value ?? "";
-        onSendMessage(input.trim());
+    const handleSend = async (message?: string) => {
+        const nextMessage = message ?? (inputRef.current?.value ?? "");
+        const trimmed = nextMessage.trim();
+        if (!trimmed) {
+            return;
+        }
+        await onSendMessage(trimmed);
         setInput("");
     };
 
@@ -80,12 +82,7 @@ export function ChatCard({
         if (isLoading) {
             return;
         }
-        // 先设置输入值，然后立即发送
-        setInput(question);
-        // 等待状态更新后发送消息
-        setTimeout(() => {
-            handleSend();
-        }, 0);
+        await handleSend(question);
     };
 
     return (
@@ -111,9 +108,9 @@ export function ChatCard({
                     </div>
                 ) : (
                     <>
-                        {messages.map((message, index) => (
+                        {messages.map((message) => (
                             <div
-                                key={`${index}-${message.role}`}
+                                key={`${message.role}-${message.content}`}
                                 className={cn(
                                     "flex",
                                     message.role === "user"
@@ -130,6 +127,7 @@ export function ChatCard({
                                     )}
                                 >
                                     {message.role === "assistant" ? (
+                                        /* biome-ignore lint/security/noDangerouslySetInnerHtml: markdown rendering requires trusted HTML conversion */
                                         <div
                                             className="ai-markdown-content"
                                             dangerouslySetInnerHTML={{
@@ -166,7 +164,7 @@ export function ChatCard({
                         <div className="w-full flex gap-2 bg-background/95 backdrop-blur-sm border-input overflow-x-auto">
                             {PRESET_QUESTIONS.map((question, index) => (
                                 <Button
-                                    key={index}
+                                    key={question.label}
                                     type="button"
                                     disabled={isLoading}
                                     variant={"outline"}
@@ -203,7 +201,9 @@ export function ChatCard({
                         className="flex-1 h-10 rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 resize-none"
                     />
                     <Button
-                        onClick={handleSend}
+                        onClick={() => {
+                            void handleSend();
+                        }}
                         disabled={!input.trim() || isLoading}
                         size="icon"
                         className="h-10 w-[60px] shrink-0"

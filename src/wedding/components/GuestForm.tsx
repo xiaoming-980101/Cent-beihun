@@ -8,17 +8,18 @@ import { Button } from "@/components/ui/button";
 import { useWeddingStore } from "@/store/wedding";
 import { cn } from "@/utils";
 import { INVITE_STATUS, RELATION_GROUPS } from "@/wedding/constants";
+import type { Guest } from "@/wedding/type";
 
 interface GuestFormProps {
     onClose?: () => void;
     editGuest?: {
-        id: string;
-        name: string;
-        phone?: string;
-        relation: string;
-        group?: "groom" | "bride";
-        inviteStatus: string;
-        note?: string;
+        id: Guest["id"];
+        name: Guest["name"];
+        phone?: Guest["phone"];
+        relation: Guest["relation"];
+        group?: Guest["group"];
+        inviteStatus: Guest["inviteStatus"];
+        note?: Guest["note"];
     };
 }
 
@@ -32,12 +33,14 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
 
     const [name, setName] = useState(editGuest?.name || "");
     const [phone, setPhone] = useState(editGuest?.phone || "");
-    const [relation, setRelation] = useState(editGuest?.relation || "friend");
+    const [relation, setRelation] = useState<Guest["relation"]>(
+        editGuest?.relation ?? "friend",
+    );
     const [group, setGroup] = useState<"groom" | "bride" | undefined>(
         editGuest?.group,
     );
-    const [inviteStatus, setInviteStatus] = useState(
-        editGuest?.inviteStatus || "pending",
+    const [inviteStatus, setInviteStatus] = useState<Guest["inviteStatus"]>(
+        editGuest?.inviteStatus ?? "pending",
     );
     const [note, setNote] = useState(editGuest?.note || "");
 
@@ -50,9 +53,9 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
         const guestData = {
             name: name.trim(),
             phone: phone.trim() || undefined,
-            relation: relation as any,
+            relation,
             group,
-            inviteStatus: inviteStatus as any,
+            inviteStatus,
             note: note.trim() || undefined,
         };
 
@@ -185,7 +188,9 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
                         id={inviteStatusId}
                         className={baseFieldClassName}
                         value={inviteStatus}
-                        onChange={(e) => setInviteStatus(e.target.value)}
+                        onChange={(e) =>
+                            setInviteStatus(e.target.value as Guest["inviteStatus"])
+                        }
                     >
                         {INVITE_STATUS.map((item) => (
                             <option key={item.id} value={item.id}>

@@ -1,6 +1,3 @@
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
-
 import dayjs from "dayjs";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { useMemo } from "react";
@@ -64,12 +61,20 @@ export default function BudgetCard({
             <div
                 data-budget-card
                 data-budget-finished
+                role="button"
+                tabIndex={0}
                 className={cn(
                     "rounded-xl border border-border bg-card flex flex-col w-full px-4 py-2 cursor-pointer shadow-sm",
                     className,
                 )}
                 onClick={() => {
                     showBudgetDetail(budget);
+                }}
+                onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        showBudgetDetail(budget);
+                    }
                 }}
             >
                 <div className="font-semibold text-foreground">
@@ -110,12 +115,20 @@ export default function BudgetCard({
     return (
         <div
             data-budget-card
+            role="button"
+            tabIndex={0}
             className={cn(
                 "rounded-xl border border-border bg-card flex flex-col w-full px-4 py-2 cursor-pointer shadow-sm",
                 className,
             )}
             onClick={() => {
                 showBudgetDetail(budget);
+            }}
+            onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    showBudgetDetail(budget);
+                }
             }}
         >
             <Collapsible.Root className="group">

@@ -2,12 +2,14 @@
 
 import { CacheableResponsePlugin } from "workbox-cacheable-response";
 import { clientsClaim } from "workbox-core";
+import type { RouteHandlerCallbackOptions } from "workbox-core/types";
 import { createHandlerBoundToURL, precacheAndRoute } from "workbox-precaching";
 import { NavigationRoute, registerRoute } from "workbox-routing";
 import { CacheFirst } from "workbox-strategies";
+import type { PrecacheEntry } from "workbox-precaching";
 
 declare const self: ServiceWorkerGlobalScope & {
-    __WB_MANIFEST: Array<any>;
+    __WB_MANIFEST: Array<PrecacheEntry | string>;
 };
 
 clientsClaim();
@@ -17,7 +19,7 @@ self.skipWaiting();
 precacheAndRoute(self.__WB_MANIFEST);
 
 // 🧩 Safari 导航修复核心逻辑
-const navigationHandler = async (params: any) => {
+const navigationHandler = async (params: RouteHandlerCallbackOptions) => {
     const handler = createHandlerBoundToURL("/index.html");
     const response = await handler(params);
 

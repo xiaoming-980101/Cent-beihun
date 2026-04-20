@@ -1,24 +1,32 @@
 import { useState, useEffect } from "react";
+import type { BillCategory, BillType } from "@/ledger/type";
 import { FormDialog } from "../ui/dialog/form-dialog";
 import CategoryEditForm from "./form";
 
+type CategoryEditInput =
+    | BillCategory
+    | { id: undefined; parent?: string; type: BillType };
+type CategoryEditResult = string | undefined;
+type ShowCategoryEditDetail = { edit?: CategoryEditInput };
+type ResolveCategoryEditDetail = { resolve: (value?: CategoryEditResult) => void };
+
 export function CategoryEditFormProvider() {
     const [open, setOpen] = useState(false);
-    const [edit, setEdit] = useState<any>(undefined);
+    const [edit, setEdit] = useState<CategoryEditInput | undefined>(undefined);
     const [resolveRef, setResolveRef] = useState<{
-        resolve: (value?: any) => void;
+        resolve: (value?: CategoryEditResult) => void;
     } | null>(null);
 
     useEffect(() => {
-        const handleShow = ((e: CustomEvent<{ edit?: any }>) => {
-            setEdit(e.detail.edit);
+        const handleShow = ((e: Event) => {
+            const event = e as CustomEvent<ShowCategoryEditDetail>;
+            setEdit(event.detail.edit);
             setOpen(true);
         }) as EventListener;
 
-        const handleStoreResolve = ((
-            e: CustomEvent<{ resolve: (value?: any) => void }>,
-        ) => {
-            setResolveRef({ resolve: e.detail.resolve });
+        const handleStoreResolve = ((e: Event) => {
+            const event = e as CustomEvent<ResolveCategoryEditDetail>;
+            setResolveRef({ resolve: event.detail.resolve });
         }) as EventListener;
 
         window.addEventListener("show-category-edit", handleShow);
@@ -30,7 +38,7 @@ export function CategoryEditFormProvider() {
         };
     }, []);
 
-    const handleConfirm = (value?: any) => {
+    const handleConfirm = (value?: CategoryEditResult) => {
         resolveRef?.resolve(value);
         setOpen(false);
         setEdit(undefined);
@@ -64,7 +72,9 @@ export function CategoryEditFormProvider() {
     );
 }
 
-export function showCategoryEdit(edit?: any): Promise<any | undefined> {
+export function showCategoryEdit(
+    edit?: CategoryEditInput,
+): Promise<CategoryEditResult | undefined> {
     return new Promise((resolve) => {
         window.dispatchEvent(
             new CustomEvent("show-category-edit", { detail: { edit } }),

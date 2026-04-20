@@ -2,13 +2,15 @@ import { type ReactNode, useEffect, useState } from "react";
 import Form from "./form";
 import type { SortableItem } from "./list";
 
-let sortableListResolveCallback: ((list: any[] | null) => void) | null = null;
-let sortableListEditData: any[] | undefined = undefined;
+let sortableListResolveCallback: ((list: SortableItem[]) => void) | null = null;
+let sortableListEditData: SortableItem[] | undefined = undefined;
 
 export function showSortableList<T extends SortableItem>(value?: T[]): Promise<T[]> {
     return new Promise((resolve) => {
-        sortableListResolveCallback = resolve as any;
-        sortableListEditData = value;
+        sortableListResolveCallback = (list) => {
+            resolve(list as T[]);
+        };
+        sortableListEditData = value as SortableItem[] | undefined;
         window.dispatchEvent(new CustomEvent("open-sortable-list"));
     });
 }
@@ -26,7 +28,7 @@ export function SortableListProvider() {
         };
     }, []);
 
-    const handleConfirm = (list: any[]) => {
+    const handleConfirm = (list: SortableItem[]) => {
         if (sortableListResolveCallback) {
             sortableListResolveCallback(list);
             sortableListResolveCallback = null;
@@ -37,7 +39,7 @@ export function SortableListProvider() {
     const handleOpenChange = (newOpen: boolean) => {
         setOpen(newOpen);
         if (!newOpen && sortableListResolveCallback) {
-            sortableListResolveCallback(null);
+            sortableListResolveCallback(sortableListEditData ?? []);
             sortableListResolveCallback = null;
         }
         if (!newOpen) {

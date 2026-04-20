@@ -9,6 +9,11 @@ export type Handler = (
     next: typeof originalFetch,
 ) => Promise<Response>;
 
+type FetchLike = (
+    url: RequestInfo | URL,
+    options?: RequestInit,
+) => Promise<Response>;
+
 // 存储所有已注册的代理（按顺序执行）
 const proxyHandlers: Handler[] = [];
 
@@ -40,10 +45,13 @@ function composeFetchChain(
     handlers: Handler[],
     baseFetch: typeof originalFetch,
 ) {
-    return handlers.reduceRight(
-        (next, handler) => (url, options) => handler(url, options, next as any),
-        baseFetch,
-    );
+    let chained: FetchLike = (url, options = {}) => baseFetch(url, options);
+    for (let i = handlers.length - 1; i >= 0; i -= 1) {
+        const handler = handlers[i];
+        const next = chained;
+        chained = (url, options = {}) => handler(url, options, next);
+    }
+    return chained;
 }
 
 // 替换全局 fetch
@@ -53,7 +61,7 @@ self.fetch = async (url: RequestInfo | URL, options: RequestInit = {}) => {
     }
 
     const composed = composeFetchChain(proxyHandlers, originalFetch);
-    return (composed as any)(url, options);
+    return composed(url, options);
 };
 
 // 注册中间件

@@ -1,6 +1,3 @@
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: ledger rows use div-based virtualized interactions */
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: ledger rows use div-based virtualized interactions */
-
 import { useVirtualizer } from "@tanstack/react-virtual";
 import dayjs, { type Dayjs } from "dayjs";
 import {
@@ -28,10 +25,18 @@ function Divider({
 }) {
     return (
         <div
+            role="button"
+            tabIndex={0}
             className={
                 "pl-12 pr-4 pt-4 pb-2 text-sm ledger-divider cursor-pointer"
             }
             onClick={onClick}
+            onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onClick?.();
+                }
+            }}
         >
             {denseDate(day)}
         </div>
@@ -53,7 +58,6 @@ type LedgerProps = {
     presence?: boolean;
     onSelectChange?: (id: string) => void;
     afterEdit?: (bill: Bill) => void;
-    onItemShow?: (index: number) => void;
     onVisibleDateChange?: (date: Dayjs) => void;
     onDateClick?: (date: Dayjs) => void;
     showAssets?: boolean;
@@ -70,7 +74,6 @@ const Ledger = forwardRef<LedgerRef, LedgerProps>(
             presence,
             onSelectChange,
             afterEdit,
-            onItemShow,
             onVisibleDateChange,
             onDateClick,
             showAssets,
@@ -156,8 +159,16 @@ const Ledger = forwardRef<LedgerRef, LedgerProps>(
                 {enableDivideAsOrdered && stickyDate && (
                     <div
                         key={stickyDate.format("YYYY-MM-DD")}
+                        role="button"
+                        tabIndex={0}
                         className="sticky top-0 z-[1] pl-12 pr-4 py-1 text-sm ledger-divider bg-background/80 backdrop-blur-sm cursor-pointer"
                         onClick={() => onDateClick?.(stickyDate)}
+                        onKeyDown={(event) => {
+                            if (event.key === "Enter" || event.key === " ") {
+                                event.preventDefault();
+                                onDateClick?.(stickyDate);
+                            }
+                        }}
                     >
                         {denseDate(stickyDate)}
                     </div>
@@ -195,7 +206,6 @@ const Ledger = forwardRef<LedgerRef, LedgerProps>(
                                       return lastDate;
                                   }
                               })();
-                        onItemShow?.(virtualRow.index);
                         return (
                             <div
                                 key={virtualRow.key}
@@ -211,11 +221,26 @@ const Ledger = forwardRef<LedgerRef, LedgerProps>(
                                 }}
                             >
                                 <div
+                                    role={enableSelect ? "button" : undefined}
+                                    tabIndex={enableSelect ? 0 : undefined}
                                     className={`w-full flex items-center overflow-hidden ledger-item item-${virtualRow.index}`}
                                     onClick={
                                         enableSelect
                                             ? () => {
                                                   onSelectChange?.(bill.id);
+                                              }
+                                            : undefined
+                                    }
+                                    onKeyDown={
+                                        enableSelect
+                                            ? (event) => {
+                                                  if (
+                                                      event.key === "Enter" ||
+                                                      event.key === " "
+                                                  ) {
+                                                      event.preventDefault();
+                                                      onSelectChange?.(bill.id);
+                                                  }
                                               }
                                             : undefined
                                     }

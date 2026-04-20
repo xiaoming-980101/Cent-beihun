@@ -18,7 +18,9 @@ import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "../ui/select";
 import type { BillTag } from "./type";
 
-const createFormSchema = (t: any) =>
+type Translator = (key: string, params?: Record<string, unknown>) => string;
+
+const createFormSchema = (t: Translator) =>
     z.object({
         name: z.string().check(
             z.maxLength(50, {
@@ -43,7 +45,7 @@ export const EditTagForm = ({
     const { quickCurrencies } = useCurrency();
     const formSchema = useMemo(() => createFormSchema(t), [t]);
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema) as any,
+        resolver: zodResolver(formSchema),
         defaultValues: edit,
     });
     const isCreate = edit === undefined;

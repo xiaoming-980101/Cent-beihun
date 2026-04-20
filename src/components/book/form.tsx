@@ -155,9 +155,9 @@ export function BookForm() {
 export function BookConfirmForm({
     edit,
 }: {
-    edit?: any;
+    edit?: unknown;
     onCancel?: () => void;
-    onConfirm?: (v: any) => void;
+    onConfirm?: (v: unknown) => void;
 }) {
     return (
         <div>

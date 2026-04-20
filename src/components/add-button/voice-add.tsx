@@ -20,9 +20,9 @@ export const VoiceFormProvider = ({ formState }: { formState: VoiceFormState }) 
             setOpen(true);
         };
 
-        window.addEventListener("show-voice-form" as any, handleShow);
+        window.addEventListener("show-voice-form", handleShow);
         return () => {
-            window.removeEventListener("show-voice-form" as any, handleShow);
+            window.removeEventListener("show-voice-form", handleShow);
         };
     }, []);
 

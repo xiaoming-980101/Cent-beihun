@@ -33,7 +33,9 @@ type LoadingState = Partial<S3Edit> & {
     check?: (v: S3Edit) => Promise<unknown>;
 };
 
-export const createFormSchema = (t: any) =>
+type Translator = (key: string) => string;
+
+export const createFormSchema = (t: Translator) =>
     z.object({
         endpoint: z
             .string()
@@ -72,7 +74,7 @@ const LoadingForm = ({
     const t = useIntl();
     const formSchema = useMemo(() => createFormSchema(t), [t]);
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema) as any,
+        resolver: zodResolver(formSchema),
         defaultValues: {
             baseDir: "cent",
             forcePathStyle: false,
@@ -85,8 +87,8 @@ const LoadingForm = ({
         data.endpoint = data.endpoint.replace(/\/$/, "");
         setChecking(true);
         try {
-            await edit?.check?.(data as S3Edit);
-            onConfirm?.(data as S3Edit);
+            await edit?.check?.(data);
+            onConfirm?.(data);
         } finally {
             setChecking(false);
         }
@@ -314,14 +316,15 @@ export const S3AuthProvider = () => {
     const [editData, setEditData] = useState<LoadingState | undefined>();
 
     useEffect(() => {
-        const handleShow = (event: CustomEvent<LoadingState>) => {
-            setEditData(event.detail);
+        const handleShow = (event: Event) => {
+            const customEvent = event as CustomEvent<LoadingState>;
+            setEditData(customEvent.detail);
             setOpen(true);
         };
 
-        window.addEventListener("show-s3-auth" as any, handleShow);
+        window.addEventListener("show-s3-auth", handleShow);
         return () => {
-            window.removeEventListener("show-s3-auth" as any, handleShow);
+            window.removeEventListener("show-s3-auth", handleShow);
         };
     }, []);
 

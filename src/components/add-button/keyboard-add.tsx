@@ -15,9 +15,9 @@ export const KeyboardFormProvider = () => {
             setOpen(true);
         };
 
-        window.addEventListener("show-keyboard-form" as any, handleShow);
+        window.addEventListener("show-keyboard-form", handleShow);
         return () => {
-            window.removeEventListener("show-keyboard-form" as any, handleShow);
+            window.removeEventListener("show-keyboard-form", handleShow);
         };
     }, []);
 

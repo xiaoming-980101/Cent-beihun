@@ -12,7 +12,7 @@ interface ParsedResponse {
     thought?: string;
     toolCall?: {
         function: string;
-        arguments: Record<string, any>;
+        arguments: Record<string, unknown>;
     } | null;
     content: string; // 除去标签后的纯文本回答
     raw: string; // 原始字符串
@@ -73,7 +73,7 @@ function parseToolContent(content: string) {
         .split(/\r?\n/)
         .map((l) => l.trim())
         .filter(Boolean);
-    const args: Record<string, any> = {};
+    const args: Record<string, unknown> = {};
     let functionName = "";
 
     for (const line of lines) {
@@ -111,15 +111,18 @@ function parseToolContent(content: string) {
  * 执行函数调用 (保持原有逻辑，稍作导出封装)
  */
 async function executeFunctionCall(
-    call: { function: string; arguments: Record<string, any> },
+    call: { function: string; arguments: Record<string, unknown> },
     ledgerData: ExportedJSON,
-): Promise<any> {
+): Promise<unknown> {
     const { function: name, arguments: args } = call;
     if (DEBUG) console.log("[Chat Debug] 执行工具:", name, args);
 
     switch (name) {
         case "query_bills": {
-            const result = queryBills(args as any, ledgerData);
+            const result = queryBills(
+                args as Parameters<typeof queryBills>[0],
+                ledgerData,
+            );
             return {
                 bills: result.bills.map((b) => ({
                     ...b,
@@ -134,7 +137,10 @@ async function executeFunctionCall(
         case "get_account_meta":
             return getAccountMeta(ledgerData.meta);
         case "analyze_bills":
-            return analyzeBills(args as any, ledgerData);
+            return analyzeBills(
+                args as Parameters<typeof analyzeBills>[0],
+                ledgerData,
+            );
         default:
             throw new Error(`未知工具: ${name}`);
     }
@@ -145,14 +151,14 @@ async function executeFunctionCall(
  */
 export const createChatBox = async (
     envPrompt: string,
-    prevMessages?: any[],
+    prevMessages?: Message[],
 ) => {
     const store = useLedgerStore.getState();
     const bills = await store.refreshBillList();
     const ledgerData: ExportedJSON = { items: bills, meta: store.infos!.meta };
 
     const conversationHistory = prevMessages ?? [];
-    const functionResults: Array<{ function: string; result: any }> = [];
+    const functionResults: Array<{ function: string; result: unknown }> = [];
 
     /**
      * next 函数现在返回一个结构化对象
@@ -167,20 +173,20 @@ export const createChatBox = async (
             iterations++;
 
             // 构建上下文 (复用你原有的 buildMessages 逻辑)
-            const messages = [
+            const messages: RequestMessage[] = [
                 { role: "system", content: `${systemPrompt}\n\n${envPrompt}` },
                 ...conversationHistory,
                 ...(functionResults.length > 0
                     ? [
                           {
-                              role: "user",
+                              role: "user" as const,
                               content: `## ${t("ai-function-toll-result")}\n${JSON.stringify(functionResults.slice(-1))}`,
                           },
                       ]
                     : []),
             ];
 
-            const aiRawResponse = await requestAI(messages as any);
+            const aiRawResponse = await requestAI(messages);
             const parsed = parseStandardResponse(aiRawResponse);
 
             if (DEBUG) console.log(`[Chat Iteration ${iterations}]`, parsed);
@@ -236,3 +242,8 @@ export interface Message {
     role: "user" | "assistant";
     content: string;
 }
+
+type RequestMessage = {
+    role: "system" | "user" | "assistant";
+    content: string;
+};

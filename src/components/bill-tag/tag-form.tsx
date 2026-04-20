@@ -1,24 +1,28 @@
 import { useState, useEffect } from "react";
 import { FormDialog } from "../ui/dialog/form-dialog";
-import { EditTagForm } from "./tag";
+import { EditTagForm, type EditTag } from "./tag";
+
+type EditTagResult = EditTag | "delete";
+type ShowEditTagDetail = { edit?: EditTag };
+type ResolveEditTagDetail = { resolve: (value?: EditTagResult) => void };
 
 export function EditTagProvider() {
     const [open, setOpen] = useState(false);
-    const [edit, setEdit] = useState<any>(undefined);
+    const [edit, setEdit] = useState<EditTag | undefined>(undefined);
     const [resolveRef, setResolveRef] = useState<{
-        resolve: (value?: any) => void;
+        resolve: (value?: EditTagResult) => void;
     } | null>(null);
 
     useEffect(() => {
-        const handleShow = ((e: CustomEvent<{ edit?: any }>) => {
-            setEdit(e.detail.edit);
+        const handleShow = ((e: Event) => {
+            const event = e as CustomEvent<ShowEditTagDetail>;
+            setEdit(event.detail.edit);
             setOpen(true);
         }) as EventListener;
 
-        const handleStoreResolve = ((
-            e: CustomEvent<{ resolve: (value?: any) => void }>,
-        ) => {
-            setResolveRef({ resolve: e.detail.resolve });
+        const handleStoreResolve = ((e: Event) => {
+            const event = e as CustomEvent<ResolveEditTagDetail>;
+            setResolveRef({ resolve: event.detail.resolve });
         }) as EventListener;
 
         window.addEventListener("show-edit-tag", handleShow);
@@ -30,7 +34,7 @@ export function EditTagProvider() {
         };
     }, []);
 
-    const handleConfirm = (value?: any) => {
+    const handleConfirm = (value?: EditTagResult) => {
         resolveRef?.resolve(value);
         setOpen(false);
         setEdit(undefined);
@@ -57,7 +61,7 @@ export function EditTagProvider() {
     );
 }
 
-export function showEditTag(edit?: any): Promise<any | undefined> {
+export function showEditTag(edit?: EditTag): Promise<EditTagResult | undefined> {
     return new Promise((resolve) => {
         window.dispatchEvent(
             new CustomEvent("show-edit-tag", { detail: { edit } }),

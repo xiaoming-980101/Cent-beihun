@@ -13,17 +13,22 @@ export type UseLongPressOptions = {
 };
 
 // 辅助函数：从事件中提取坐标
-const getCoords = (event: any) => {
+type CoordEvent = PointerEvent | TouchEvent;
+
+const getCoords = (event: CoordEvent) => {
     if ("touches" in event && event.touches.length > 0) {
         return { x: event.touches[0].clientX, y: event.touches[0].clientY };
-    } else if ("changedTouches" in event && event.changedTouches.length > 0) {
+    }
+    if ("changedTouches" in event && event.changedTouches.length > 0) {
         return {
             x: event.changedTouches[0].clientX,
             y: event.changedTouches[0].clientY,
         };
-    } else {
+    }
+    if ("clientX" in event) {
         return { x: event.clientX, y: event.clientY };
     }
+    return { x: 0, y: 0 };
 };
 
 export function useLongPress(options: UseLongPressOptions) {

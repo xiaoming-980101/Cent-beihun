@@ -6,13 +6,13 @@ import hashBack from "./hash-back";
 const CONFIRM_DIALOG_BASE_Z = 4;
 
 // 单个实例的状态定义
-type InstanceState<Value = any, Returned = any> = {
+type InstanceState<Value = unknown, Returned = unknown> = {
     visible: boolean;
     zIndex?: number;
     edit?: Value;
     controller?: {
         resolve: (val: Returned) => void;
-        reject: (reason?: any) => void;
+        reject: (reason?: unknown) => void;
         promise: Promise<Returned>;
         cancel: () => void;
     };
@@ -38,12 +38,13 @@ export const useGlobalConfirmStore = create<
 >()((set, get) => ({
     instances: {},
 
-    open: (id, value) => {
+    open: <V, R>(id: string, value?: V) => {
         const controller = get().instances[id]?.controller;
-        if (controller) return [controller.promise, controller.cancel] as const;
+        if (controller)
+            return [controller.promise as Promise<R | undefined>, controller.cancel] as const;
 
         const openId = `id-${Date.now()}`;
-        const { promise, reject, resolve } = Promise.withResolvers<any>();
+        const { promise, reject, resolve } = Promise.withResolvers<R | undefined>();
 
         let cancelled = false;
         const innerCancel = () => {
@@ -78,15 +79,15 @@ export const useGlobalConfirmStore = create<
                     edit: value,
                     openId,
                     controller: {
-                        resolve,
-                        reject,
-                        promise,
+                        resolve: resolve as (val: unknown) => void,
+                        reject: reject as (reason?: unknown) => void,
+                        promise: promise as Promise<unknown>,
                         cancel,
                     },
                 };
             }),
         );
-        return [promise, cancel] as const;
+        return [promise as Promise<R | undefined>, cancel] as const;
     },
 
     update: (id, partial) => {

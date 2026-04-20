@@ -13,7 +13,12 @@ vi.mock("react-router", async () => {
 });
 
 vi.mock("@/store/book", () => ({
-    useBookStore: (selector: any) =>
+    useBookStore: (
+        selector: (state: {
+            currentBookId: string;
+            books: { id: string; name: string }[];
+        }) => unknown,
+    ) =>
         selector({ currentBookId: "1", books: [{ id: "1", name: "测试账本" }] }),
 }));
 

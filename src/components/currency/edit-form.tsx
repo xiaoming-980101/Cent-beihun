@@ -1,22 +1,27 @@
 import { useState, useEffect } from "react";
+import type { CustomCurrency } from "@/ledger/type";
 import { FormDialog } from "../ui/dialog/form-dialog";
 import { EditCurrencyForm } from "./edit";
 
+type CurrencyEdit = Omit<CustomCurrency, "id"> & { id?: string };
+type CurrencyEditResult = CurrencyEdit | "delete" | undefined;
+type EditResolve = (value?: CurrencyEditResult) => void;
+
 export function EditCurrencyProvider() {
     const [open, setOpen] = useState(false);
-    const [edit, setEdit] = useState<any>(undefined);
+    const [edit, setEdit] = useState<CurrencyEdit | undefined>(undefined);
     const [resolveRef, setResolveRef] = useState<{
-        resolve: (value?: any) => void;
+        resolve: EditResolve;
     } | null>(null);
 
     useEffect(() => {
-        const handleShow = ((e: CustomEvent<{ edit?: any }>) => {
+        const handleShow = ((e: CustomEvent<{ edit?: CurrencyEdit }>) => {
             setEdit(e.detail.edit);
             setOpen(true);
         }) as EventListener;
 
         const handleStoreResolve = ((
-            e: CustomEvent<{ resolve: (value?: any) => void }>,
+            e: CustomEvent<{ resolve: EditResolve }>,
         ) => {
             setResolveRef({ resolve: e.detail.resolve });
         }) as EventListener;
@@ -30,7 +35,7 @@ export function EditCurrencyProvider() {
         };
     }, []);
 
-    const handleConfirm = (value?: any) => {
+    const handleConfirm = (value?: CurrencyEditResult) => {
         resolveRef?.resolve(value);
         setOpen(false);
         setEdit(undefined);
@@ -57,7 +62,7 @@ export function EditCurrencyProvider() {
     );
 }
 
-export function showEditCurrency(edit?: any): Promise<any | undefined> {
+export function showEditCurrency(edit?: CurrencyEdit): Promise<CurrencyEditResult> {
     return new Promise((resolve) => {
         window.dispatchEvent(
             new CustomEvent("show-edit-currency", { detail: { edit } }),

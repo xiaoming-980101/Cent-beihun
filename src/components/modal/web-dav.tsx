@@ -28,7 +28,9 @@ type LoadingState = Partial<WebDAVEdit> & {
     check?: (v: WebDAVEdit) => Promise<unknown>;
 };
 
-export const createFormSchema = (t: any) =>
+type Translator = (key: string) => string;
+
+export const createFormSchema = (t: Translator) =>
     z.object({
         remote: z.string(),
         username: z.string(),
@@ -53,7 +55,7 @@ const LoadingForm = ({
     const t = useIntl();
     const formSchema = useMemo(() => createFormSchema(t), [t]);
     const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema) as any,
+        resolver: zodResolver(formSchema),
         defaultValues: {
             proxy: "", //"https://oncent-backend.linkai.work/proxy?url=",
         },
@@ -250,14 +252,15 @@ export const WebDAVAuthProvider = () => {
     const [editData, setEditData] = useState<LoadingState | undefined>();
 
     useEffect(() => {
-        const handleShow = (event: CustomEvent<LoadingState>) => {
-            setEditData(event.detail);
+        const handleShow = (event: Event) => {
+            const customEvent = event as CustomEvent<LoadingState>;
+            setEditData(customEvent.detail);
             setOpen(true);
         };
 
-        window.addEventListener("show-webdav-auth" as any, handleShow);
+        window.addEventListener("show-webdav-auth", handleShow);
         return () => {
-            window.removeEventListener("show-webdav-auth" as any, handleShow);
+            window.removeEventListener("show-webdav-auth", handleShow);
         };
     }, []);
 

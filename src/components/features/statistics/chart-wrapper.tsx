@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import type { EChartsOption } from "echarts";
-import Chart from "@/components/chart";
+import Chart, { type ECOption } from "@/components/chart";
 import { EmptyState } from "@/components/shared";
 import { cn } from "@/utils";
 
@@ -76,7 +76,9 @@ export function ChartWrapper({
                         description="调整筛选条件后可查看趋势变化。"
                     />
                 ) : null}
-                {!isLoading && !isEmpty ? <Chart className="h-full w-full" option={themedOption as any} /> : null}
+                {!isLoading && !isEmpty ? (
+                    <Chart className="h-full w-full" option={themedOption as ECOption} />
+                ) : null}
             </div>
         </section>
     );

@@ -191,7 +191,7 @@ export const DefaultCurrencies = [
 ];
 
 export type Currency = {
-    label: any;
+    label: string;
     id: string;
     labelKey: string;
     symbol: string;

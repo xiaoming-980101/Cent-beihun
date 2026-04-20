@@ -1,6 +1,3 @@
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: <explanation> */
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: <explanation> */
-
 import { useEffect, useState } from "react";
 import { useIntl } from "@/locale";
 import { abbreviatedSha } from "~build/git";
@@ -11,7 +8,8 @@ export default function Version() {
 
     const [gitVersionVisible, setGitVersionVisible] = useState(false);
     return (
-        <div
+        <button
+            type="button"
             className="flex flex-col justify-center items-center"
             onClick={() => {
                 setGitVersionVisible((v) => !v);
@@ -25,7 +23,7 @@ export default function Version() {
             ) : (
                 <GitVersionChecker />
             )}
-        </div>
+        </button>
     );
 }
 

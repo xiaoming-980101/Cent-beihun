@@ -2,6 +2,7 @@ import dayjs, { type OpUnitType } from "dayjs";
 import type { ECOption } from "@/components/chart";
 import { amountToNumber } from "@/ledger/bill";
 import type { Bill, BillType } from "@/ledger/type";
+import { useIntl } from "@/locale";
 import { deepMerge } from "@/utils/object";
 import {
     categoryColors,
@@ -117,7 +118,7 @@ export interface ProcessedChartData {
  */
 export function processBillDataForCharts(
     options: ProcessBillDataOptions,
-    t: any,
+    t: ReturnType<typeof useIntl>,
 ): ProcessedChartData {
     const { bills, getCategory, getUserInfo, gap: _gap } = options;
     const TOTAL_KEY = "__TOTAL__";
@@ -423,7 +424,7 @@ export function processBillDataForCharts(
 }
 
 export const overallTrendOption = (
-    dataset: { source: any[] },
+    dataset: { source: EchartsDatasetSource },
     options?: ECOption,
 ) =>
     deepMerge(
@@ -534,7 +535,7 @@ export const userTrendOption = (
     return deepMerge(baseOption, options);
 };
 
-export const structureOption = (dataset: any[], options?: ECOption) => {
+export const structureOption = (dataset: PieChartDataItem[], options?: ECOption) => {
     // 处理数据，为每一项注入基于 name 的固定颜色
     const coloredData = [...dataset]
         .sort((a, b) => a.value - b.value)

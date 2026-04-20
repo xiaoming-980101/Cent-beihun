@@ -1,4 +1,4 @@
-export type GestureOption<S = any> = {
+export type GestureOption<S = unknown> = {
     stop?: boolean;
     triggerX?:
         | number
@@ -69,7 +69,7 @@ const detectTargetScrollable = (
     return false;
 };
 
-export const registerSlideGesture = <S = any>(
+export const registerSlideGesture = <S = unknown>(
     dom: HTMLElement,
     option: GestureOption<S>,
 ) => {

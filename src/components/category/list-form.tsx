@@ -1,14 +1,16 @@
 import { useEffect, useState } from "react";
+import type { BillType } from "@/ledger/type";
 import { FormDialog } from "../ui/dialog/form-dialog";
 import CategoryList from "./list";
 
 export function CategoryListProvider() {
     const [open, setOpen] = useState(false);
-    const [edit, setEdit] = useState<any>(undefined);
+    const [edit, setEdit] = useState<BillType | undefined>(undefined);
 
     useEffect(() => {
-        const handleShow = ((e: CustomEvent<{ edit?: any }>) => {
-            setEdit(e.detail?.edit);
+        const handleShow = ((e: Event) => {
+            const event = e as CustomEvent<{ edit?: BillType }>;
+            setEdit(event.detail?.edit);
             setOpen(true);
         }) as EventListener;
         window.addEventListener("show-category-list", handleShow);
@@ -44,7 +46,7 @@ export function CategoryListProvider() {
     );
 }
 
-export function showCategoryList(edit?: any): Promise<void> {
+export function showCategoryList(edit?: BillType): Promise<void> {
     return new Promise((resolve) => {
         requestAnimationFrame(() => {
             window.dispatchEvent(

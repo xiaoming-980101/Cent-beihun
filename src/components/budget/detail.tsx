@@ -1,24 +1,28 @@
 import { useState, useEffect } from "react";
 import { FormDialog } from "../ui/dialog/form-dialog";
 import { BudgetDetailForm } from "./detail-form";
+import type { Budget } from "./type";
+
+type ShowBudgetDetail = { edit?: Budget };
+type ResolveBudgetDetail = { resolve: (value?: Budget) => void };
 
 export function BudgetDetailProvider() {
     const [open, setOpen] = useState(false);
-    const [edit, setEdit] = useState<any>(undefined);
+    const [edit, setEdit] = useState<Budget | undefined>(undefined);
     const [resolveRef, setResolveRef] = useState<{
-        resolve: (value?: any) => void;
+        resolve: (value?: Budget) => void;
     } | null>(null);
 
     useEffect(() => {
-        const handleShow = ((e: CustomEvent<{ edit?: any }>) => {
-            setEdit(e.detail.edit);
+        const handleShow = ((e: Event) => {
+            const event = e as CustomEvent<ShowBudgetDetail>;
+            setEdit(event.detail.edit);
             setOpen(true);
         }) as EventListener;
 
-        const handleStoreResolve = ((
-            e: CustomEvent<{ resolve: (value?: any) => void }>,
-        ) => {
-            setResolveRef({ resolve: e.detail.resolve });
+        const handleStoreResolve = ((e: Event) => {
+            const event = e as CustomEvent<ResolveBudgetDetail>;
+            setResolveRef({ resolve: event.detail.resolve });
         }) as EventListener;
 
         window.addEventListener("show-budget-detail", handleShow);
@@ -30,7 +34,7 @@ export function BudgetDetailProvider() {
         };
     }, []);
 
-    const handleConfirm = (value?: any) => {
+    const handleConfirm = (value?: Budget) => {
         resolveRef?.resolve(value);
         setOpen(false);
         setEdit(undefined);
@@ -57,14 +61,13 @@ export function BudgetDetailProvider() {
         >
             <BudgetDetailForm
                 edit={edit}
-                onConfirm={handleConfirm}
                 onCancel={() => handleOpenChange(false)}
             />
         </FormDialog>
     );
 }
 
-export function showBudgetDetail(edit?: any): Promise<any | undefined> {
+export function showBudgetDetail(edit?: Budget): Promise<Budget | undefined> {
     return new Promise((resolve) => {
         window.dispatchEvent(
             new CustomEvent("show-budget-detail", { detail: { edit } }),

@@ -1,5 +1,3 @@
-/** biome-ignore-all lint/correctness/noNestedComponentDefinitions: The calendar injects DayPicker slot components inline so they can share local styling configuration. */
-
 import {
     ChevronDownIcon,
     ChevronLeftIcon,
@@ -139,6 +137,7 @@ function Calendar({
                 hidden: cn("invisible", defaultClassNames.hidden),
                 ...classNames,
             }}
+            /* biome-ignore lint/correctness/noNestedComponentDefinitions: slot overrides need inline closures for DayPicker props wiring */
             components={{
                 Root: ({ className, rootRef, ...props }) => {
                     return (

@@ -1,6 +1,3 @@
-/** biome-ignore-all lint/a11y/noStaticElementInteractions: Table-row layout is used to preserve aligned columns while keeping the whole row clickable. */
-/** biome-ignore-all lint/a11y/useKeyWithClickEvents: Table-row layout is used to preserve aligned columns while keeping the whole row clickable. */
-
 import type { ReactNode } from "react";
 import { cn } from "@/utils";
 import { toFixed } from "@/utils/number";
@@ -27,11 +24,19 @@ export function StaticItem({
 }) {
     return (
         <div
+            role="button"
+            tabIndex={0}
             className={cn(
                 "table-row h-14 w-full cursor-pointer rounded-[14px] transition-all hover:bg-[color:var(--wedding-surface-muted)]",
                 className,
             )}
             onClick={onClick}
+            onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onClick?.();
+                }
+            }}
         >
             <div className="table-cell w-[1px] truncate pl-2 text-left align-middle text-sm text-[color:var(--wedding-text)]">
                 {children}
@@ -57,9 +62,17 @@ export function StaticItem({
                 </Progress>
             </div>
             <div
+                role="button"
+                tabIndex={0}
                 className="table-cell w-[1px] truncate pr-2 text-right align-middle text-[color:var(--wedding-text)]"
                 onClick={() => {
                     onMoneyClick?.();
+                }}
+                onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        onMoneyClick?.();
+                    }
                 }}
             >
                 <div className="flex items-center w-full">

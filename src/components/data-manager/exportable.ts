@@ -113,7 +113,7 @@ const mapImportImages = async (
                             );
                         }
                         const mimeType = getMimeType(assetPath);
-                        const blob = new Blob([assetData as any], {
+                        const blob = new Blob([assetData], {
                             type: mimeType,
                         });
                         return new File(
@@ -228,7 +228,7 @@ export const prepareExportFile = async (bookId: string) => {
         [BACKUP_JSON_FILE]: strToU8(json),
         ...files,
     });
-    const blob = new Blob([zipped as any], { type: "application/zip" });
+    const blob = new Blob([zipped], { type: "application/zip" });
 
     return { blob, ext: "cent.zip" };
 };

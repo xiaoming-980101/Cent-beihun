@@ -1,4 +1,3 @@
-/** biome-ignore-all lint/a11y/noAutofocus: <explanation> */
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useIntl } from "@/locale";
@@ -66,7 +65,6 @@ export default function KeyboardForm({
                 <div className="w-full flex-1 flex flex-col px-4 py-2">
                     <textarea
                         ref={textareaRef}
-                        autoFocus
                         className="w-full flex-1 resize-none p-2 rounded-md border outline-none focus:outline-foreground/50"
                         value={textValue}
                         placeholder={t("keyboard-input-placeholder")}

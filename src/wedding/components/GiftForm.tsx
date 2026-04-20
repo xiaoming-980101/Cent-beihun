@@ -9,20 +9,21 @@ import { DatePicker } from "@/components/ui/date-picker";
 import { useWeddingStore } from "@/store/wedding";
 import { cn } from "@/utils";
 import { GIFT_EVENTS, PAYMENT_METHODS } from "@/wedding/constants";
+import type { GiftRecord } from "@/wedding/type";
 import { formatAmount } from "@/wedding/utils";
 
 interface GiftFormProps {
     onClose?: () => void;
     editRecord?: {
-        id: string;
-        type: string;
-        guestId?: string;
-        guestName?: string;
-        amount: number;
-        date: number;
-        event: string;
-        method?: string;
-        note?: string;
+        id: GiftRecord["id"];
+        type: GiftRecord["type"];
+        guestId?: GiftRecord["guestId"];
+        guestName?: GiftRecord["guestName"];
+        amount: GiftRecord["amount"];
+        date: GiftRecord["date"];
+        event: GiftRecord["event"];
+        method?: GiftRecord["method"];
+        note?: GiftRecord["note"];
     };
 }
 
@@ -32,7 +33,7 @@ export function GiftForm({ onClose, editRecord }: GiftFormProps) {
     const baseFieldClassName = "wedding-input";
 
     const [type, setType] = useState<"received" | "sent">(
-        (editRecord?.type as any) || "received",
+        editRecord?.type ?? "received",
     );
     const [guestId, setGuestId] = useState(editRecord?.guestId || "");
     const [guestName, setGuestName] = useState(editRecord?.guestName || "");
@@ -40,8 +41,12 @@ export function GiftForm({ onClose, editRecord }: GiftFormProps) {
     const [date, setDate] = useState<Date>(
         editRecord?.date ? new Date(editRecord.date) : new Date(),
     );
-    const [event, setEvent] = useState(editRecord?.event || "wedding");
-    const [method, setMethod] = useState(editRecord?.method || "");
+    const [event, setEvent] = useState<GiftRecord["event"]>(
+        editRecord?.event ?? "wedding",
+    );
+    const [method, setMethod] = useState<GiftRecord["method"] | "">(
+        editRecord?.method ?? "",
+    );
     const [note, setNote] = useState(editRecord?.note || "");
 
     const handleSubmit = async () => {
@@ -57,8 +62,8 @@ export function GiftForm({ onClose, editRecord }: GiftFormProps) {
             guestName: guestId ? undefined : guestName.trim() || undefined,
             amount: amountNum,
             date: date.getTime(),
-            event: event as any,
-            method: (method as any) || undefined,
+            event,
+            method: method || undefined,
             note: note.trim() || undefined,
         };
 
@@ -192,7 +197,9 @@ export function GiftForm({ onClose, editRecord }: GiftFormProps) {
                         <select
                             className={baseFieldClassName}
                             value={event}
-                            onChange={(e) => setEvent(e.target.value)}
+                            onChange={(e) =>
+                                setEvent(e.target.value as GiftRecord["event"])
+                            }
                         >
                             {GIFT_EVENTS.map((item) => (
                                 <option key={item.id} value={item.id}>
@@ -208,7 +215,11 @@ export function GiftForm({ onClose, editRecord }: GiftFormProps) {
                         <select
                             className={baseFieldClassName}
                             value={method}
-                            onChange={(e) => setMethod(e.target.value)}
+                            onChange={(e) =>
+                                setMethod(
+                                    e.target.value as GiftRecord["method"] | "",
+                                )
+                            }
                         >
                             <option value="">选择支付方式（可选）</option>
                             {PAYMENT_METHODS.map((item) => (

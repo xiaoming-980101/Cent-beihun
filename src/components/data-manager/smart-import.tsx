@@ -388,7 +388,7 @@ const checkJSON = (v: unknown) => {
     if (!v || typeof v !== "object") {
         throw new Error("result is not an object");
     }
-    if (!Array.isArray((v as any)["items"])) {
+    if (!("items" in v) || !Array.isArray(v.items)) {
         throw new Error("the value of key 'items' in result is not an array");
     }
     if ((v as ExportedJSON).items.length === 0) {

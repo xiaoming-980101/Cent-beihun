@@ -9,7 +9,7 @@ export class Scheduler {
     private runningCallbackPromise: Promise<void> | null = null;
 
     private sessionResolve: (() => void) | null = null;
-    private sessionReject: ((err: any) => void) | null = null;
+    private sessionReject: ((err: unknown) => void) | null = null;
     private sessionPromise: Promise<void> | null = null;
 
     private listeners = new Set<(running: Promise<void>) => void>();

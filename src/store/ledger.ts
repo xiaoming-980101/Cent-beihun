@@ -14,6 +14,10 @@ import { useUserStore } from "./user";
 
 const toastLib = import("sonner");
 
+type ErrorWithStatus = {
+    status?: number;
+};
+
 export type EditBill = Omit<OutputType<Bill>, "id"> & {
     id?: Bill["id"];
     creatorId?: Bill["creatorId"];
@@ -148,7 +152,7 @@ export const useLedgerStore = create<LedgerStore>()((set, get) => {
             await updateBillList(MIN_SIZE);
             StorageAPI.toSync();
         } catch (err) {
-            if ((err as any)?.status === 404) {
+            if ((err as ErrorWithStatus | null | undefined)?.status === 404) {
                 const { toast } = await toastLib;
                 toast.error(
                     t(
@@ -318,7 +322,7 @@ export const useLedgerStore = create<LedgerStore>()((set, get) => {
         updateGlobalMeta: async (v) => {
             const { StorageAPI } = await loadStorageAPI();
             const repo = getCurrentFullRepoName();
-            const prevMeta = await StorageAPI.getMeta(repo);
+            const prevMeta = (await StorageAPI.getMeta(repo)) as GlobalMeta;
             const newMeta =
                 typeof v === "function" ? v(prevMeta) : deepMerge(prevMeta, v);
             await StorageAPI.batch(repo, [
@@ -331,7 +335,7 @@ export const useLedgerStore = create<LedgerStore>()((set, get) => {
         updatePersonalMeta: async (v) => {
             const { StorageAPI } = await loadStorageAPI();
             const repo = getCurrentFullRepoName();
-            const prevMeta = await StorageAPI.getMeta(repo);
+            const prevMeta = (await StorageAPI.getMeta(repo)) as GlobalMeta;
             const uid = useUserStore.getState().id;
             const personalMeta: PersonalMeta =
                 (prevMeta as GlobalMeta | undefined)?.personal?.[uid] ?? {};
