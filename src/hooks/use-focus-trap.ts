@@ -38,4 +38,3 @@ export function useFocusTrap(isActive: boolean) {
 
     return containerRef;
 }
-

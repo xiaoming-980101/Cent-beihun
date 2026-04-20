@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 import { useLongPress } from "@/hooks/use-long-press";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import { BaseButton } from "./base";
 import KeyboardForm from "./keyboard-form";
 
@@ -42,17 +42,14 @@ export const KeyboardFormProvider = () => {
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={handleOpenChange}
             title="text input"
             maxWidth="md"
         >
-            <KeyboardForm
-                onConfirm={handleConfirm}
-                onCancel={handleCancel}
-            />
-        </FormDialog>
+            <KeyboardForm onConfirm={handleConfirm} onCancel={handleCancel} />
+        </ResponsiveDialog>
     );
 };
 

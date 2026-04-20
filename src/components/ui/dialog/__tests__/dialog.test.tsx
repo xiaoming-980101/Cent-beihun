@@ -1,11 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import {
     Dialog,
     DialogContent,
+    DialogDescription,
     DialogHeader,
     DialogTitle,
-    DialogDescription,
 } from "../../dialog";
 
 /**
@@ -21,7 +21,7 @@ describe("DialogContent", () => {
                 <DialogContent>
                     <div>Content</div>
                 </DialogContent>
-            </Dialog>
+            </Dialog>,
         );
 
         const closeButton = screen.getByRole("button", { name: /close/i });
@@ -34,7 +34,7 @@ describe("DialogContent", () => {
                 <DialogContent hideClose={true}>
                     <div>Content</div>
                 </DialogContent>
-            </Dialog>
+            </Dialog>,
         );
 
         const closeButton = screen.queryByRole("button", { name: /close/i });
@@ -47,7 +47,7 @@ describe("DialogContent", () => {
                 <DialogContent>
                     <div data-testid="child-content">Test Content</div>
                 </DialogContent>
-            </Dialog>
+            </Dialog>,
         );
 
         expect(screen.getByTestId("child-content")).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe("DialogContent", () => {
                 <DialogContent>
                     <div>Content</div>
                 </DialogContent>
-            </Dialog>
+            </Dialog>,
         );
 
         const closeButton = screen.getByRole("button", { name: /close/i });
@@ -81,7 +81,7 @@ describe("DialogContent", () => {
                 <DialogContent>
                     <div>Content</div>
                 </DialogContent>
-            </Dialog>
+            </Dialog>,
         );
 
         fireEvent.keyDown(document, { key: "Escape" });
@@ -100,14 +100,13 @@ describe("DialogContent", () => {
                     </DialogHeader>
                     <div>Content</div>
                 </DialogContent>
-            </Dialog>
+            </Dialog>,
         );
 
         // 验证组件渲染 - 需求 1.6
         expect(screen.getByText("测试")).toBeInTheDocument();
     });
 });
-
 
 describe("DialogHeader and DialogTitle", () => {
     it("should render DialogHeader with DialogTitle", () => {
@@ -118,7 +117,7 @@ describe("DialogHeader and DialogTitle", () => {
                         <DialogTitle>Test Title</DialogTitle>
                     </DialogHeader>
                 </DialogContent>
-            </Dialog>
+            </Dialog>,
         );
 
         expect(screen.getByText("Test Title")).toBeInTheDocument();
@@ -133,7 +132,7 @@ describe("DialogHeader and DialogTitle", () => {
                         <DialogDescription>Test Description</DialogDescription>
                     </DialogHeader>
                 </DialogContent>
-            </Dialog>
+            </Dialog>,
         );
 
         expect(screen.getByText("Test Title")).toBeInTheDocument();
@@ -151,7 +150,7 @@ describe("Dialog Overlay", () => {
                     </DialogHeader>
                     <div>Content</div>
                 </DialogContent>
-            </Dialog>
+            </Dialog>,
         );
 
         // 验证弹窗渲染 - 需求 1.2, 1.8
@@ -166,11 +165,11 @@ describe("Dialog Overlay", () => {
                 <DialogContent>
                     <div>Content</div>
                 </DialogContent>
-            </Dialog>
+            </Dialog>,
         );
 
         // 查找遮罩层并点击 - 需求 1.8
-        const overlay = container.querySelector('[data-radix-dialog-overlay]');
+        const overlay = container.querySelector("[data-radix-dialog-overlay]");
         if (overlay) {
             fireEvent.click(overlay);
             await waitFor(() => {

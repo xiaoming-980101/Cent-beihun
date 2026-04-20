@@ -15,10 +15,21 @@ vi.mock("@/store/wedding", () => ({
     useWeddingStore: () => ({
         weddingData: {
             guests: [
-                { id: "g1", name: "Alice", relation: "friend", inviteStatus: "confirmed" },
+                {
+                    id: "g1",
+                    name: "Alice",
+                    relation: "friend",
+                    inviteStatus: "confirmed",
+                },
             ],
             weddingBudgets: [
-                { id: "b1", category: "摄影", budget: 5000, spent: 2000, status: "planned" },
+                {
+                    id: "b1",
+                    category: "摄影",
+                    budget: 5000,
+                    spent: 2000,
+                    status: "planned",
+                },
             ],
         },
         deleteGuest: vi.fn(),
@@ -38,4 +49,3 @@ describe("Guests/Budget Pages", () => {
         expect(screen.getByText("摄影")).toBeInTheDocument();
     });
 });
-

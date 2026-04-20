@@ -277,7 +277,7 @@ function BudgetDetail({
                     >
                         <div className="flex flex-col justify-center items-center">
                             {label}
-                                <div className="flex justify-center items-center gap-1 h-1">
+                            <div className="flex justify-center items-center gap-1 h-1">
                                 {reached?.map((r, i) => (
                                     <div
                                         /* biome-ignore lint/suspicious/noArrayIndexKey: reached indicators are positional summaries */

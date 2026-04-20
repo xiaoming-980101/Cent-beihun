@@ -6,17 +6,17 @@ import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
 import { useLedgerStore } from "@/store/ledger";
 import { useUserStore } from "@/store/user";
-import { FormDialog } from "../ui/dialog/form-dialog";
-import { prompt } from "../ui/dialog/utils";
 import Deletable from "../deletable";
 import { Button } from "../ui/button";
+import { ResponsiveDialog } from "../ui/dialog/index";
+import { prompt } from "../ui/dialog/utils";
 
-function UserManagementDialog({ 
-    open, 
-    onOpenChange 
-}: { 
-    open: boolean; 
-    onOpenChange: (open: boolean) => void; 
+function UserManagementDialog({
+    open,
+    onOpenChange,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
 }) {
     const t = useIntl();
     const { id, avatar_url, name: myName } = useUserStore();
@@ -34,13 +34,13 @@ function UserManagementDialog({
             title: t("please-enter-nickname"),
             inputType: "text",
             placeholder: "请输入昵称",
-            validate: (value) => value.trim().length > 0 || "昵称不能为空"
+            validate: (value) => value.trim().length > 0 || "昵称不能为空",
         });
-        
+
         if (!newName) {
             return;
         }
-        
+
         await useLedgerStore.getState().updatePersonalMeta((prev) => {
             if (!prev.names) {
                 prev.names = {};
@@ -49,7 +49,7 @@ function UserManagementDialog({
             return prev;
         });
     };
-    
+
     const toRecoverName = async (user: { id: string }) => {
         await useLedgerStore.getState().updatePersonalMeta((prev) => {
             if (!prev.names) {
@@ -61,16 +61,18 @@ function UserManagementDialog({
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("user-management")}
-            maxWidth="md"
             fullScreenOnMobile={true}
+            maxWidth="md"
         >
             <div className="space-y-4">
                 <div>
-                    <div className="mb-2 text-sm text-[color:var(--wedding-text-mute)]">{t("me")}</div>
+                    <div className="mb-2 text-sm text-[color:var(--wedding-text-mute)]">
+                        {t("me")}
+                    </div>
                     <div className="flex items-center justify-between gap-2 rounded-xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-3">
                         <div className="flex items-center gap-3">
                             <img
@@ -79,8 +81,12 @@ function UserManagementDialog({
                                 className="h-12 w-12 rounded-full border"
                             />
                             <div>
-                                <div className="font-semibold text-[color:var(--wedding-text)]">{myName}</div>
-                                <div className="text-sm text-[color:var(--wedding-text-mute)]">{id}</div>
+                                <div className="font-semibold text-[color:var(--wedding-text)]">
+                                    {myName}
+                                </div>
+                                <div className="text-sm text-[color:var(--wedding-text-mute)]">
+                                    {id}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -163,7 +169,7 @@ function UserManagementDialog({
                     </div>
                 </div>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

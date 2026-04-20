@@ -1,6 +1,4 @@
-import type {
-    LineSeriesOption,
-} from "echarts/charts";
+import type { LineSeriesOption } from "echarts/charts";
 import { LineChart, PieChart } from "echarts/charts";
 import type {
     DatasetComponentOption,
@@ -26,7 +24,7 @@ import { cn } from "@/utils";
 
 // 通过 ComposeOption 来组合出一个只有必须组件和图表的 Option 类型
 export type ECOption = ComposeOption<
-    LineSeriesOption
+    | LineSeriesOption
     | TitleComponentOption
     | TooltipComponentOption
     | GridComponentOption

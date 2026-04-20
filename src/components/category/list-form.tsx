@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import type { BillType } from "@/ledger/type";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import CategoryList from "./list";
 
 export function CategoryListProvider() {
@@ -20,29 +20,32 @@ export function CategoryListProvider() {
     }, []);
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
-            onOpenChange={(nextOpen) => {
+            onOpenChange={(nextOpen: boolean) => {
                 setOpen(nextOpen);
                 if (!nextOpen) {
                     setEdit(undefined);
-                    window.dispatchEvent(new CustomEvent("category-list-closed"));
+                    window.dispatchEvent(
+                        new CustomEvent("category-list-closed"),
+                    );
                 }
             }}
             title="分类设置"
             fullScreenOnMobile={true}
             bodyClassName="p-0 sm:pt-14"
-            fullscreenBodyClassName="max-sm:p-0"
         >
             <CategoryList
                 edit={edit}
                 onCancel={() => {
                     setOpen(false);
                     setEdit(undefined);
-                    window.dispatchEvent(new CustomEvent("category-list-closed"));
+                    window.dispatchEvent(
+                        new CustomEvent("category-list-closed"),
+                    );
                 }}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

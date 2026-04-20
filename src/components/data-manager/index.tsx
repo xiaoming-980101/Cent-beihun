@@ -1,16 +1,16 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { loading } from "@/components/modal/loading";
+import { alert } from "@/components/ui/dialog/utils";
 import PopupLayout from "@/layouts/popup-layout";
 import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
 import { useLedgerStore } from "@/store/ledger";
 import { cn } from "@/utils";
 import { download } from "@/utils/download";
-import { FormDialog } from "../ui/dialog/form-dialog";
 import { FORMAT_BACKUP, showFilePicker } from "../file-picker";
-import { alert } from "@/components/ui/dialog/utils";
-import { loading } from "@/components/modal/loading";
 import { Button } from "../ui/button";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import { prepareExportFile, processImportFile } from "./exportable";
 import { showOncentImport } from "./oncent";
 import {
@@ -52,18 +52,17 @@ export const SmartImportProvider = () => {
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={handleOpenChange}
             title="Smart Import"
-            maxWidth="md"
             fullScreenOnMobile={true}
+            maxWidth="md"
             className="sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]"
             bodyClassName="p-0 sm:pt-14"
-            fullscreenBodyClassName="max-sm:p-0"
         >
             <SmartImport onCancel={handleCancel} />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 };
 
@@ -78,7 +77,15 @@ export const showSmartImport = (): Promise<void> => {
 
 const betaClassName = `relative after:content-['beta'] after:rounded after:bg-yellow-400 after:px-[2px] after:text-[8px] after:block after:absolute after:top-0 after:right-0 after:translate-x-[calc(100%+4px)]`;
 
-function Form({ open, onOpenChange, onCancel }: { open: boolean; onOpenChange: (open: boolean) => void; onCancel?: () => void }) {
+function Form({
+    open,
+    onOpenChange,
+    onCancel,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    onCancel?: () => void;
+}) {
     const t = useIntl();
     const toImport = async () => {
         const bookid = useBookStore.getState().currentBookId;
@@ -138,12 +145,12 @@ function Form({ open, onOpenChange, onCancel }: { open: boolean; onOpenChange: (
         });
     };
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("data-manager")}
-            maxWidth="md"
             fullScreenOnMobile={true}
+            maxWidth="md"
             className="sm:max-h-[55vh] sm:w-[90vw] sm:max-w-[500px]"
             bodyClassName="max-sm:px-4 max-sm:py-4"
         >
@@ -204,7 +211,7 @@ function Form({ open, onOpenChange, onCancel }: { open: boolean; onOpenChange: (
             </div>
             <ImportPreviewProvider />
             <SmartImportProvider />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

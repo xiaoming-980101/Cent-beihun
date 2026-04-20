@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+import { ResponsiveDialog } from "@/components/ui/dialog/index";
 import { useIntl } from "@/locale";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import { Button } from "../ui/button";
 import RateInput from "./rate-input";
-import { toast } from "sonner";
 
 export type ManualRateEdit = {
     baseCurrencyLabel: string;
@@ -50,7 +50,7 @@ function ManualRateForm({
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("manually-update-rate")}
@@ -65,7 +65,11 @@ function ManualRateForm({
                     onChange={setRate}
                 />
                 <div className="flex gap-2 justify-end pt-1">
-                    <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => onOpenChange(false)}
+                    >
                         {t("cancel")}
                     </Button>
                     <Button size="sm" onClick={handleConfirm}>
@@ -73,7 +77,7 @@ function ManualRateForm({
                     </Button>
                 </div>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 
@@ -91,17 +95,25 @@ export function ManualRateProvider() {
         }) as EventListener;
 
         const handleStoreResolve = ((
-            e: CustomEvent<{ resolve: (value: number | null | undefined) => void }>,
+            e: CustomEvent<{
+                resolve: (value: number | null | undefined) => void;
+            }>,
         ) => {
             setResolveRef({ resolve: e.detail.resolve });
         }) as EventListener;
 
         window.addEventListener("show-manual-rate-update", handleShow);
-        window.addEventListener("store-manual-rate-resolve", handleStoreResolve);
+        window.addEventListener(
+            "store-manual-rate-resolve",
+            handleStoreResolve,
+        );
 
         return () => {
             window.removeEventListener("show-manual-rate-update", handleShow);
-            window.removeEventListener("store-manual-rate-resolve", handleStoreResolve);
+            window.removeEventListener(
+                "store-manual-rate-resolve",
+                handleStoreResolve,
+            );
         };
     }, []);
 

@@ -12,8 +12,8 @@ import {
     getCategoriesStr,
     textToBillSystemPrompt,
 } from "../assistant/text-to-bill";
-import { FormDialog } from "../ui/dialog/form-dialog";
 import { Button } from "../ui/button";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import { Input } from "../ui/input";
 import { Switch } from "../ui/switch";
 
@@ -24,12 +24,12 @@ function generateRandomPasscode(): string {
     return `relayr-${v4()}`;
 }
 
-function QuickEntrySettingsDialog({ 
-    open, 
-    onOpenChange 
-}: { 
-    open: boolean; 
-    onOpenChange: (open: boolean) => void; 
+function QuickEntrySettingsDialog({
+    open,
+    onOpenChange,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
 }) {
     const t = useIntl();
 
@@ -101,12 +101,12 @@ function QuickEntrySettingsDialog({
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("quick-entry-settings")}
-            maxWidth="md"
             fullScreenOnMobile={true}
+            maxWidth="md"
         >
             <div className="space-y-4">
                 {/* Relayr 开关 */}
@@ -266,7 +266,7 @@ function QuickEntrySettingsDialog({
                     </a>
                 </div>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

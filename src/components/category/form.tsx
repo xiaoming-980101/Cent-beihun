@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import * as z from "zod/mini";
 import { StorageDeferredAPI } from "@/api/storage";
 import { Button } from "@/components/ui/button";
+import { alert } from "@/components/ui/dialog/utils";
 import {
     Form,
     FormControl,
@@ -26,7 +27,6 @@ import type { BillCategory, BillType } from "@/ledger/type";
 import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
 import { cn } from "@/utils";
-import { alert } from "@/components/ui/dialog/utils";
 import { Switch } from "../ui/switch";
 import CategoryIcon from "./icon";
 import { ICONS } from "./icons";
@@ -370,12 +370,10 @@ export default function CategoryEditForm({
                                                 }
                                                 type="button"
                                                 onClick={() => {
-                                                    setCategory(
-                                                        (v) => ({
-                                                            ...v,
-                                                            icon: icon.className,
-                                                        }),
-                                                    );
+                                                    setCategory((v) => ({
+                                                        ...v,
+                                                        icon: icon.className,
+                                                    }));
                                                 }}
                                                 className="size-12 p-2 rounded-full border flex justify-center items-center cursor-pointer"
                                             >
@@ -416,20 +414,16 @@ export default function CategoryEditForm({
                                             !svgText ||
                                             !validSvgText(svgText)
                                         ) {
-                                            setCategory(
-                                                (v) => ({
-                                                    ...v,
-                                                    icon: v?.icon,
-                                                }),
-                                            );
+                                            setCategory((v) => ({
+                                                ...v,
+                                                icon: v?.icon,
+                                            }));
                                             return;
                                         }
-                                        setCategory(
-                                            (v) => ({
-                                                ...v,
-                                                icon: svgText,
-                                            }),
-                                        );
+                                        setCategory((v) => ({
+                                            ...v,
+                                            icon: svgText,
+                                        }));
                                     }}
                                 />
                             </div>

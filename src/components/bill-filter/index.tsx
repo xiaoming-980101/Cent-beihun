@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import type { BillFilter } from "@/ledger/type";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import BillFilterView from "./filter-view";
 import BillFilterForm from "./form";
-import type { BillFilter } from "@/ledger/type";
 
 export default BillFilterForm;
 
@@ -14,7 +14,9 @@ type BillFilterEdit = {
     hideDelete?: boolean;
 };
 
-type BillFilterResult = "delete" | { filter: BillFilter; name?: string; displayCurrency?: string };
+type BillFilterResult =
+    | "delete"
+    | { filter: BillFilter; name?: string; displayCurrency?: string };
 
 let resolveCallback: ((value: BillFilterResult | null) => void) | null = null;
 
@@ -55,7 +57,7 @@ export const BillFilterViewProvider = () => {
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={handleOpenChange}
             title="Edit Bill Filter"
@@ -68,15 +70,17 @@ export const BillFilterViewProvider = () => {
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 };
 
-export const showBillFilterView = (edit?: BillFilterEdit): Promise<BillFilterResult | null> => {
+export const showBillFilterView = (
+    edit?: BillFilterEdit,
+): Promise<BillFilterResult | null> => {
     return new Promise((resolve) => {
         resolveCallback = resolve;
         window.dispatchEvent(
-            new CustomEvent("show-bill-filter-view", { detail: edit })
+            new CustomEvent("show-bill-filter-view", { detail: edit }),
         );
     });
 };

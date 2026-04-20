@@ -396,7 +396,10 @@ export const createTidal = <Item extends BaseItem>({
                     // upload assets (actual upload of binary files) - the syncer.transformAsset above only transforms keys.
                     // For GitHub syncer we need to actually upload assets as blobs to assets/<name>
                     // We'll detect assets from itemResult.assets (transformAssets returns file list)
-                    const assetFiles: { path: string; content: UploadContent }[] = [];
+                    const assetFiles: {
+                        path: string;
+                        content: UploadContent;
+                    }[] = [];
                     // itemResult.assets items are expected to have { file: File, formattedValue } shape (as transformAssets returns)
                     (itemResult.assets || []).forEach((a) => {
                         if (a.file) {
@@ -421,9 +424,7 @@ export const createTidal = <Item extends BaseItem>({
 
                     // after success, delete local stashes & update local meta
                     await Promise.all([
-                        itemBucket.deleteStashes(
-                            ...stashes.map((s) => s.id),
-                        ),
+                        itemBucket.deleteStashes(...stashes.map((s) => s.id)),
                         itemBucket.configStorage.setValue({
                             structure: newStructure,
                         }),

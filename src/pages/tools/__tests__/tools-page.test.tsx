@@ -7,9 +7,8 @@ import Tools from "../Tools";
 const navigateMock = vi.fn();
 
 vi.mock("react-router", async () => {
-    const actual = await vi.importActual<typeof import("react-router")>(
-        "react-router",
-    );
+    const actual =
+        await vi.importActual<typeof import("react-router")>("react-router");
     return {
         ...actual,
         useNavigate: () => navigateMock,
@@ -69,7 +68,9 @@ describe("Tools Page", () => {
         expect(screen.getByText("亲友管理")).toBeInTheDocument();
         expect(screen.getByText("婚礼预算")).toBeInTheDocument();
 
-        fireEvent.click(screen.getByRole("button", { name: "进入工具：礼金簿" }));
+        fireEvent.click(
+            screen.getByRole("button", { name: "进入工具：礼金簿" }),
+        );
         expect(navigateMock).toHaveBeenCalledWith("/tools/gift-book");
     });
 });

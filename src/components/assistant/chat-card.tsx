@@ -62,7 +62,7 @@ export function ChatCard({
     }, [messages.length]);
 
     const handleSend = async (message?: string) => {
-        const nextMessage = message ?? (inputRef.current?.value ?? "");
+        const nextMessage = message ?? inputRef.current?.value ?? "";
         const trimmed = nextMessage.trim();
         if (!trimmed) {
             return;

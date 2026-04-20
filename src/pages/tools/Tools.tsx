@@ -1,10 +1,10 @@
+import { Gift, Users, Wallet } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useShallow } from "zustand/shallow";
 import { FeatureCard, ThemeToggle } from "@/components/shared";
 import { WeddingPageShell, WeddingTopBar } from "@/components/wedding-ui";
 import { useBookStore } from "@/store/book";
 import { useWeddingStore } from "@/store/wedding";
-import { Gift, Users, Wallet } from "lucide-react";
 
 const MAIN_TOOLS = [
     {
@@ -99,9 +99,9 @@ export default function Tools() {
     const totalBudget = budgets.reduce((sum, item) => sum + item.budget, 0);
     const paidBudget = budgets.reduce((sum, item) => sum + item.spent, 0);
     const secondaryMeta = {
-        "任务日历": `${tasks.filter((item) => item.deadline).length} 个排期日`,
-        "统计分析": `${giftRecords.length + budgets.length + tasks.length} 条婚礼数据`,
-        "搜索筛选": `${tasks.length + guests.length + giftRecords.length} 条可检索`,
+        任务日历: `${tasks.filter((item) => item.deadline).length} 个排期日`,
+        统计分析: `${giftRecords.length + budgets.length + tasks.length} 条婚礼数据`,
+        搜索筛选: `${tasks.length + guests.length + giftRecords.length} 条可检索`,
         语音记录: "设置中启用",
         标签管理: "分类与标签维护",
         "AI 助手": "智能摘要与建议",
@@ -133,10 +133,34 @@ export default function Tools() {
 
             <section className="grid grid-cols-4 gap-2">
                 {[
-                    ["待推进任务", `${tasks.filter((item) => item.status !== "completed").length} 项`, "进行中", "#FFF7ED", "#F97316"],
-                    ["亲友人数", `${guests.length} 位`, "已登记", "#EFF6FF", "#3B82F6"],
-                    ["礼金记录", `${giftRecords.length} 笔`, "台账", "#FDE7F3", "#F472B6"],
-                    ["预算项目", `${budgets.length} 项`, "管理中", "#F3E8FF", "#A855F7"],
+                    [
+                        "待推进任务",
+                        `${tasks.filter((item) => item.status !== "completed").length} 项`,
+                        "进行中",
+                        "#FFF7ED",
+                        "#F97316",
+                    ],
+                    [
+                        "亲友人数",
+                        `${guests.length} 位`,
+                        "已登记",
+                        "#EFF6FF",
+                        "#3B82F6",
+                    ],
+                    [
+                        "礼金记录",
+                        `${giftRecords.length} 笔`,
+                        "台账",
+                        "#FDE7F3",
+                        "#F472B6",
+                    ],
+                    [
+                        "预算项目",
+                        `${budgets.length} 项`,
+                        "管理中",
+                        "#F3E8FF",
+                        "#A855F7",
+                    ],
                 ].map(([label, value, sub, bg, color]) => (
                     <div
                         key={label}

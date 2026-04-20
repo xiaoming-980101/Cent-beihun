@@ -18,8 +18,12 @@ type ThemeContextValue = {
 };
 
 type LegacyMediaQueryList = MediaQueryList & {
-    addListener?: (listener: (this: MediaQueryList, ev: MediaQueryListEvent) => void) => void;
-    removeListener?: (listener: (this: MediaQueryList, ev: MediaQueryListEvent) => void) => void;
+    addListener?: (
+        listener: (this: MediaQueryList, ev: MediaQueryListEvent) => void,
+    ) => void;
+    removeListener?: (
+        listener: (this: MediaQueryList, ev: MediaQueryListEvent) => void,
+    ) => void;
 };
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);

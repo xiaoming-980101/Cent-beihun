@@ -1,9 +1,9 @@
+import * as RadioGroup from "@radix-ui/react-radio-group";
 import {
     SelectContent,
     SelectPortal,
     SelectViewport,
 } from "@radix-ui/react-select";
-import * as RadioGroup from "@radix-ui/react-radio-group";
 import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { v4 } from "uuid";
@@ -19,9 +19,9 @@ import { BillCategories } from "@/ledger/category";
 import type { Bill } from "@/ledger/type";
 import { useIntl } from "@/locale";
 import { useLedgerStore } from "@/store/ledger";
-import { FormDialog } from "../ui/dialog/form-dialog";
 import Loading from "../loading";
 import { Button } from "../ui/button";
+import { ResponsiveDialog } from "../ui/dialog/index";
 
 // 单条用户行
 export interface UserRow {
@@ -152,7 +152,7 @@ function OncentImportForm({
         }
     };
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title="Oncent"
@@ -195,7 +195,9 @@ function OncentImportForm({
                             className="flex items-center gap-4"
                             defaultValue={importStrategy}
                             onValueChange={(v) => {
-                                setImportStrategy(v === "overlap" ? "overlap" : "add");
+                                setImportStrategy(
+                                    v === "overlap" ? "overlap" : "add",
+                                );
                             }}
                         >
                             <div className="flex gap-2 items-center">
@@ -232,7 +234,7 @@ function OncentImportForm({
                     </Button>
                 </div>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 
@@ -287,11 +289,13 @@ export const OncentImport = () => {
     );
 };
 
-export const showOncentImport = (edit?: OncentDatabaseData): Promise<boolean | null> => {
+export const showOncentImport = (
+    edit?: OncentDatabaseData,
+): Promise<boolean | null> => {
     return new Promise((resolve) => {
         resolveCallback = resolve;
         window.dispatchEvent(
-            new CustomEvent("show-oncent-import", { detail: edit })
+            new CustomEvent("show-oncent-import", { detail: edit }),
         );
     });
 };

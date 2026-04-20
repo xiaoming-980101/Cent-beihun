@@ -1,5 +1,6 @@
-import * as React from "react";
 import { X } from "lucide-react";
+import type * as React from "react";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -7,7 +8,6 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/index";
 
 /**
@@ -147,7 +147,7 @@ export function FormDialog({
                 hideClose={true}
                 {...(!description ? { "aria-describedby": undefined } : {})}
                 className={cn(
-                    "fixed left-[50%] top-[50%] z-[81] -translate-x-1/2 -translate-y-1/2",
+                    "fixed left-[50%] top-[50%] z-[111] -translate-x-1/2 -translate-y-1/2",
                     "flex max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] w-full flex-col overflow-hidden",
                     "rounded-[30px]",
                     "border border-[#edd6df] dark:border-[#302631]",
@@ -158,7 +158,7 @@ export function FormDialog({
                     fullScreenOnMobile
                         ? "max-sm:inset-0 max-sm:left-0 max-sm:top-0 max-sm:h-[100dvh] max-sm:max-h-[100dvh] max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none max-sm:border-0 max-sm:bg-[color:var(--wedding-app-bg)] max-sm:shadow-none"
                         : "max-sm:w-[min(92vw,32rem)] max-sm:max-w-[92vw] max-sm:max-h-[min(86dvh,760px)] max-sm:rounded-[28px]",
-                    className
+                    className,
                 )}
             >
                 {shouldShowTopClose ? (

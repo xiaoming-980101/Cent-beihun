@@ -90,9 +90,7 @@ export default function createConfirmProvider<Value, Returned = Value>(
                     )}
                     style={layerStyle}
                     onOpenAutoFocus={(e) => {
-                        (
-                            document.activeElement as HTMLElement
-                        )?.blur?.();
+                        (document.activeElement as HTMLElement)?.blur?.();
                         e.preventDefault();
                     }}
                     onInteractOutside={(e) => {

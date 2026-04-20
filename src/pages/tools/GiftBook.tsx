@@ -18,8 +18,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { WeddingPageShell, WeddingTopBar } from "@/components/wedding-ui";
 import { useWeddingStore } from "@/store/wedding";
-import { calculateGiftStats } from "@/wedding/utils";
 import {
+    calculateGiftStats,
     formatShortDate,
     getGiftTypeLabel,
     getGroupLabel,
@@ -64,13 +64,19 @@ export default function GiftBook() {
                             </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                            <DropdownMenuItem onClick={() => setActiveTab("all")}>
+                            <DropdownMenuItem
+                                onClick={() => setActiveTab("all")}
+                            >
                                 全部记录
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setActiveTab("received")}>
+                            <DropdownMenuItem
+                                onClick={() => setActiveTab("received")}
+                            >
                                 仅看收礼
                             </DropdownMenuItem>
-                            <DropdownMenuItem onClick={() => setActiveTab("sent")}>
+                            <DropdownMenuItem
+                                onClick={() => setActiveTab("sent")}
+                            >
                                 仅看送礼
                             </DropdownMenuItem>
                         </DropdownMenuContent>
@@ -146,13 +152,19 @@ export default function GiftBook() {
                         }}
                     />
                 ) : (
-                    <Accordion type="single" collapsible className="space-y-2.5">
+                    <Accordion
+                        type="single"
+                        collapsible
+                        className="space-y-2.5"
+                    >
                         {filtered
                             .slice()
                             .sort((a, b) => b.date - a.date)
                             .map((record) => {
                                 const guest = record.guestId
-                                    ? guests.find((item) => item.id === record.guestId)
+                                    ? guests.find(
+                                          (item) => item.id === record.guestId,
+                                      )
                                     : undefined;
                                 const guestName =
                                     guest?.name || record.guestName || "未知";
@@ -171,7 +183,8 @@ export default function GiftBook() {
                                                     className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-lg"
                                                     style={{
                                                         background:
-                                                            record.type === "received"
+                                                            record.type ===
+                                                            "received"
                                                                 ? "rgba(244,114,182,0.12)"
                                                                 : "rgba(59,130,246,0.12)",
                                                     }}
@@ -208,7 +221,9 @@ export default function GiftBook() {
                                                                 : "未关联"}
                                                         </span>
                                                         <span className="text-[10px] text-[color:var(--wedding-text-mute)]">
-                                                            {formatShortDate(record.date)}
+                                                            {formatShortDate(
+                                                                record.date,
+                                                            )}
                                                         </span>
                                                     </div>
                                                 </div>
@@ -224,7 +239,9 @@ export default function GiftBook() {
                                                             所属方
                                                         </div>
                                                         <div className="mt-1 font-medium">
-                                                            {getGroupLabel(guest?.group)}
+                                                            {getGroupLabel(
+                                                                guest?.group,
+                                                            )}
                                                         </div>
                                                     </div>
                                                     <div>
@@ -232,7 +249,9 @@ export default function GiftBook() {
                                                             类型
                                                         </div>
                                                         <div className="mt-1 font-medium">
-                                                            {getGiftTypeLabel(record.type)}
+                                                            {getGiftTypeLabel(
+                                                                record.type,
+                                                            )}
                                                         </div>
                                                     </div>
                                                     <div>
@@ -250,7 +269,9 @@ export default function GiftBook() {
                                                             日期
                                                         </div>
                                                         <div className="mt-1 font-medium">
-                                                            {formatShortDate(record.date)}
+                                                            {formatShortDate(
+                                                                record.date,
+                                                            )}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -274,7 +295,9 @@ export default function GiftBook() {
                                                         size="sm"
                                                         className="flex-1"
                                                         onClick={() => {
-                                                            setEditingRecord(record);
+                                                            setEditingRecord(
+                                                                record,
+                                                            );
                                                             setShowForm(true);
                                                         }}
                                                     >
@@ -286,16 +309,23 @@ export default function GiftBook() {
                                                         size="sm"
                                                         className="flex-1 text-destructive hover:bg-destructive/10 hover:text-destructive"
                                                         onClick={async () => {
-                                                            const confirmed = await confirm({
-                                                                title: "确认删除礼金记录？",
-                                                                description: "此操作无法撤销，删除后将永久移除该礼金记录。",
-                                                                variant: "destructive",
-                                                                confirmText: "确认删除",
-                                                                cancelText: "取消",
-                                                            });
-                                                            
+                                                            const confirmed =
+                                                                await confirm({
+                                                                    title: "确认删除礼金记录？",
+                                                                    description:
+                                                                        "此操作无法撤销，删除后将永久移除该礼金记录。",
+                                                                    variant:
+                                                                        "destructive",
+                                                                    confirmText:
+                                                                        "确认删除",
+                                                                    cancelText:
+                                                                        "取消",
+                                                                });
+
                                                             if (confirmed) {
-                                                                deleteGiftRecord(record.id);
+                                                                deleteGiftRecord(
+                                                                    record.id,
+                                                                );
                                                             }
                                                         }}
                                                     >

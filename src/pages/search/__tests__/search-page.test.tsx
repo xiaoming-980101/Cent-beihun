@@ -40,7 +40,12 @@ vi.mock("@/store/ledger", () => ({
     useLedgerStore: Object.assign(
         (
             selector?: (state: {
-                infos: { meta: { tags: unknown[]; personal: Record<string, unknown> } };
+                infos: {
+                    meta: {
+                        tags: unknown[];
+                        personal: Record<string, unknown>;
+                    };
+                };
                 bills: unknown[];
                 removeBills: () => void;
                 updateBills: () => void;

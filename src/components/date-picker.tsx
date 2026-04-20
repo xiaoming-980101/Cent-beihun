@@ -98,7 +98,10 @@ export function DatePicker({
             }}
         >
             <PopoverTrigger asChild>
-                <div className="flex justify-center items-center relative cursor-pointer" data-date-picker-root>
+                <div
+                    className="flex justify-center items-center relative cursor-pointer"
+                    data-date-picker-root
+                >
                     {children}
                     <div className="mx-2">
                         {display(value ? current : undefined)}
@@ -106,7 +109,7 @@ export function DatePicker({
                 </div>
             </PopoverTrigger>
             <PopoverContent
-                className="z-[90] w-auto overflow-hidden p-3 flex flex-col gap-2"
+                className="z-[105] w-auto overflow-hidden p-3 flex flex-col gap-2"
                 align="center"
                 side="bottom"
                 sideOffset={8}
@@ -115,7 +118,10 @@ export function DatePicker({
                     mode="single"
                     captionLayout="dropdown"
                     className="rounded-md p-0"
-                    startMonth={dayjs().subtract(30, "year").startOf("year").toDate()}
+                    startMonth={dayjs()
+                        .subtract(30, "year")
+                        .startOf("year")
+                        .toDate()}
                     endMonth={dayjs().add(30, "year").endOf("year").toDate()}
                     selected={current?.toDate()}
                     onSelect={(v) => {

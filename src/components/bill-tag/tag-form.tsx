@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { FormDialog } from "../ui/dialog/form-dialog";
-import { EditTagForm, type EditTag } from "./tag";
+import { useEffect, useState } from "react";
+import { ResponsiveDialog } from "../ui/dialog/index";
+import { type EditTag, EditTagForm } from "./tag";
 
 type EditTagResult = EditTag | "delete";
 type ShowEditTagDetail = { edit?: EditTag };
@@ -30,7 +30,10 @@ export function EditTagProvider() {
 
         return () => {
             window.removeEventListener("show-edit-tag", handleShow);
-            window.removeEventListener("store-edit-tag-resolve", handleStoreResolve);
+            window.removeEventListener(
+                "store-edit-tag-resolve",
+                handleStoreResolve,
+            );
         };
     }, []);
 
@@ -51,17 +54,24 @@ export function EditTagProvider() {
     };
 
     return (
-        <FormDialog open={open} onOpenChange={handleOpenChange} title="编辑标签" fullScreenOnMobile={true}>
+        <ResponsiveDialog
+            open={open}
+            onOpenChange={handleOpenChange}
+            title="编辑标签"
+            fullScreenOnMobile={true}
+        >
             <EditTagForm
                 edit={edit}
                 onConfirm={handleConfirm}
                 onCancel={() => handleOpenChange(false)}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 
-export function showEditTag(edit?: EditTag): Promise<EditTagResult | undefined> {
+export function showEditTag(
+    edit?: EditTag,
+): Promise<EditTagResult | undefined> {
     return new Promise((resolve) => {
         window.dispatchEvent(
             new CustomEvent("show-edit-tag", { detail: { edit } }),

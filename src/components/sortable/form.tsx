@@ -1,5 +1,5 @@
 import { useCallback, useState } from "react";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
+import { ResponsiveDialog } from "@/components/ui/dialog/index";
 import { useIntl } from "@/locale";
 import { Button } from "../ui/button";
 import { type SortableItem, SortableList } from "./list";
@@ -22,14 +22,14 @@ export default function Form<T extends SortableItem>({
         setList(v);
     }, []);
     const t = useIntl();
-    
+
     const handleConfirm = () => {
         onConfirm?.(list);
         onOpenChange(false);
     };
-    
+
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("sort")}
@@ -45,11 +45,9 @@ export default function Form<T extends SortableItem>({
                     />
                 </div>
                 <div className="flex justify-end">
-                    <Button onClick={handleConfirm}>
-                        {t("confirm")}
-                    </Button>
+                    <Button onClick={handleConfirm}>{t("confirm")}</Button>
                 </div>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }

@@ -21,7 +21,9 @@ const endpointType: EndpointType =
         ? (rawEndpointType as EndpointType)
         : fallbackEndpointType;
 
-const loadEndpoint = async (type: EndpointType): Promise<SyncEndpointFactory> => {
+const loadEndpoint = async (
+    type: EndpointType,
+): Promise<SyncEndpointFactory> => {
     return endpointLoaders[type]();
 };
 

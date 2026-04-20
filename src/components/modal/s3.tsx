@@ -3,9 +3,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod/mini";
 import { useIntl } from "@/locale";
-import { FormDialog } from "../ui/dialog/form-dialog";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import {
     Form,
     FormControl,
@@ -95,7 +95,7 @@ const LoadingForm = ({
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("sync-with-s3")}
@@ -304,7 +304,7 @@ const LoadingForm = ({
                     </Button>
                 </div>
             </Form>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 };
 
@@ -362,8 +362,6 @@ export const S3AuthProvider = () => {
 export const showS3Auth = (edit?: LoadingState): Promise<S3Edit | null> => {
     return new Promise((resolve) => {
         resolveCallback = resolve;
-        window.dispatchEvent(
-            new CustomEvent("show-s3-auth", { detail: edit })
-        );
+        window.dispatchEvent(new CustomEvent("show-s3-auth", { detail: edit }));
     });
 };

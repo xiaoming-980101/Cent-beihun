@@ -1,6 +1,6 @@
 import { type ReactNode, useEffect, useState } from "react";
+import { ResponsiveDialog } from "@/components/ui/dialog/index";
 import { useIntl } from "@/locale";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import { Button } from "../ui/button";
 
 type LoadingState = {
@@ -33,9 +33,9 @@ const LoadingForm = ({
             edit?.target?.removeEventListener("close", onClose);
         };
     }, [edit?.target, onConfirm, onOpenChange]);
-    
+
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("loading")}
@@ -57,7 +57,7 @@ const LoadingForm = ({
                     </Button>
                 )}
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 };
 
@@ -85,7 +85,10 @@ export function LoadingProvider() {
 
         return () => {
             window.removeEventListener("show-loading", handleShow);
-            window.removeEventListener("store-loading-resolve", handleStoreResolve);
+            window.removeEventListener(
+                "store-loading-resolve",
+                handleStoreResolve,
+            );
         };
     }, []);
 
@@ -115,7 +118,9 @@ export function LoadingProvider() {
     );
 }
 
-export function showLoading(edit?: LoadingState): Promise<LoadingState | undefined> {
+export function showLoading(
+    edit?: LoadingState,
+): Promise<LoadingState | undefined> {
     return new Promise((resolve) => {
         window.dispatchEvent(
             new CustomEvent("show-loading", { detail: { edit } }),

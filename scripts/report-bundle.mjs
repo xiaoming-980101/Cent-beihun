@@ -1,4 +1,4 @@
-import { readdir, stat, writeFile, mkdir } from "node:fs/promises";
+import { mkdir, readdir, stat, writeFile } from "node:fs/promises";
 import path from "node:path";
 
 const root = process.cwd();

@@ -6,7 +6,7 @@ import { v4 } from "uuid";
 import * as z from "zod/mini";
 import { useShallow } from "zustand/shallow";
 import { Calendar } from "@/components/ui/calendar";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
+import { ResponsiveDialog } from "@/components/ui/dialog/index";
 import { prompt } from "@/components/ui/dialog/utils";
 import {
     Form,
@@ -130,7 +130,7 @@ export default function ScheduledEditForm({
     }
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("scheduled-edit")}
@@ -384,7 +384,7 @@ export default function ScheduledEditForm({
                     </div>
                 </form>
             </Form>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

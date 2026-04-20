@@ -3,9 +3,11 @@ import Form from "./form";
 import type { SortableItem } from "./list";
 
 let sortableListResolveCallback: ((list: SortableItem[]) => void) | null = null;
-let sortableListEditData: SortableItem[] | undefined = undefined;
+let sortableListEditData: SortableItem[] | undefined;
 
-export function showSortableList<T extends SortableItem>(value?: T[]): Promise<T[]> {
+export function showSortableList<T extends SortableItem>(
+    value?: T[],
+): Promise<T[]> {
     return new Promise((resolve) => {
         sortableListResolveCallback = (list) => {
             resolve(list as T[]);

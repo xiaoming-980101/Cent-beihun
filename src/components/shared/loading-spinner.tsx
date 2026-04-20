@@ -12,4 +12,3 @@ export function LoadingSpinner({ label = "加载中..." }: { label?: string }) {
         </div>
     );
 }
-

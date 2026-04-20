@@ -43,14 +43,14 @@ export function RemarkHint({
                         keyMap.set(comment, count);
                         const key = count > 1 ? `${comment}-${count}` : comment;
                         return (
-                        <button
-                            key={key}
-                            type="button"
-                            className="cursor-pointer border rounded-sm px-1 flex items-center active:bg-foreground/20"
-                            onClick={() => onSelect?.(comment)}
-                        >
-                            {comment}
-                        </button>
+                            <button
+                                key={key}
+                                type="button"
+                                className="cursor-pointer border rounded-sm px-1 flex items-center active:bg-foreground/20"
+                                onClick={() => onSelect?.(comment)}
+                            >
+                                {comment}
+                            </button>
                         );
                     })}
                 </div>

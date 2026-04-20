@@ -239,7 +239,7 @@ export default function EditorForm({
 
     const tagSelectorRef = useRef<HTMLDivElement>(null);
     useWheelScrollX(tagSelectorRef);
-    
+
     return (
         <Calculator.Root
             multiplyKey={multiplyKey}
@@ -328,7 +328,8 @@ export default function EditorForm({
                                                 key={currency.id}
                                                 value={currency.id}
                                             >
-                                                {currency.label} ({currency.symbol})
+                                                {currency.label} (
+                                                {currency.symbol})
                                             </SelectItem>
                                         ))}
                                     </SelectContent>
@@ -344,7 +345,8 @@ export default function EditorForm({
                                 <Calculator.Value
                                     className={cn(
                                         "text-5xl font-black text-white after:inline-block after:translate-y-[-6px] after:font-thin after:opacity-0 after:content-['|']",
-                                        monitorFocused && "after:animate-caret-blink",
+                                        monitorFocused &&
+                                            "after:animate-caret-blink",
                                     )}
                                 />
                             </button>
@@ -353,7 +355,9 @@ export default function EditorForm({
                         {/* 汇率提示 */}
                         {billState.currency && (
                             <div className="mt-3 text-center text-sm text-white/80">
-                                ≈ {baseCurrency.symbol} {amountToNumber(billState.amount)} {baseCurrency.label}
+                                ≈ {baseCurrency.symbol}{" "}
+                                {amountToNumber(billState.amount)}{" "}
+                                {baseCurrency.label}
                             </div>
                         )}
                         {billState.amount < 0 && (
@@ -381,13 +385,20 @@ export default function EditorForm({
                                 管理
                             </button>
                         </div>
-                        <div className={cn("grid gap-2", categoriesGridClassName(categories))}>
+                        <div
+                            className={cn(
+                                "grid gap-2",
+                                categoriesGridClassName(categories),
+                            )}
+                        >
                             {categories.map((item) => (
                                 <CategoryItem
                                     key={item.id}
                                     category={item}
                                     selected={billState.categoryId === item.id}
-                                    onMouseDown={() => handleParentCategoryClick(item.id)}
+                                    onMouseDown={() =>
+                                        handleParentCategoryClick(item.id)
+                                    }
                                 />
                             ))}
                         </div>
@@ -399,12 +410,20 @@ export default function EditorForm({
                             <h3 className="mb-3 text-sm font-semibold text-[color:var(--wedding-text)]">
                                 🏷️ 子分类
                             </h3>
-                            <div className={cn("grid gap-2", categoriesGridClassName(subCategories))}>
+                            <div
+                                className={cn(
+                                    "grid gap-2",
+                                    categoriesGridClassName(subCategories),
+                                )}
+                            >
                                 {subCategories?.map((subCategory) => (
                                     <CategoryItem
                                         key={subCategory.id}
                                         category={subCategory}
-                                        selected={billState.categoryId === subCategory.id}
+                                        selected={
+                                            billState.categoryId ===
+                                            subCategory.id
+                                        }
                                         onMouseDown={() => {
                                             setBillState((v) => ({
                                                 ...v,
@@ -467,7 +486,10 @@ export default function EditorForm({
                                                 return { ...prev, time };
                                             }
                                             const { predict } = convert(
-                                                amountToNumber(prev.currency?.amount ?? prev.amount),
+                                                amountToNumber(
+                                                    prev.currency?.amount ??
+                                                        prev.amount,
+                                                ),
                                                 prev.currency.target,
                                                 baseCurrency.id,
                                                 time,
@@ -478,8 +500,11 @@ export default function EditorForm({
                                                 amount: numberToAmount(predict),
                                                 currency: {
                                                     base: baseCurrency.id,
-                                                    target: prev.currency.target,
-                                                    amount: prev.currency?.amount ?? prev.amount,
+                                                    target: prev.currency
+                                                        .target,
+                                                    amount:
+                                                        prev.currency?.amount ??
+                                                        prev.amount,
                                                 },
                                             };
                                         });
@@ -499,7 +524,9 @@ export default function EditorForm({
                                 >
                                     <div className="flex items-center gap-2 rounded-xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-3 py-2">
                                         <i className="icon-[mdi--map-marker] size-4 text-green-500" />
-                                        <span className="text-sm text-[color:var(--wedding-text)]">已定位</span>
+                                        <span className="text-sm text-[color:var(--wedding-text)]">
+                                            已定位
+                                        </span>
                                     </div>
                                 </Deletable>
                             ) : (
@@ -507,11 +534,16 @@ export default function EditorForm({
                                     ref={locationRef}
                                     className="flex items-center gap-2 rounded-xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] px-3 py-2 transition-colors hover:bg-[color:var(--wedding-surface)]"
                                     onValueChange={(v) => {
-                                        setBillState((prev) => ({ ...prev, location: v }));
+                                        setBillState((prev) => ({
+                                            ...prev,
+                                            location: v,
+                                        }));
                                     }}
                                 >
                                     <i className="icon-[mdi--map-marker-plus-outline] size-4 text-green-500" />
-                                    <span className="text-sm text-[color:var(--wedding-text)]">添加位置</span>
+                                    <span className="text-sm text-[color:var(--wedding-text)]">
+                                        添加位置
+                                    </span>
                                 </CurrentLocation>
                             )}
 
@@ -524,7 +556,9 @@ export default function EditorForm({
                                             onDelete={() => {
                                                 setBillState((v) => ({
                                                     ...v,
-                                                    images: v.images?.filter((m) => m !== img),
+                                                    images: v.images?.filter(
+                                                        (m) => m !== img,
+                                                    ),
                                                 }));
                                             }}
                                         >
@@ -544,7 +578,9 @@ export default function EditorForm({
                                     onClick={chooseImage}
                                 >
                                     <i className="icon-[mdi--image-plus-outline] size-4 text-purple-500" />
-                                    <span className="text-sm text-[color:var(--wedding-text)]">添加图片</span>
+                                    <span className="text-sm text-[color:var(--wedding-text)]">
+                                        添加图片
+                                    </span>
                                 </button>
                             )}
                         </div>
@@ -565,7 +601,10 @@ export default function EditorForm({
                                 管理
                             </button>
                         </div>
-                        <div ref={tagSelectorRef} className="flex flex-wrap gap-2 overflow-x-auto scrollbar-hidden">
+                        <div
+                            ref={tagSelectorRef}
+                            className="flex flex-wrap gap-2 overflow-x-auto scrollbar-hidden"
+                        >
                             <TagGroupSelector
                                 isCreate={isCreate}
                                 selectedTags={billState.tagIds}

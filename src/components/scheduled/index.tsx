@@ -4,8 +4,12 @@ import { Button } from "../ui/button";
 import { ScheduledProvider, showScheduled } from "./list-form";
 import { ScheduledEditProvider, showScheduledEdit } from "./scheduled-form";
 
-export { ScheduledProvider, showScheduled };
-export { ScheduledEditProvider, showScheduledEdit };
+export {
+    ScheduledEditProvider,
+    ScheduledProvider,
+    showScheduled,
+    showScheduledEdit,
+};
 
 export default function Scheduled() {
     const t = useIntl();
@@ -21,7 +25,9 @@ export default function Scheduled() {
                 className="h-auto w-full rounded-none px-1 py-1"
             >
                 <div className="wedding-settings-item rounded-[18px]">
-                    <div className={cn("flex items-center gap-3", betaClassName)}>
+                    <div
+                        className={cn("flex items-center gap-3", betaClassName)}
+                    >
                         <div className="wedding-settings-item__icon bg-cyan-50 text-cyan-500 dark:bg-cyan-500/12">
                             <i className="icon-[mdi--calendar-clock] size-5"></i>
                         </div>

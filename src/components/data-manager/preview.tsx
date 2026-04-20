@@ -101,9 +101,7 @@ export const PreviewForm = ({
                     value={importStrategy}
                     className="flex flex-col gap-2"
                     onValueChange={(v) =>
-                        setImportStrategy(
-                            v === "append" ? "append" : "overlap",
-                        )
+                        setImportStrategy(v === "append" ? "append" : "overlap")
                     }
                 >
                     <Label className="flex gap-2">
@@ -157,10 +155,7 @@ export const PreviewForm = ({
                 )}
             </div>
             <div className="flex justify-end gap-2">
-                <Button
-                    variant="ghost"
-                    onClick={onCancel}
-                >
+                <Button variant="ghost" onClick={onCancel}>
                     {t("cancel")}
                 </Button>
                 <Button

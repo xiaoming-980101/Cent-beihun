@@ -6,8 +6,8 @@ import {
     useRef,
     useState,
 } from "react";
+import { ResponsiveDialog } from "@/components/ui/dialog/index";
 import { useIntl } from "@/locale";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import IOSUnscrolledInput from "../input";
 import { Button } from "../ui/button";
 
@@ -44,9 +44,9 @@ const PromptForm = ({
             inputRef.current?.focus();
         }
     }, [autoFocus, open]);
-    
+
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={edit?.title?.toString() || ""}
@@ -88,7 +88,7 @@ const PromptForm = ({
                     </Button>
                 </div>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 };
 
@@ -116,7 +116,10 @@ export function PromptProvider() {
 
         return () => {
             window.removeEventListener("show-prompt-modal", handleShow);
-            window.removeEventListener("store-prompt-resolve", handleStoreResolve);
+            window.removeEventListener(
+                "store-prompt-resolve",
+                handleStoreResolve,
+            );
         };
     }, []);
 

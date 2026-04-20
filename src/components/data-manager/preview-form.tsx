@@ -10,7 +10,7 @@ import { useBookStore } from "@/store/book";
 import { useLedgerStore } from "@/store/ledger";
 import { useUserStore } from "@/store/user";
 import { deepClone, deepEqual, deepMerge } from "@/utils/object";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import { PreviewForm, type PreviewState } from "./preview";
 
 // 事件驱动的弹窗管理
@@ -54,7 +54,7 @@ export const ImportPreviewProvider = () => {
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={handleOpenChange}
             title="导入预览"
@@ -67,15 +67,17 @@ export const ImportPreviewProvider = () => {
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 };
 
-export const showImportPreview = (edit?: PreviewState): Promise<PreviewState | null> => {
+export const showImportPreview = (
+    edit?: PreviewState,
+): Promise<PreviewState | null> => {
     return new Promise((resolve) => {
         resolveCallback = resolve;
         window.dispatchEvent(
-            new CustomEvent("show-import-preview", { detail: edit })
+            new CustomEvent("show-import-preview", { detail: edit }),
         );
     });
 };

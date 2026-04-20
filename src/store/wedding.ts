@@ -29,6 +29,11 @@ type WeddingStoreActions = {
     updateEngagementDate: (date: number) => Promise<void>;
     updateWeddingDate: (date: number) => Promise<void>;
     updatePartnerName: (name: string) => Promise<void>;
+    updateWeddingInfo: (updates: {
+        engagementDate?: number;
+        weddingDate?: number;
+        partnerName?: string;
+    }) => Promise<void>;
 
     // 任务管理
     addTask: (task: Omit<WeddingTask, "id" | "createdAt">) => Promise<void>;
@@ -149,7 +154,8 @@ export const useWeddingStore = create<WeddingStore>()((set, get) => {
     useLedgerStore.subscribe((state, prev) => {
         // 当 meta 变化时刷新婚礼数据
         if (state.infos?.meta !== prev.infos?.meta && get().initialized) {
-            const weddingData = state.infos?.meta?.wedding ?? DEFAULT_WEDDING_DATA;
+            const weddingData =
+                state.infos?.meta?.wedding ?? DEFAULT_WEDDING_DATA;
             set(
                 produce((s: WeddingStore) => {
                     s.weddingData = weddingData;
@@ -181,6 +187,23 @@ export const useWeddingStore = create<WeddingStore>()((set, get) => {
             const prev = get().weddingData;
             if (!prev) return;
             await updateWeddingData({ ...prev, partnerName: name });
+        },
+
+        updateWeddingInfo: async (updates) => {
+            const prev = get().weddingData;
+            if (!prev) return;
+            await updateWeddingData({
+                ...prev,
+                ...(updates.engagementDate !== undefined && {
+                    engagementDate: updates.engagementDate,
+                }),
+                ...(updates.weddingDate !== undefined && {
+                    weddingDate: updates.weddingDate,
+                }),
+                ...(updates.partnerName !== undefined && {
+                    partnerName: updates.partnerName,
+                }),
+            });
         },
 
         addTask: async (task) => {

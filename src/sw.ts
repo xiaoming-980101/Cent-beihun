@@ -3,10 +3,10 @@
 import { CacheableResponsePlugin } from "workbox-cacheable-response";
 import { clientsClaim } from "workbox-core";
 import type { RouteHandlerCallbackOptions } from "workbox-core/types";
+import type { PrecacheEntry } from "workbox-precaching";
 import { createHandlerBoundToURL, precacheAndRoute } from "workbox-precaching";
 import { NavigationRoute, registerRoute } from "workbox-routing";
 import { CacheFirst } from "workbox-strategies";
-import type { PrecacheEntry } from "workbox-precaching";
 
 declare const self: ServiceWorkerGlobalScope & {
     __WB_MANIFEST: Array<PrecacheEntry | string>;

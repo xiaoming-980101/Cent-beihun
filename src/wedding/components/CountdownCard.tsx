@@ -90,7 +90,11 @@ export function CountdownCard() {
         openIfToday("wedding", "结婚彩蛋", weddingData.weddingDate);
     }, [weddingData.engagementDate, weddingData.weddingDate]);
 
-    const openEggByTap = (kind: CountdownKind, title: string, target: number) => {
+    const openEggByTap = (
+        kind: CountdownKind,
+        title: string,
+        target: number,
+    ) => {
         setTapCount((prev) => {
             const next = (prev[kind] ?? 0) + 1;
             if (next >= 5) {
@@ -226,7 +230,10 @@ export function CountdownCard() {
                                     精确倒计时
                                 </div>
                                 <div className="mt-2 text-2xl font-black tracking-tight text-pink-500">
-                                    {formatPreciseCountdown(eggOpen.target).text}
+                                    {
+                                        formatPreciseCountdown(eggOpen.target)
+                                            .text
+                                    }
                                 </div>
                             </div>
                             <button

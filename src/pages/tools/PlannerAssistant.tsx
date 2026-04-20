@@ -3,16 +3,16 @@ import { useMemo } from "react";
 import { useNavigate } from "react-router";
 import { useShallow } from "zustand/shallow";
 import {
+    AssistantProvider,
+    showAssistant,
+} from "@/components/settings/assistant";
+import {
     WeddingActionButton,
     WeddingBadge,
     WeddingPageShell,
     WeddingStat,
     WeddingTopBar,
 } from "@/components/wedding-ui";
-import {
-    AssistantProvider,
-    showAssistant,
-} from "@/components/settings/assistant";
 import { useBookStore } from "@/store/book";
 import { useLedgerStore } from "@/store/ledger";
 import { useUserStore } from "@/store/user";
@@ -75,7 +75,9 @@ export default function PlannerAssistant() {
                     </div>
                     <div className="rounded-full bg-white/55 px-3 py-1.5 text-[11px] font-semibold text-pink-500 dark:bg-white/10">
                         {weddingData?.weddingDate
-                            ? dayjs(weddingData.weddingDate).format("YYYY.MM.DD")
+                            ? dayjs(weddingData.weddingDate).format(
+                                  "YYYY.MM.DD",
+                              )
                             : "未设置婚期"}
                     </div>
                 </div>

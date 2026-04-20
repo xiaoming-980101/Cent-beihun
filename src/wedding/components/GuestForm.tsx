@@ -189,7 +189,9 @@ export function GuestForm({ onClose, editGuest }: GuestFormProps) {
                         className={baseFieldClassName}
                         value={inviteStatus}
                         onChange={(e) =>
-                            setInviteStatus(e.target.value as Guest["inviteStatus"])
+                            setInviteStatus(
+                                e.target.value as Guest["inviteStatus"],
+                            )
                         }
                     >
                         {INVITE_STATUS.map((item) => (

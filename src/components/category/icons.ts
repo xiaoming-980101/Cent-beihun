@@ -164,7 +164,10 @@ export const ICONS = [
             { name: "balloon", className: "icon-[mdi--balloon]" },
             { name: "party-popper", className: "icon-[mdi--party-popper]" },
             { name: "social", className: "icon-[mdi--account-group]" },
-            { name: "family", className: "icon-[mdi--human-male-female-child]" },
+            {
+                name: "family",
+                className: "icon-[mdi--human-male-female-child]",
+            },
             { name: "loan", className: "icon-[mdi--hand-coin]" },
             { name: "hongbao", className: "icon-[mdi--wallet-giftcard]" },
             { name: "Lean", className: "icon-[mdi--hand-extended]" },
@@ -221,7 +224,10 @@ export const ICONS = [
                 className: "icon-[mdi--dots-horizontal-circle]",
             },
             { name: "help-circle", className: "icon-[mdi--help-circle]" },
-            { name: "question-mark", className: "icon-[mdi--help-circle-outline]" },
+            {
+                name: "question-mark",
+                className: "icon-[mdi--help-circle-outline]",
+            },
             {
                 name: "other-expenses",
                 className: "icon-[mdi--folder-multiple]",

@@ -36,7 +36,11 @@ export const createGiteeSyncer = (config: {
         url?: string;
         content?: string;
     };
-    type GiteeUser = { login: string; id: number | string; avatar_url?: string };
+    type GiteeUser = {
+        login: string;
+        id: number | string;
+        avatar_url?: string;
+    };
 
     const pathToName = (path: string) => {
         const splitted = path.split("/");

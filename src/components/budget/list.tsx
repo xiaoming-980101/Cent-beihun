@@ -1,8 +1,8 @@
 import dayjs from "dayjs";
+import { confirm } from "@/components/ui/dialog/utils";
 import { useBudget } from "@/hooks/use-budget";
 import PopupLayout from "@/layouts/popup-layout";
 import { useIntl } from "@/locale";
-import { confirm } from "@/components/ui/dialog/utils";
 import { showSortableList } from "../sortable";
 import { Button } from "../ui/button";
 import { showBudgetEdit } from ".";
@@ -121,12 +121,14 @@ export default function BudgetListForm({
                                                 variant="destructive"
                                                 className="w-[24px] h-[24px] p-0"
                                                 onClick={async () => {
-                                                    const confirmed = await confirm({
-                                                        title: t(
-                                                            "are-you-sure-to-delete-this-budget",
-                                                        ),
-                                                        variant: "destructive",
-                                                    });
+                                                    const confirmed =
+                                                        await confirm({
+                                                            title: t(
+                                                                "are-you-sure-to-delete-this-budget",
+                                                            ),
+                                                            variant:
+                                                                "destructive",
+                                                        });
                                                     if (!confirmed) {
                                                         return;
                                                     }

@@ -230,7 +230,9 @@ export default function BillFilterForm({
                                     ...prev,
                                     recent: {
                                         value: prev.recent?.value ?? 1,
-                                        unit: v as NonNullable<BillFilter["recent"]>["unit"],
+                                        unit: v as NonNullable<
+                                            BillFilter["recent"]
+                                        >["unit"],
                                     },
                                 }));
                             }}

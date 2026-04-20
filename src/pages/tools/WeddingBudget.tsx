@@ -4,7 +4,11 @@ import { EmptyState, FloatingActionButton } from "@/components/shared";
 import { WeddingPageShell, WeddingTopBar } from "@/components/wedding-ui";
 import { useWeddingStore } from "@/store/wedding";
 import { BUDGET_STATUSES } from "@/wedding/constants";
-import { checkBudgetStatus, formatAmount, formatShortDate } from "@/wedding/utils";
+import {
+    checkBudgetStatus,
+    formatAmount,
+    formatShortDate,
+} from "@/wedding/utils";
 
 const STATUS_STYLE = {
     planned: { color: "#F97316", bg: "rgba(249,115,22,0.12)" },
@@ -86,7 +90,10 @@ export default function WeddingBudget() {
                 </div>
                 <div className="mt-1 text-[10px] text-purple-900/70 dark:text-purple-200/70">
                     {budgets.length} 个项目 ·{" "}
-                    {budgets.filter((item) => item.status === "completed").length}{" "}
+                    {
+                        budgets.filter((item) => item.status === "completed")
+                            .length
+                    }{" "}
                     个已结清
                 </div>
             </section>
@@ -112,8 +119,9 @@ export default function WeddingBudget() {
                         >
                             {status === "all"
                                 ? "全部"
-                                : BUDGET_STATUSES.find((item) => item.id === status)
-                                      ?.name}
+                                : BUDGET_STATUSES.find(
+                                      (item) => item.id === status,
+                                  )?.name}
                         </button>
                     ),
                 )}
@@ -136,7 +144,9 @@ export default function WeddingBudget() {
                     filtered.map((budget) => {
                         const progress =
                             budget.budget > 0
-                                ? Math.round((budget.spent / budget.budget) * 100)
+                                ? Math.round(
+                                      (budget.spent / budget.budget) * 100,
+                                  )
                                 : 0;
                         const statusStyle = STATUS_STYLE[budget.status];
                         const budgetState = checkBudgetStatus(budget);
@@ -168,7 +178,8 @@ export default function WeddingBudget() {
                                             }}
                                         >
                                             {BUDGET_STATUSES.find(
-                                                (item) => item.id === budget.status,
+                                                (item) =>
+                                                    item.id === budget.status,
                                             )?.name || budget.status}
                                         </span>
                                         <div className="text-base font-bold text-[color:var(--wedding-text)]">
@@ -192,11 +203,14 @@ export default function WeddingBudget() {
                                         </div>
                                         <div className="text-[13px] font-semibold text-orange-500">
                                             ¥
-                                            {(budget.balance ??
+                                            {(
+                                                budget.balance ??
                                                 Math.max(
-                                                    budget.budget - budget.spent,
+                                                    budget.budget -
+                                                        budget.spent,
                                                     0,
-                                                )).toLocaleString()}
+                                                )
+                                            ).toLocaleString()}
                                         </div>
                                     </div>
                                 </div>
@@ -222,7 +236,9 @@ export default function WeddingBudget() {
                                     {budget.vendorPhone ? (
                                         <span>{budget.vendorPhone}</span>
                                     ) : budget.dueDate ? (
-                                        <span>{formatShortDate(budget.dueDate)}</span>
+                                        <span>
+                                            {formatShortDate(budget.dueDate)}
+                                        </span>
                                     ) : null}
                                 </div>
                             </button>

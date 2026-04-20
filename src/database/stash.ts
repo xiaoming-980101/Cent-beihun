@@ -252,10 +252,7 @@ const diffMeta = (
     return diffs;
 };
 
-export const mergeMeta = (
-    prev: unknown,
-    patch: unknown,
-) => {
+export const mergeMeta = (prev: unknown, patch: unknown) => {
     if (
         patch &&
         typeof patch === "object" &&
@@ -267,7 +264,8 @@ export const mergeMeta = (
                 ? (prev as Record<string, unknown>)
                 : {};
         const result = merge(base, patch as Record<string, unknown>);
-        const patchMeta = (patch as { $$patch?: { timestamp?: number } }).$$patch;
+        const patchMeta = (patch as { $$patch?: { timestamp?: number } })
+            .$$patch;
         (result as Record<string, unknown>).__updated_at = patchMeta?.timestamp;
         delete (result as Record<string, unknown>).$$patch;
         return result;

@@ -64,7 +64,7 @@ const rebaseRates = (dailyData: DailyRate, newBase: string): Rate => {
     if (!baseRate) {
         console.warn(
             `Currency code '${newBase}' not found in exchange rates. Available currencies:`,
-            Object.keys(dailyData.rates)
+            Object.keys(dailyData.rates),
         );
         // 如果找不到货币，返回原始数据而不是抛出错误
         return { ...dailyData };

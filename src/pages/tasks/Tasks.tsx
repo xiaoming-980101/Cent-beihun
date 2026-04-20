@@ -4,7 +4,7 @@ import { useShallow } from "zustand/shallow";
 import { TaskListView } from "@/components/features/tasks/task-list-view";
 import { EmptyState, FloatingActionButton } from "@/components/shared";
 import { Badge } from "@/components/ui/badge";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
+import { ResponsiveDialog } from "@/components/ui/dialog/index";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { WeddingPageShell, WeddingTopBar } from "@/components/wedding-ui";
 import { useBookStore } from "@/store/book";
@@ -28,8 +28,22 @@ export default function Tasks() {
     const [activeFilter, setActiveFilter] = useState("全部");
     const [activeCategory, setActiveCategory] = useState("全部");
     const [showForm, setShowForm] = useState(false);
+    const [formLoading, setFormLoading] = useState(false);
     const [editingTask, setEditingTask] = useState<WeddingTask | null>(null);
     const taskFormRef = useRef<TaskFormHandle>(null);
+
+    // 处理任务表单提交
+    const handleTaskSubmit = async () => {
+        setFormLoading(true);
+        try {
+            await taskFormRef.current?.submit();
+            setShowForm(false);
+        } catch (error) {
+            console.error("Failed to submit task:", error);
+        } finally {
+            setFormLoading(false);
+        }
+    };
 
     const categories = useMemo(() => {
         return [
@@ -52,7 +66,9 @@ export default function Tasks() {
         });
     }, [activeCategory, activeFilter, tasks]);
 
-    const doneCount = tasks.filter((task) => task.status === "completed").length;
+    const doneCount = tasks.filter(
+        (task) => task.status === "completed",
+    ).length;
     const progress =
         tasks.length > 0 ? Math.round((doneCount / tasks.length) * 100) : 0;
 
@@ -126,7 +142,10 @@ export default function Tasks() {
                 {[
                     { label: "全部", icon: "icon-[mdi--view-grid-outline]" },
                     { label: "进行中", icon: "icon-[mdi--progress-clock]" },
-                    { label: "待办", icon: "icon-[mdi--checkbox-blank-circle-outline]" },
+                    {
+                        label: "待办",
+                        icon: "icon-[mdi--checkbox-blank-circle-outline]",
+                    },
                     { label: "已完成", icon: "icon-[mdi--check-circle]" },
                 ].map((item) => (
                     <Badge
@@ -138,9 +157,18 @@ export default function Tasks() {
                                 activeFilter === item.label
                                     ? "linear-gradient(135deg, #F472B6 0%, #EC4899 100%)"
                                     : "var(--wedding-surface-muted)",
-                            color: activeFilter === item.label ? "#fff" : "#F472B6",
-                            border: activeFilter === item.label ? "none" : "1px solid var(--wedding-line)",
-                            boxShadow: activeFilter === item.label ? "0 4px 14px -6px rgba(236, 72, 153, 0.4)" : "none",
+                            color:
+                                activeFilter === item.label
+                                    ? "#fff"
+                                    : "#F472B6",
+                            border:
+                                activeFilter === item.label
+                                    ? "none"
+                                    : "1px solid var(--wedding-line)",
+                            boxShadow:
+                                activeFilter === item.label
+                                    ? "0 4px 14px -6px rgba(236, 72, 153, 0.4)"
+                                    : "none",
                         }}
                     >
                         <i className={`${item.icon} size-3.5`} />
@@ -169,7 +197,10 @@ export default function Tasks() {
                                 activeCategory === item
                                     ? "#A855F7"
                                     : "var(--wedding-text-soft)",
-                            boxShadow: activeCategory === item ? "0 4px 14px -6px rgba(168, 85, 247, 0.3)" : "none",
+                            boxShadow:
+                                activeCategory === item
+                                    ? "0 4px 14px -6px rgba(168, 85, 247, 0.3)"
+                                    : "none",
                         }}
                     >
                         {item}
@@ -203,15 +234,18 @@ export default function Tasks() {
                 )}
             </section>
 
-            <FormDialog
+            <ResponsiveDialog
                 open={showForm}
                 onOpenChange={setShowForm}
                 title={editingTask ? "编辑任务" : "添加任务"}
+                description={editingTask ? "修改任务信息" : "创建新的婚礼任务"}
                 maxWidth="md"
                 fullScreenOnMobile={true}
-                saveButtonText={editingTask ? "保存更新" : "创建任务"}
-                onSave={async () => {
-                    await taskFormRef.current?.submit();
+                actions={{
+                    cancelText: "取消",
+                    confirmText: editingTask ? "保存更新" : "创建任务",
+                    onConfirm: handleTaskSubmit,
+                    loading: formLoading,
                 }}
             >
                 <TaskForm
@@ -219,7 +253,7 @@ export default function Tasks() {
                     editTask={editingTask ?? undefined}
                     onClose={() => setShowForm(false)}
                 />
-            </FormDialog>
+            </ResponsiveDialog>
         </WeddingPageShell>
     );
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { BatchEditOptions } from "./batch-edit-form";
 import BatchEditForm from "./batch-edit-form";
 
@@ -28,7 +28,10 @@ export function BatchEditProvider() {
 
         return () => {
             window.removeEventListener("show-batch-edit", handleShow);
-            window.removeEventListener("store-batch-edit-resolve", handleStoreResolve);
+            window.removeEventListener(
+                "store-batch-edit-resolve",
+                handleStoreResolve,
+            );
         };
     }, []);
 

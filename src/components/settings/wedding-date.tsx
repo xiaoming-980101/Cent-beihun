@@ -3,7 +3,7 @@ import { useState } from "react";
 import WeddingDatePicker from "@/components/ui/wedding-date-picker";
 import { useWeddingStore } from "@/store/wedding";
 import { Button } from "../ui/button";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import { ResponsiveDialog } from "../ui/dialog/index";
 
 export default function WeddingDateSettingsItem() {
     const { weddingData, updateWeddingDate, updateEngagementDate } =
@@ -43,7 +43,9 @@ export default function WeddingDateSettingsItem() {
                             </div>
                             <div className="wedding-settings-item__desc">
                                 {weddingDate
-                                    ? dayjs(weddingDate).format("YYYY年MM月DD日")
+                                    ? dayjs(weddingDate).format(
+                                          "YYYY年MM月DD日",
+                                      )
                                     : "设置婚期后显示倒计时"}
                             </div>
                         </div>
@@ -52,11 +54,24 @@ export default function WeddingDateSettingsItem() {
                 </div>
             </Button>
 
-            <FormDialog
+            <ResponsiveDialog
                 open={showPicker}
                 onOpenChange={setShowPicker}
                 title="设置婚礼日期"
                 maxWidth="sm"
+                actions={{
+                    cancelText: "取消",
+                    confirmText: "确定",
+                    onConfirm: () => {
+                        if (engagementDateDraft) {
+                            updateEngagementDate(engagementDateDraft);
+                        }
+                        if (weddingDateDraft) {
+                            updateWeddingDate(weddingDateDraft);
+                        }
+                        setShowPicker(false);
+                    },
+                }}
             >
                 <div className="space-y-4">
                     <div className="rounded-[20px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] p-4">
@@ -101,32 +116,7 @@ export default function WeddingDateSettingsItem() {
                         />
                     </div>
                 </div>
-
-                <div className="mt-5 flex gap-3">
-                    <Button
-                        onClick={() => setShowPicker(false)}
-                        variant="outline"
-                        className="flex-1 rounded-full border-[color:var(--wedding-line)] text-[color:var(--wedding-text-mute)] hover:bg-[color:var(--wedding-surface-muted)]"
-                    >
-                        取消
-                    </Button>
-                    <Button
-                        onClick={() => {
-                            if (engagementDateDraft) {
-                                updateEngagementDate(engagementDateDraft);
-                            }
-                            if (weddingDateDraft) {
-                                updateWeddingDate(weddingDateDraft);
-                            }
-                            setShowPicker(false);
-                        }}
-                        className="flex-1 rounded-full bg-gradient-to-r from-pink-500 to-pink-600 text-white shadow-[0_8px_20px_-8px_rgba(236,72,153,0.6)] hover:shadow-[0_12px_28px_-8px_rgba(236,72,153,0.7)]"
-                    >
-                        <i className="icon-[mdi--check] mr-1 size-4" />
-                        确定
-                    </Button>
-                </div>
-            </FormDialog>
+            </ResponsiveDialog>
         </div>
     );
 }

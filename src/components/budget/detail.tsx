@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import { useEffect, useState } from "react";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import { BudgetDetailForm } from "./detail-form";
 import type { Budget } from "./type";
 
@@ -26,11 +26,17 @@ export function BudgetDetailProvider() {
         }) as EventListener;
 
         window.addEventListener("show-budget-detail", handleShow);
-        window.addEventListener("store-budget-detail-resolve", handleStoreResolve);
+        window.addEventListener(
+            "store-budget-detail-resolve",
+            handleStoreResolve,
+        );
 
         return () => {
             window.removeEventListener("show-budget-detail", handleShow);
-            window.removeEventListener("store-budget-detail-resolve", handleStoreResolve);
+            window.removeEventListener(
+                "store-budget-detail-resolve",
+                handleStoreResolve,
+            );
         };
     }, []);
 
@@ -51,7 +57,7 @@ export function BudgetDetailProvider() {
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={handleOpenChange}
             title="预算详情"
@@ -63,7 +69,7 @@ export function BudgetDetailProvider() {
                 edit={edit}
                 onCancel={() => handleOpenChange(false)}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

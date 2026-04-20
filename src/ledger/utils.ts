@@ -7,7 +7,7 @@ dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 
 import { DefaultCurrencyId as DefaultBaseCurrencyId } from "@/api/currency/currencies";
-import { useIntl } from "@/locale";
+import type { useIntl } from "@/locale";
 import { BillCategories } from "./category";
 import type { Bill, BillCategory, BillFilter, BillType } from "./type";
 
@@ -200,11 +200,7 @@ export const categoriesGridClassName = (cs: BillCategory[] | undefined) =>
 /**
  * 属性合并辅助函数：处理 A, B, Default 三者之间的冲突
  */
-function mergeProperties(
-    valA: unknown,
-    valB: unknown,
-    valD: unknown,
-): unknown {
+function mergeProperties(valA: unknown, valB: unknown, valD: unknown): unknown {
     // 1. 如果 B 中没有该属性，或者值完全一样，保留 A 的值（或者 B 的值，反正一样）
     if (valB === undefined || valA === valB) {
         return valA;

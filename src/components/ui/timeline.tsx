@@ -1,5 +1,5 @@
-import { cn } from "@/utils";
 import type { ReactNode } from "react";
+import { cn } from "@/utils";
 import { Avatar, AvatarFallback } from "./avatar";
 import { ScrollArea } from "./scroll-area";
 import { Separator } from "./separator";
@@ -75,7 +75,9 @@ export function Timeline({
                                     {(item.time || item.description) && (
                                         <p className="mt-0.5 text-xs text-muted-foreground">
                                             {item.time}
-                                            {item.time && item.description && " · "}
+                                            {item.time &&
+                                                item.description &&
+                                                " · "}
                                             {item.description}
                                         </p>
                                     )}
@@ -149,7 +151,8 @@ export function Timeline({
                                         <div
                                             className={cn(
                                                 "shrink-0 text-right text-lg font-bold",
-                                                item.amountColor || "text-pink-500",
+                                                item.amountColor ||
+                                                    "text-pink-500",
                                             )}
                                         >
                                             {item.amount}
@@ -175,38 +178,20 @@ export function Timeline({
         return (
             <div className={cn("space-y-3", className)}>
                 {items.map((item, index) => (
-                    <div key={item.id} className="flex gap-3">
+                    <div key={item.id} className="flex gap-4">
                         {/* 时间线左侧 */}
-                        <div className="relative flex flex-col items-center">
+                        <div className="relative flex flex-col items-center pt-1">
                             {/* 节点 */}
-                            <div
-                                className={cn(
-                                    "z-10 flex h-9 w-9 items-center justify-center rounded-full border-2 border-background shadow-sm",
-                                    item.iconBg || "bg-pink-500",
-                                )}
-                            >
-                                <div
-                                    className="flex h-7 w-7 items-center justify-center rounded-full"
-                                    style={
-                                        item.iconColor
-                                            ? {
-                                                  color: item.iconColor,
-                                                  backgroundColor: `${item.iconColor}20`,
-                                              }
-                                            : {
-                                                  color: "white",
-                                                  backgroundColor: "transparent",
-                                              }
-                                    }
-                                >
+                            <div className="z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-full border-2 border-[color:var(--wedding-surface)] bg-gradient-to-br from-pink-400 to-pink-500 shadow-sm dark:border-[color:var(--wedding-surface-muted)] dark:from-pink-500 dark:to-pink-600">
+                                <div className="flex h-full w-full items-center justify-center text-white">
                                     {item.icon || (
-                                        <div className="h-2.5 w-2.5 rounded-full bg-current" />
+                                        <div className="h-2 w-2 rounded-full bg-current" />
                                     )}
                                 </div>
                             </div>
                             {/* 连接线 */}
                             {index < items.length - 1 && (
-                                <div className="h-full w-px flex-1 bg-gradient-to-b from-pink-300/70 via-violet-300/55 to-transparent dark:from-pink-500/35 dark:via-violet-500/25" />
+                                <div className="mt-2 h-full w-[2px] flex-1 bg-gradient-to-b from-pink-300/50 via-pink-200/30 to-transparent dark:from-pink-500/30 dark:via-pink-500/15 dark:to-transparent" />
                             )}
                         </div>
 
@@ -214,14 +199,14 @@ export function Timeline({
                         <button
                             type="button"
                             onClick={item.onClick}
-                            className="mb-3 flex flex-1 items-start justify-between gap-3 rounded-[18px] border border-border bg-card px-3 py-3 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
+                            className="mb-3 flex flex-1 items-start justify-between gap-4 rounded-2xl border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] px-4 py-3.5 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md hover:border-pink-200/60 active:translate-y-0 dark:hover:border-pink-500/30"
                         >
                             <div className="min-w-0 flex-1">
-                                <p className="truncate text-sm font-semibold text-foreground">
+                                <p className="truncate text-[14px] font-semibold text-[color:var(--wedding-text)]">
                                     {item.title}
                                 </p>
                                 {(item.time || item.description) && (
-                                    <p className="mt-1 text-xs text-muted-foreground">
+                                    <p className="mt-1.5 text-[12px] text-[color:var(--wedding-text-mute)]">
                                         {item.time}
                                         {item.time && item.description && " · "}
                                         {item.description}
@@ -231,7 +216,7 @@ export function Timeline({
                             {item.amount && (
                                 <div
                                     className={cn(
-                                        "shrink-0 text-right text-base font-semibold",
+                                        "shrink-0 text-right text-[16px] font-bold",
                                         item.amountColor || "text-pink-500",
                                     )}
                                 >
@@ -247,7 +232,10 @@ export function Timeline({
 
     if (showScrollArea) {
         return (
-            <ScrollArea className="rounded-[20px] border border-border bg-gradient-to-b from-background to-muted/30 p-3" style={{ height: scrollHeight }}>
+            <ScrollArea
+                className="rounded-2xl bg-transparent p-2"
+                style={{ height: scrollHeight }}
+            >
                 <TimelineContent />
             </ScrollArea>
         );

@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1776299785219,
-  "projectRoot": "d:\\ai\\dinghun\\Cent-beihun",
+  "lastScanned": 1776697949204,
+  "projectRoot": "/Users/baobeizhenkeai/Documents/beihun",
   "techStack": {
     "languages": [
       {
@@ -33,6 +33,11 @@
         "category": "frontend"
       },
       {
+        "name": "@playwright/test",
+        "version": "1.59.1",
+        "category": "testing"
+      },
+      {
         "name": "esbuild",
         "version": "0.27.2",
         "category": "build"
@@ -46,6 +51,11 @@
         "name": "vite",
         "version": "7.1.2",
         "category": "build"
+      },
+      {
+        "name": "vitest",
+        "version": "4.1.4",
+        "category": "testing"
       }
     ],
     "packageManager": "pnpm",
@@ -53,18 +63,23 @@
   },
   "build": {
     "buildCommand": "pnpm build",
-    "testCommand": null,
+    "testCommand": "pnpm test",
     "lintCommand": "pnpm lint",
     "devCommand": "pnpm dev",
     "scripts": {
       "dev": "vite --host",
       "build": "vite build",
       "analyze": "ANALYZE=true vite build",
-      "lint": "tsc -b && biome check --diagnostic-level error",
+      "analyze:report": "ANALYZE=true vite build && node scripts/report-bundle.mjs",
+      "lint": "tsc -b",
+      "lint:biome": "biome check --diagnostic-level error",
       "preview": "vite preview --host --port 5173",
       "check": "biome check --write",
       "pre-commit": "pnpm run lint",
-      "screenshot": "node screenshots/capture.cjs"
+      "screenshot": "node screenshots/capture.cjs",
+      "test": "vitest --run",
+      "test:watch": "vitest",
+      "test:ui": "vitest --ui"
     }
   },
   "conventions": {
@@ -79,7 +94,9 @@
     "mainDirectories": [
       "docs",
       "public",
-      "src"
+      "scripts",
+      "src",
+      "tests"
     ],
     "gitBranches": {
       "defaultBranch": "main",
@@ -91,8 +108,8 @@
     "dist": {
       "path": "dist",
       "purpose": "Distribution/build output",
-      "fileCount": 7,
-      "lastAccessed": 1776299785184,
+      "fileCount": 8,
+      "lastAccessed": 1776697949169,
       "keyFiles": [
         "__headers",
         "favicon.ico",
@@ -104,24 +121,21 @@
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
-      "fileCount": 1,
-      "lastAccessed": 1776299785185,
+      "fileCount": 9,
+      "lastAccessed": 1776697949170,
       "keyFiles": [
-        "gitee-pages-deploy.md"
+        "2026-04-16-final-summary.md",
+        "2026-04-16-phase2-improvements.md",
+        "2026-04-16-shadcn-ui-integration.md",
+        "2026-04-16-shadcn-ui-migration-plan.md",
+        "2026-04-16-task-list-optimization.md"
       ]
-    },
-    "outputs": {
-      "path": "outputs",
-      "purpose": null,
-      "fileCount": 0,
-      "lastAccessed": 1776299785193,
-      "keyFiles": []
     },
     "public": {
       "path": "public",
       "purpose": "Public files",
       "fileCount": 3,
-      "lastAccessed": 1776299785193,
+      "lastAccessed": 1776697949178,
       "keyFiles": [
         "__headers",
         "favicon.ico",
@@ -131,18 +145,30 @@
     "screenshots": {
       "path": "screenshots",
       "purpose": null,
-      "fileCount": 27,
-      "lastAccessed": 1776299785194,
+      "fileCount": 24,
+      "lastAccessed": 1776697949178,
       "keyFiles": [
+        "1776263653187.png",
         "capture.cjs",
-        "config.example.cjs"
+        "config.example.cjs",
+        "mobile-dialog-bill-editor-date-picker.png",
+        "mobile-dialog-bill-editor.png"
+      ]
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 1,
+      "lastAccessed": 1776697949178,
+      "keyFiles": [
+        "report-bundle.mjs"
       ]
     },
     "src": {
       "path": "src",
       "purpose": "Source code",
       "fileCount": 5,
-      "lastAccessed": 1776299785194,
+      "lastAccessed": 1776697949178,
       "keyFiles": [
         "index.css",
         "main.tsx",
@@ -151,141 +177,64 @@
         "vite-env.d.ts"
       ]
     },
-    "截图": {
-      "path": "截图",
+    "test-results": {
+      "path": "test-results",
       "purpose": null,
+      "fileCount": 1,
+      "lastAccessed": 1776697949190,
+      "keyFiles": []
+    },
+    "tests": {
+      "path": "tests",
+      "purpose": "Test files",
       "fileCount": 0,
-      "lastAccessed": 1776299785195,
+      "lastAccessed": 1776697949199,
       "keyFiles": []
     },
     "dist/assets": {
       "path": "dist/assets",
       "purpose": "Static assets",
-      "fileCount": 27,
-      "lastAccessed": 1776299785196,
+      "fileCount": 79,
+      "lastAccessed": 1776697949201,
       "keyFiles": [
-        "en-CR9-uxYy.js",
-        "GiftBook-B23qMM_m.js",
-        "GuestManagement-BCLctRPu.js"
+        "GiftBook-CeI7P7Wy.js",
+        "GuestManagement-D5NdT4zc.js",
+        "PlannerAssistant-CJ3UXhKi.js"
       ]
     },
     "src/api": {
       "path": "src/api",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1776299785197,
+      "lastAccessed": 1776697949204,
       "keyFiles": []
     },
     "src/assets": {
       "path": "src/assets",
       "purpose": "Static assets",
       "fileCount": 0,
-      "lastAccessed": 1776299785197,
+      "lastAccessed": 1776697949204,
       "keyFiles": []
     },
     "src/components": {
       "path": "src/components",
       "purpose": "UI components",
-      "fileCount": 14,
-      "lastAccessed": 1776299785198,
+      "fileCount": 15,
+      "lastAccessed": 1776697949204,
       "keyFiles": [
         "animated-number.tsx",
         "clearable.tsx",
         "date-picker.tsx"
       ]
+    },
+    "src/lib": {
+      "path": "src/lib",
+      "purpose": "Library code",
+      "fileCount": 0,
+      "lastAccessed": 1776697949204,
+      "keyFiles": []
     }
   },
-  "hotPaths": [
-    {
-      "path": "src\\pages\\home\\index.tsx",
-      "accessCount": 14,
-      "lastAccessed": 1776304555640,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\settings\\form.tsx",
-      "accessCount": 3,
-      "lastAccessed": 1776304354075,
-      "type": "file"
-    },
-    {
-      "path": "package.json",
-      "accessCount": 1,
-      "lastAccessed": 1775803519299,
-      "type": "file"
-    },
-    {
-      "path": "README.md",
-      "accessCount": 1,
-      "lastAccessed": 1775803559266,
-      "type": "file"
-    },
-    {
-      "path": "vercel.json",
-      "accessCount": 1,
-      "lastAccessed": 1775803559726,
-      "type": "file"
-    },
-    {
-      "path": "vite.config.ts",
-      "accessCount": 1,
-      "lastAccessed": 1775803560200,
-      "type": "file"
-    },
-    {
-      "path": "index.html",
-      "accessCount": 1,
-      "lastAccessed": 1775803571134,
-      "type": "file"
-    },
-    {
-      "path": "nginx.conf",
-      "accessCount": 1,
-      "lastAccessed": 1775803650837,
-      "type": "file"
-    },
-    {
-      "path": "deploy-jdcloud.md",
-      "accessCount": 1,
-      "lastAccessed": 1775803652066,
-      "type": "file"
-    },
-    {
-      "path": "src\\store\\wedding.ts",
-      "accessCount": 1,
-      "lastAccessed": 1776304254266,
-      "type": "file"
-    },
-    {
-      "path": "src\\wedding\\components\\CountdownCard.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776304254336,
-      "type": "file"
-    },
-    {
-      "path": "src\\pages\\tools\\PlannerAssistant.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776304260669,
-      "type": "file"
-    },
-    {
-      "path": "src\\pages\\settings\\index.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776304284126,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\settings\\preset.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776304300463,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\settings\\wedding-date.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1776304330025,
-      "type": "file"
-    }
-  ],
+  "hotPaths": [],
   "userDirectives": []
 }

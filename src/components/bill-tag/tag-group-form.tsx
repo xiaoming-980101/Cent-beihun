@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
-import { FormDialog } from "../ui/dialog/form-dialog";
-import { EditTagGroupForm, type EditTagGroup } from "./tag-group";
+import { useEffect, useState } from "react";
+import { ResponsiveDialog } from "../ui/dialog/index";
+import { type EditTagGroup, EditTagGroupForm } from "./tag-group";
 
 type EditTagGroupResult = EditTagGroup | "delete";
 type ShowEditTagGroupDetail = { edit?: EditTagGroup };
@@ -28,11 +28,17 @@ export function EditTagGroupProvider() {
         }) as EventListener;
 
         window.addEventListener("show-edit-tag-group", handleShow);
-        window.addEventListener("store-edit-tag-group-resolve", handleStoreResolve);
+        window.addEventListener(
+            "store-edit-tag-group-resolve",
+            handleStoreResolve,
+        );
 
         return () => {
             window.removeEventListener("show-edit-tag-group", handleShow);
-            window.removeEventListener("store-edit-tag-group-resolve", handleStoreResolve);
+            window.removeEventListener(
+                "store-edit-tag-group-resolve",
+                handleStoreResolve,
+            );
         };
     }, []);
 
@@ -53,13 +59,18 @@ export function EditTagGroupProvider() {
     };
 
     return (
-        <FormDialog open={open} onOpenChange={handleOpenChange} title="编辑标签组" fullScreenOnMobile={true}>
+        <ResponsiveDialog
+            open={open}
+            onOpenChange={handleOpenChange}
+            title="编辑标签组"
+            fullScreenOnMobile={true}
+        >
             <EditTagGroupForm
                 edit={edit}
                 onConfirm={handleConfirm}
                 onCancel={() => handleOpenChange(false)}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

@@ -40,6 +40,7 @@ const GuestManagement = lazyWithReload(
 const WeddingBudget = lazyWithReload(
     () => import("@/pages/tools/WeddingBudget"),
 );
+const ModalTest = lazyWithReload(() => import("@/pages/modal-test"));
 
 type CachedRouteEntry = {
     key: string;
@@ -92,6 +93,11 @@ const cachedRouteEntries: CachedRouteEntry[] = [
         key: "/tools/wedding-budget",
         match: (pathname) => pathname === "/tools/wedding-budget",
         render: () => <WeddingBudget />,
+    },
+    {
+        key: "/modal-test",
+        match: (pathname) => pathname === "/modal-test",
+        render: () => <ModalTest />,
     },
 ];
 

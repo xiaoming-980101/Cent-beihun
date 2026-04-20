@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import CurrencyListForm from "./list";
 
 export function CurrencyListProvider() {
@@ -14,12 +14,14 @@ export function CurrencyListProvider() {
     }, []);
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={(nextOpen) => {
                 setOpen(nextOpen);
                 if (!nextOpen) {
-                    window.dispatchEvent(new CustomEvent("currency-list-closed"));
+                    window.dispatchEvent(
+                        new CustomEvent("currency-list-closed"),
+                    );
                 }
             }}
             title="币种管理"
@@ -30,10 +32,12 @@ export function CurrencyListProvider() {
             <CurrencyListForm
                 onCancel={() => {
                     setOpen(false);
-                    window.dispatchEvent(new CustomEvent("currency-list-closed"));
+                    window.dispatchEvent(
+                        new CustomEvent("currency-list-closed"),
+                    );
                 }}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

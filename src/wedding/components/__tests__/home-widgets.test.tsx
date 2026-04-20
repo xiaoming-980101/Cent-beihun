@@ -12,7 +12,9 @@ type MockWeddingData = {
         status: "pending" | "in_progress" | "completed";
         deadline?: number;
     }>;
-    guests: Array<{ inviteStatus: "pending" | "invited" | "confirmed" | "declined" }>;
+    guests: Array<{
+        inviteStatus: "pending" | "invited" | "confirmed" | "declined";
+    }>;
     giftRecords: Array<{ type: "received" | "sent"; amount: number }>;
     weddingBudgets: Array<{ budget: number; spent: number }>;
 };
@@ -45,7 +47,10 @@ describe("Home Widgets", () => {
                     deadline: now.getTime() + 24 * 60 * 60 * 1000,
                 },
             ],
-            guests: [{ inviteStatus: "confirmed" }, { inviteStatus: "pending" }],
+            guests: [
+                { inviteStatus: "confirmed" },
+                { inviteStatus: "pending" },
+            ],
             giftRecords: [
                 { type: "received", amount: 2000 },
                 { type: "received", amount: 1000 },
@@ -100,6 +105,8 @@ describe("Home Widgets", () => {
             </MemoryRouter>,
         );
 
-        expect(screen.getByText("今日暂无待办，继续保持好节奏。")).toBeInTheDocument();
+        expect(
+            screen.getByText("今日暂无待办，继续保持好节奏。"),
+        ).toBeInTheDocument();
     });
 });

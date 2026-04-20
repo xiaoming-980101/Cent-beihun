@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import { useEffect, useState } from "react";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import BudgetEditForm from "./form";
 import type { EditBudget } from "./type";
 
@@ -26,11 +26,17 @@ export function BudgetEditProvider() {
         }) as EventListener;
 
         window.addEventListener("show-budget-edit", handleShow);
-        window.addEventListener("store-budget-edit-resolve", handleStoreResolve);
+        window.addEventListener(
+            "store-budget-edit-resolve",
+            handleStoreResolve,
+        );
 
         return () => {
             window.removeEventListener("show-budget-edit", handleShow);
-            window.removeEventListener("store-budget-edit-resolve", handleStoreResolve);
+            window.removeEventListener(
+                "store-budget-edit-resolve",
+                handleStoreResolve,
+            );
         };
     }, []);
 
@@ -51,24 +57,25 @@ export function BudgetEditProvider() {
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={handleOpenChange}
             title="编辑预算"
             fullScreenOnMobile={true}
             bodyClassName="p-0 sm:pt-14"
-            fullscreenBodyClassName="max-sm:p-0"
         >
             <BudgetEditForm
                 edit={edit}
                 onConfirm={handleConfirm}
                 onCancel={() => handleOpenChange(false)}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 
-export function showBudgetEdit(edit?: EditBudget): Promise<EditBudget | undefined> {
+export function showBudgetEdit(
+    edit?: EditBudget,
+): Promise<EditBudget | undefined> {
     return new Promise((resolve) => {
         window.dispatchEvent(
             new CustomEvent("show-budget-edit", { detail: { edit } }),

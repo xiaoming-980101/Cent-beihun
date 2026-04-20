@@ -1,183 +1,195 @@
-import * as React from "react"
-import * as DialogPrimitive from "@radix-ui/react-dialog"
-import { X } from "lucide-react"
+import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { X } from "lucide-react";
+import * as React from "react";
 
-import { cn } from "@/utils/index"
+import { cn } from "@/utils/index";
 
 function isFloatingLayerInteraction(target: EventTarget | null): boolean {
-  if (!(target instanceof Element)) return false
+    if (!(target instanceof Element)) return false;
 
-  return Boolean(
-    target.closest('[role="listbox"]') ||
-      target.closest('[role="dialog"]') ||
-      target.closest('[role="menu"]') ||
-      target.closest('[data-radix-popper-content-wrapper]') ||
-      target.closest('[data-radix-select-content]') ||
-      target.closest('[data-radix-select-viewport]') ||
-      target.closest('[data-radix-popover-content]') ||
-      target.closest('[data-radix-dropdown-menu-content]') ||
-      target.closest('[data-radix-context-menu-content]') ||
-      target.closest('.react-datepicker') ||
-      target.closest('.react-datepicker-popper')
-  )
+    return Boolean(
+        target.closest('[role="listbox"]') ||
+            target.closest('[role="dialog"]') ||
+            target.closest('[role="menu"]') ||
+            target.closest("[data-radix-popper-content-wrapper]") ||
+            target.closest("[data-radix-select-content]") ||
+            target.closest("[data-radix-select-viewport]") ||
+            target.closest("[data-radix-popover-content]") ||
+            target.closest("[data-radix-dropdown-menu-content]") ||
+            target.closest("[data-radix-context-menu-content]") ||
+            target.closest(".react-datepicker") ||
+            target.closest(".react-datepicker-popper"),
+    );
 }
 
 function hasOpenFloatingLayer(): boolean {
-  if (typeof document === "undefined") return false
+    if (typeof document === "undefined") return false;
 
-  return Boolean(
-    document.querySelector('[data-radix-dropdown-menu-content][data-state="open"]') ||
-      document.querySelector('[data-radix-popover-content][data-state="open"]') ||
-      document.querySelector('[data-radix-select-content][data-state="open"]') ||
-      document.querySelector(".react-datepicker-popper")
-  )
+    return Boolean(
+        document.querySelector(
+            '[data-radix-dropdown-menu-content][data-state="open"]',
+        ) ||
+            document.querySelector(
+                '[data-radix-popover-content][data-state="open"]',
+            ) ||
+            document.querySelector(
+                '[data-radix-select-content][data-state="open"]',
+            ) ||
+            document.querySelector(".react-datepicker-popper"),
+    );
 }
 
-const Dialog = DialogPrimitive.Root
+const Dialog = DialogPrimitive.Root;
 
-const DialogTrigger = DialogPrimitive.Trigger
+const DialogTrigger = DialogPrimitive.Trigger;
 
-const DialogPortal = DialogPrimitive.Portal
+const DialogPortal = DialogPrimitive.Portal;
 
-const DialogClose = DialogPrimitive.Close
+const DialogClose = DialogPrimitive.Close;
 
 const DialogOverlay = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Overlay>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
+    React.ElementRef<typeof DialogPrimitive.Overlay>,
+    React.ComponentPropsWithoutRef<typeof DialogPrimitive.Overlay>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Overlay
-    ref={ref}
-    className={cn(
-      "fixed inset-0 z-[80] bg-[rgba(15,12,18,0.72)] backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
-      className
-    )}
-    {...props}
-  />
-))
-DialogOverlay.displayName = DialogPrimitive.Overlay.displayName
+    <DialogPrimitive.Overlay
+        ref={ref}
+        className={cn(
+            "fixed inset-0 z-[110] bg-[rgba(15,12,18,0.72)] backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+            className,
+        )}
+        {...props}
+    />
+));
+DialogOverlay.displayName = DialogPrimitive.Overlay.displayName;
 
 const DialogContent = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Content>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
-    fade?: boolean;
-    swipe?: boolean;
-    hideClose?: boolean;
-  }
+    React.ElementRef<typeof DialogPrimitive.Content>,
+    React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
+        fade?: boolean;
+        swipe?: boolean;
+        hideClose?: boolean;
+    }
 >(({ className, children, fade, swipe, hideClose, ...props }, ref) => (
-  <DialogPortal>
-    <DialogPrimitive.Close asChild>
-      <DialogOverlay />
-    </DialogPrimitive.Close>
-    <DialogPrimitive.Content
-      ref={ref}
-      className={cn(
-        "fixed left-[50%] top-[50%] z-[81] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border p-6 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
-        "rounded-[30px] border-[#edd6df] bg-[#fffdfd] shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)] dark:border-[#302631] dark:bg-[#181419]",
-        className
-      )}
-      aria-describedby={
-        Object.prototype.hasOwnProperty.call(props, "aria-describedby")
-          ? props["aria-describedby"]
-          : undefined
-      }
-      onPointerDownOutside={(e) => {
-        // 阻止点击 Select/Popover/Dropdown 等浮层时关闭弹窗
-        if (isFloatingLayerInteraction(e.target)) {
-          e.preventDefault()
-        }
-      }}
-      onFocusOutside={(e) => {
-        // 某些浮层(如 DropdownMenu)会先触发焦点迁移，导致弹窗被误判为外部交互
-        if (isFloatingLayerInteraction(e.target) || hasOpenFloatingLayer()) {
-          e.preventDefault()
-        }
-      }}
-      onInteractOutside={(e) => {
-        if (isFloatingLayerInteraction(e.target) || hasOpenFloatingLayer()) {
-          e.preventDefault()
-        }
-      }}
-      {...props}
-    >
-      {children}
-      {!hideClose && (
-        <DialogPrimitive.Close
-          onClick={(event) => event.stopPropagation()}
-          className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] flex h-9 w-9 items-center justify-center rounded-full text-[color:var(--wedding-text-mute)] transition hover:bg-[color:var(--wedding-surface-muted)] hover:text-[color:var(--wedding-text)] focus:outline-none focus:ring-2 focus:ring-[color:var(--wedding-line-strong)] focus:ring-offset-2 disabled:pointer-events-none"
-        >
-          <X className="h-5 w-5" />
-          <span className="sr-only">Close</span>
+    <DialogPortal>
+        <DialogPrimitive.Close asChild>
+            <DialogOverlay />
         </DialogPrimitive.Close>
-      )}
-    </DialogPrimitive.Content>
-  </DialogPortal>
-))
-DialogContent.displayName = DialogPrimitive.Content.displayName
+        <DialogPrimitive.Content
+            ref={ref}
+            className={cn(
+                "fixed left-[50%] top-[50%] z-[111] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border p-6 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
+                "rounded-[30px] border-[#edd6df] bg-[#fffdfd] shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)] dark:border-[#302631] dark:bg-[#181419]",
+                className,
+            )}
+            aria-describedby={
+                Object.hasOwn(props, "aria-describedby")
+                    ? props["aria-describedby"]
+                    : undefined
+            }
+            onPointerDownOutside={(e) => {
+                // 阻止点击 Select/Popover/Dropdown 等浮层时关闭弹窗
+                if (isFloatingLayerInteraction(e.target)) {
+                    e.preventDefault();
+                }
+            }}
+            onFocusOutside={(e) => {
+                // 某些浮层(如 DropdownMenu)会先触发焦点迁移，导致弹窗被误判为外部交互
+                if (
+                    isFloatingLayerInteraction(e.target) ||
+                    hasOpenFloatingLayer()
+                ) {
+                    e.preventDefault();
+                }
+            }}
+            onInteractOutside={(e) => {
+                if (
+                    isFloatingLayerInteraction(e.target) ||
+                    hasOpenFloatingLayer()
+                ) {
+                    e.preventDefault();
+                }
+            }}
+            {...props}
+        >
+            {children}
+            {!hideClose && (
+                <DialogPrimitive.Close
+                    onClick={(event) => event.stopPropagation()}
+                    className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] flex h-9 w-9 items-center justify-center rounded-full text-[color:var(--wedding-text-mute)] transition hover:bg-[color:var(--wedding-surface-muted)] hover:text-[color:var(--wedding-text)] focus:outline-none focus:ring-2 focus:ring-[color:var(--wedding-line-strong)] focus:ring-offset-2 disabled:pointer-events-none"
+                >
+                    <X className="h-5 w-5" />
+                    <span className="sr-only">Close</span>
+                </DialogPrimitive.Close>
+            )}
+        </DialogPrimitive.Content>
+    </DialogPortal>
+));
+DialogContent.displayName = DialogPrimitive.Content.displayName;
 
 const DialogHeader = ({
-  className,
-  ...props
+    className,
+    ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn(
-      "flex flex-col space-y-1.5 text-center sm:text-left",
-      className
-    )}
-    {...props}
-  />
-)
-DialogHeader.displayName = "DialogHeader"
+    <div
+        className={cn(
+            "flex flex-col space-y-1.5 text-center sm:text-left",
+            className,
+        )}
+        {...props}
+    />
+);
+DialogHeader.displayName = "DialogHeader";
 
 const DialogFooter = ({
-  className,
-  ...props
+    className,
+    ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
-  <div
-    className={cn(
-      "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
-      className
-    )}
-    {...props}
-  />
-)
-DialogFooter.displayName = "DialogFooter"
+    <div
+        className={cn(
+            "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+            className,
+        )}
+        {...props}
+    />
+);
+DialogFooter.displayName = "DialogFooter";
 
 const DialogTitle = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Title>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
+    React.ElementRef<typeof DialogPrimitive.Title>,
+    React.ComponentPropsWithoutRef<typeof DialogPrimitive.Title>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Title
-    ref={ref}
-    className={cn(
-      "text-base font-semibold leading-tight tracking-tight",
-      className
-    )}
-    {...props}
-  />
-))
-DialogTitle.displayName = DialogPrimitive.Title.displayName
+    <DialogPrimitive.Title
+        ref={ref}
+        className={cn(
+            "text-base font-semibold leading-tight tracking-tight",
+            className,
+        )}
+        {...props}
+    />
+));
+DialogTitle.displayName = DialogPrimitive.Title.displayName;
 
 const DialogDescription = React.forwardRef<
-  React.ElementRef<typeof DialogPrimitive.Description>,
-  React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
+    React.ElementRef<typeof DialogPrimitive.Description>,
+    React.ComponentPropsWithoutRef<typeof DialogPrimitive.Description>
 >(({ className, ...props }, ref) => (
-  <DialogPrimitive.Description
-    ref={ref}
-    className={cn("text-sm text-muted-foreground", className)}
-    {...props}
-  />
-))
-DialogDescription.displayName = DialogPrimitive.Description.displayName
+    <DialogPrimitive.Description
+        ref={ref}
+        className={cn("text-sm text-muted-foreground", className)}
+        {...props}
+    />
+));
+DialogDescription.displayName = DialogPrimitive.Description.displayName;
 
 export {
-  Dialog,
-  DialogPortal,
-  DialogOverlay,
-  DialogTrigger,
-  DialogClose,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-}
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogOverlay,
+    DialogPortal,
+    DialogTitle,
+    DialogTrigger,
+};

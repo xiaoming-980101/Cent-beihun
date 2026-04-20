@@ -3,8 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod/mini";
 import { useIntl } from "@/locale";
-import { FormDialog } from "../ui/dialog/form-dialog";
 import { Button } from "../ui/button";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import {
     Form,
     FormControl,
@@ -73,7 +73,7 @@ const LoadingForm = ({
         }
     };
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("sync-with-web-dav")}
@@ -240,7 +240,7 @@ const LoadingForm = ({
                     </Button>
                 </div>
             </Form>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 };
 
@@ -295,11 +295,13 @@ export const WebDAVAuthProvider = () => {
     );
 };
 
-export const showWebDAVAuth = (edit?: LoadingState): Promise<WebDAVEdit | null> => {
+export const showWebDAVAuth = (
+    edit?: LoadingState,
+): Promise<WebDAVEdit | null> => {
     return new Promise((resolve) => {
         resolveCallback = resolve;
         window.dispatchEvent(
-            new CustomEvent("show-webdav-auth", { detail: edit })
+            new CustomEvent("show-webdav-auth", { detail: edit }),
         );
     });
 };

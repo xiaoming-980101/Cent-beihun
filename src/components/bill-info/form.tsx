@@ -131,9 +131,9 @@ export default function BillInfo({
         ? scheduleds.find((v) => v.id === edit.extra?.scheduledId)
         : undefined;
     return (
-        <div className="flex h-full min-h-[320px] w-full flex-col rounded-[20px] bg-transparent p-0">
-            <div className="flex h-full w-full flex-col rounded-[18px] bg-transparent px-1 py-1">
-                <div className="flex-1 flex flex-col">
+        <div className="flex w-full flex-col rounded-[20px] bg-transparent p-0">
+            <div className="flex w-full flex-col rounded-[18px] bg-transparent px-1 py-1">
+                <div className="flex flex-col space-y-4">
                     {/* header */}
                     <div className="flex items-center justify-between">
                         <div className="flex items-center">
@@ -208,7 +208,7 @@ export default function BillInfo({
                     </div>
 
                     {edit.images && (
-                        <div className="flex-1 py-2 flex gap-2 items-center justify-center max-w-full overflow-x-auto hidden-scrollbar">
+                        <div className="flex gap-2 items-center justify-center max-w-full overflow-x-auto hidden-scrollbar py-2">
                             {edit.images.map((img) => {
                                 const imageKey =
                                     typeof img === "string"
@@ -219,7 +219,7 @@ export default function BillInfo({
                                         key={imageKey}
                                         source={img}
                                         alt=""
-                                        className="max-h-[200px] object-cover rounded min-w-24 min-h-24 data-[state=loading]:animate-pulse bg-primary/10"
+                                        className="max-h-[160px] object-cover rounded min-w-20 min-h-20 data-[state=loading]:animate-pulse bg-primary/10"
                                     />
                                 );
                             })}
@@ -234,7 +234,7 @@ export default function BillInfo({
                 </div>
 
                 {/* footer */}
-                <div className="footer flex items-center justify-between">
+                <div className="footer flex items-center justify-between pt-4 border-t border-[color:var(--wedding-line)]">
                     <div className="flex">
                         {canEdit && (
                             <MoreAction

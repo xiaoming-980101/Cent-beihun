@@ -9,27 +9,26 @@
 // 基础 Dialog 组件
 export {
     Dialog,
-    DialogPortal,
-    DialogOverlay,
-    DialogTrigger,
     DialogClose,
     DialogContent,
-    DialogHeader,
-    DialogFooter,
-    DialogTitle,
     DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogOverlay,
+    DialogPortal,
+    DialogTitle,
+    DialogTrigger,
 } from "../dialog";
-
+export { ConfirmDialog, type ConfirmDialogProps } from "./confirm-dialog";
 // 专用弹窗组件
 export { FormDialog, type FormDialogProps } from "./form-dialog";
-export { ConfirmDialog, type ConfirmDialogProps } from "./confirm-dialog";
 
 // 工具函数
 export {
-    confirm,
-    prompt,
+    type AlertOptions,
     alert,
     type ConfirmOptions,
+    confirm,
     type PromptOptions,
-    type AlertOptions,
+    prompt,
 } from "./utils";

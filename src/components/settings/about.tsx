@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
+import { ResponsiveDialog } from "@/components/ui/dialog/index";
 import { useIntl } from "@/locale";
 
 import { Button } from "../ui/button";
@@ -14,7 +14,7 @@ function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
     const t = useIntl();
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("about-cent")}
@@ -68,7 +68,7 @@ function AboutDialog({ open, onOpenChange }: AboutDialogProps) {
                     <i className="icon-[mdi--arrow-top-right]"></i>
                 </a>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 
@@ -102,12 +102,7 @@ function AboutSettingsProvider() {
         }
     };
 
-    return (
-        <AboutDialog
-            open={open}
-            onOpenChange={handleOpenChange}
-        />
-    );
+    return <AboutDialog open={open} onOpenChange={handleOpenChange} />;
 }
 
 export default function AboutSettingsItem() {

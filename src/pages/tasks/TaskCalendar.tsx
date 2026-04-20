@@ -6,7 +6,7 @@ import dayjs from "dayjs";
 import { Solar } from "lunar-javascript";
 import { useEffect, useMemo, useState } from "react";
 import { useShallow } from "zustand/shallow";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
+import { ResponsiveDialog } from "@/components/ui/dialog/index";
 import {
     WeddingBadge,
     WeddingFloatingActionButton,
@@ -123,6 +123,7 @@ export default function TaskCalendar() {
     const [selectedDate, setSelectedDate] = useState(today);
     const [collapsed, setCollapsed] = useState(false);
     const [showForm, setShowForm] = useState(false);
+    const [formLoading, setFormLoading] = useState(false);
     const [monthHolidayMap, setMonthHolidayMap] = useState<HolidayInfoMap>({});
 
     useEffect(() => {
@@ -392,9 +393,24 @@ export default function TaskCalendar() {
 
             <section className="grid grid-cols-3 gap-2">
                 {[
-                    ["本月任务", `${currentMonthTaskCount} 项`, currentMonth.format("YYYY年M月"), "#F472B6"],
-                    ["选中日期", `${selectedTasks.length} 项`, selectedDate.format("M月D日"), "#3B82F6"],
-                    ["已完成", `${selectedCompletedCount} 项`, "仅统计当前日期", "#22C55E"],
+                    [
+                        "本月任务",
+                        `${currentMonthTaskCount} 项`,
+                        currentMonth.format("YYYY年M月"),
+                        "#F472B6",
+                    ],
+                    [
+                        "选中日期",
+                        `${selectedTasks.length} 项`,
+                        selectedDate.format("M月D日"),
+                        "#3B82F6",
+                    ],
+                    [
+                        "已完成",
+                        `${selectedCompletedCount} 项`,
+                        "仅统计当前日期",
+                        "#22C55E",
+                    ],
                 ].map(([label, value, hint, color]) => (
                     <div
                         key={label}
@@ -448,7 +464,9 @@ export default function TaskCalendar() {
                                         <div className="min-w-0">
                                             <div className="flex items-center gap-2">
                                                 <div className="truncate text-lg font-semibold text-[color:var(--wedding-text)]">
-                                                    {getCategoryEmoji(task.category)}{" "}
+                                                    {getCategoryEmoji(
+                                                        task.category,
+                                                    )}{" "}
                                                     {task.title}
                                                 </div>
                                             </div>
@@ -477,7 +495,9 @@ export default function TaskCalendar() {
                                     </div>
                                     <div className="mt-3 flex flex-wrap gap-2 text-xs">
                                         <span className="rounded-full bg-white px-2.5 py-1 text-[color:var(--wedding-text-soft)] dark:bg-white/8">
-                                            {getTaskPriorityLabel(task.priority)}
+                                            {getTaskPriorityLabel(
+                                                task.priority,
+                                            )}
                                             优先级
                                         </span>
                                         <span className="rounded-full bg-white px-2.5 py-1 text-[color:var(--wedding-text-soft)] dark:bg-white/8">
@@ -515,23 +535,28 @@ export default function TaskCalendar() {
                 <i className="icon-[mdi--plus] size-7" />
             </WeddingFloatingActionButton>
 
-            <FormDialog
+            <ResponsiveDialog
                 open={showForm}
                 onOpenChange={setShowForm}
                 title="添加任务"
+                description={`默认截止日期为 ${selectedDate.format("M月D日")}，你也可以在表单里修改`}
                 maxWidth="md"
                 fullScreenOnMobile={true}
+                actions={{
+                    cancelText: "取消",
+                    confirmText: "创建任务",
+                    onConfirm: async () => {
+                        // TaskForm组件会处理提交逻辑，这里只需要关闭弹窗
+                        setShowForm(false);
+                    },
+                    loading: formLoading,
+                }}
             >
-                <div className="mb-3 text-sm wedding-muted">
-                    默认截止日期会带入{" "}
-                    {selectedDate.format("M月D日")}
-                    ，你也可以在表单里修改。
-                </div>
                 <TaskForm
                     initialDeadline={selectedDate.valueOf()}
                     onClose={() => setShowForm(false)}
                 />
-            </FormDialog>
+            </ResponsiveDialog>
         </WeddingPageShell>
     );
 }

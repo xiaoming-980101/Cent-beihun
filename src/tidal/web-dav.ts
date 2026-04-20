@@ -3,7 +3,13 @@ import type { UserInfo } from "@/api/endpoints/type";
 import type { FileEntry } from "@/database/assets";
 import { shortId } from "@/database/id";
 import { registerProxy } from "@/utils/fetch-proxy";
-import type { AssetKey, FileLike, StoreStructure, Syncer, UploadContent } from ".";
+import type {
+    AssetKey,
+    FileLike,
+    StoreStructure,
+    Syncer,
+    UploadContent,
+} from ".";
 
 type WebDAVConfig = {
     remoteUrl: string;
@@ -242,8 +248,8 @@ export const createWebDAVSyncer = (cfg: WebDAVConfig): Syncer => {
                 // if it's a File/Blob, upload as binary; otherwise stringify.
                 if (
                     f.content &&
-                    typeof (f.content as { arrayBuffer?: unknown }).arrayBuffer ===
-                        "function"
+                    typeof (f.content as { arrayBuffer?: unknown })
+                        .arrayBuffer === "function"
                 ) {
                     // Blob / File
                     const arr = await (f.content as Blob).arrayBuffer();

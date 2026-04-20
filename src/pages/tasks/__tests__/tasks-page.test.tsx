@@ -6,9 +6,8 @@ const navigateMock = vi.fn();
 const updateTaskMock = vi.fn();
 
 vi.mock("react-router", async () => {
-    const actual = await vi.importActual<typeof import("react-router")>(
-        "react-router",
-    );
+    const actual =
+        await vi.importActual<typeof import("react-router")>("react-router");
     return { ...actual, useNavigate: () => navigateMock };
 });
 
@@ -19,7 +18,10 @@ vi.mock("@/store/book", () => ({
             books: { id: string; name: string }[];
         }) => unknown,
     ) =>
-        selector({ currentBookId: "1", books: [{ id: "1", name: "测试账本" }] }),
+        selector({
+            currentBookId: "1",
+            books: [{ id: "1", name: "测试账本" }],
+        }),
 }));
 
 vi.mock("@/store/wedding", () => ({
@@ -48,4 +50,3 @@ describe("Tasks Page", () => {
         expect(navigateMock).toHaveBeenCalledWith("/tasks/calendar");
     });
 });
-

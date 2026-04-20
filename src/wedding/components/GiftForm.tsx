@@ -183,7 +183,9 @@ export function GiftForm({ onClose, editRecord }: GiftFormProps) {
                         </label>
                         <DatePicker
                             date={date}
-                            onDateChange={(newDate) => newDate && setDate(newDate)}
+                            onDateChange={(newDate) =>
+                                newDate && setDate(newDate)
+                            }
                             placeholder="选择日期"
                         />
                     </div>

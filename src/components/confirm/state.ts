@@ -41,10 +41,15 @@ export const useGlobalConfirmStore = create<
     open: <V, R>(id: string, value?: V) => {
         const controller = get().instances[id]?.controller;
         if (controller)
-            return [controller.promise as Promise<R | undefined>, controller.cancel] as const;
+            return [
+                controller.promise as Promise<R | undefined>,
+                controller.cancel,
+            ] as const;
 
         const openId = `id-${Date.now()}`;
-        const { promise, reject, resolve } = Promise.withResolvers<R | undefined>();
+        const { promise, reject, resolve } = Promise.withResolvers<
+            R | undefined
+        >();
 
         let cancelled = false;
         const innerCancel = () => {

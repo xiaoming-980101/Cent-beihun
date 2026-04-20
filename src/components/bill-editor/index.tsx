@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { useLedgerStore } from "@/store/ledger";
-import type { EditBill } from "@/store/ledger";
 import type { Bill } from "@/ledger/type";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import type { EditBill } from "@/store/ledger";
+import { useLedgerStore } from "@/store/ledger";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import EditorForm from "./form";
 
 // 事件驱动的弹窗管理
-let resolveCallback: ((value: Omit<Bill, "id" | "creatorId"> | null) => void) | null = null;
+let resolveCallback:
+    | ((value: Omit<Bill, "id" | "creatorId"> | null) => void)
+    | null = null;
 
 export const BillEditorProvider = () => {
     const [open, setOpen] = useState(false);
@@ -45,30 +47,31 @@ export const BillEditorProvider = () => {
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={handleOpenChange}
             title="Edit Bill"
-            maxWidth="lg"
             fullScreenOnMobile={true}
+            maxWidth="lg"
             className="sm:max-h-[85vh] sm:w-[90vw] sm:max-w-[600px]"
             bodyClassName="p-0 sm:pt-4"
-            fullscreenBodyClassName="max-sm:p-0"
         >
             <EditorForm
                 edit={editData}
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 };
 
-export const showBillEditor = (edit?: EditBill): Promise<Omit<Bill, "id" | "creatorId"> | null> => {
+export const showBillEditor = (
+    edit?: EditBill,
+): Promise<Omit<Bill, "id" | "creatorId"> | null> => {
     return new Promise((resolve) => {
         resolveCallback = resolve;
         window.dispatchEvent(
-            new CustomEvent("show-bill-editor", { detail: edit })
+            new CustomEvent("show-bill-editor", { detail: edit }),
         );
     });
 };

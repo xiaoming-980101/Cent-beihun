@@ -1,5 +1,5 @@
-import dayjs from "dayjs";
 import { fireEvent, render, screen } from "@testing-library/react";
+import dayjs from "dayjs";
 import { describe, expect, it, vi } from "vitest";
 import type { WeddingTask } from "@/wedding/type";
 import { TaskCalendarView } from "../task-calendar-view";
@@ -22,7 +22,11 @@ describe("Task Views", () => {
         const onEdit = vi.fn();
         const onToggle = vi.fn();
         render(
-            <TaskListView tasks={tasks} onEdit={onEdit} onToggleStatus={onToggle} />,
+            <TaskListView
+                tasks={tasks}
+                onEdit={onEdit}
+                onToggleStatus={onToggle}
+            />,
         );
 
         fireEvent.click(screen.getByLabelText("切换任务状态"));

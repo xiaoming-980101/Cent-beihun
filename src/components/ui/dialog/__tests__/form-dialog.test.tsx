@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { FormDialog } from "../form-dialog";
 
 /**
@@ -13,7 +13,7 @@ describe("FormDialog", () => {
         render(
             <FormDialog open={true} onOpenChange={() => {}} title="测试标题">
                 <div>内容</div>
-            </FormDialog>
+            </FormDialog>,
         );
 
         // 验证标题渲染 - 需求 2.5
@@ -24,7 +24,7 @@ describe("FormDialog", () => {
         render(
             <FormDialog open={true} onOpenChange={() => {}} title="测试">
                 <div data-testid="child">子组件内容</div>
-            </FormDialog>
+            </FormDialog>,
         );
 
         // 验证子组件渲染 - 需求 2.2
@@ -38,7 +38,7 @@ describe("FormDialog", () => {
         render(
             <FormDialog open={true} onOpenChange={onOpenChange} title="测试">
                 <div>内容</div>
-            </FormDialog>
+            </FormDialog>,
         );
 
         const closeButton = screen.getByRole("button", { name: /close/i });
@@ -56,7 +56,7 @@ describe("FormDialog", () => {
         render(
             <FormDialog open={true} onOpenChange={onOpenChange} title="测试">
                 <div>内容</div>
-            </FormDialog>
+            </FormDialog>,
         );
 
         fireEvent.keyDown(document, { key: "Escape" });
@@ -76,7 +76,7 @@ describe("FormDialog", () => {
                 hideClose={true}
             >
                 <div>内容</div>
-            </FormDialog>
+            </FormDialog>,
         );
 
         const closeButton = screen.queryByRole("button", { name: /close/i });
@@ -92,7 +92,7 @@ describe("FormDialog", () => {
                 maxWidth="sm"
             >
                 <div>内容</div>
-            </FormDialog>
+            </FormDialog>,
         );
 
         // 验证组件渲染 - 需求 2.7
@@ -107,7 +107,7 @@ describe("FormDialog", () => {
                 maxWidth="lg"
             >
                 <div>内容</div>
-            </FormDialog>
+            </FormDialog>,
         );
         expect(screen.getByText("测试")).toBeInTheDocument();
 
@@ -119,7 +119,7 @@ describe("FormDialog", () => {
                 maxWidth="xl"
             >
                 <div>内容</div>
-            </FormDialog>
+            </FormDialog>,
         );
         expect(screen.getByText("测试")).toBeInTheDocument();
     });
@@ -133,7 +133,7 @@ describe("FormDialog", () => {
                 className="custom-class"
             >
                 <div>内容</div>
-            </FormDialog>
+            </FormDialog>,
         );
 
         // 验证组件渲染 - 需求 2.7
@@ -148,7 +148,7 @@ describe("FormDialog", () => {
                     <p>内容2</p>
                     <p>内容3</p>
                 </div>
-            </FormDialog>
+            </FormDialog>,
         );
 
         // 验证可滚动内容区域 - 需求 2.3
@@ -158,14 +158,12 @@ describe("FormDialog", () => {
     });
 
     it("should not emit description warning when no description is provided", () => {
-        const warnSpy = vi
-            .spyOn(console, "warn")
-            .mockImplementation(() => {});
+        const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
 
         render(
             <FormDialog open={true} onOpenChange={() => {}} title="测试">
                 <div>内容</div>
-            </FormDialog>
+            </FormDialog>,
         );
 
         expect(warnSpy).not.toHaveBeenCalledWith(

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { BillCategory, BillType } from "@/ledger/type";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import CategoryEditForm from "./form";
 
 type CategoryEditInput =
@@ -8,7 +8,9 @@ type CategoryEditInput =
     | { id: undefined; parent?: string; type: BillType };
 type CategoryEditResult = string | undefined;
 type ShowCategoryEditDetail = { edit?: CategoryEditInput };
-type ResolveCategoryEditDetail = { resolve: (value?: CategoryEditResult) => void };
+type ResolveCategoryEditDetail = {
+    resolve: (value?: CategoryEditResult) => void;
+};
 
 export function CategoryEditFormProvider() {
     const [open, setOpen] = useState(false);
@@ -30,11 +32,17 @@ export function CategoryEditFormProvider() {
         }) as EventListener;
 
         window.addEventListener("show-category-edit", handleShow);
-        window.addEventListener("store-category-edit-resolve", handleStoreResolve);
+        window.addEventListener(
+            "store-category-edit-resolve",
+            handleStoreResolve,
+        );
 
         return () => {
             window.removeEventListener("show-category-edit", handleShow);
-            window.removeEventListener("store-category-edit-resolve", handleStoreResolve);
+            window.removeEventListener(
+                "store-category-edit-resolve",
+                handleStoreResolve,
+            );
         };
     }, []);
 
@@ -55,7 +63,7 @@ export function CategoryEditFormProvider() {
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={handleOpenChange}
             title="编辑分类"
@@ -68,7 +76,7 @@ export function CategoryEditFormProvider() {
                 onConfirm={handleConfirm}
                 onCancel={() => handleOpenChange(false)}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

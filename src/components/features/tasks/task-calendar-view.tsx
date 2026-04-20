@@ -20,12 +20,15 @@ export function TaskCalendarView({
         cursor = cursor.add(1, "day");
     }
 
-    const taskCountByDate = tasks.reduce<Record<string, number>>((acc, task) => {
-        if (!task.deadline) return acc;
-        const key = dayjs(task.deadline).format("YYYY-MM-DD");
-        acc[key] = (acc[key] ?? 0) + 1;
-        return acc;
-    }, {});
+    const taskCountByDate = tasks.reduce<Record<string, number>>(
+        (acc, task) => {
+            if (!task.deadline) return acc;
+            const key = dayjs(task.deadline).format("YYYY-MM-DD");
+            acc[key] = (acc[key] ?? 0) + 1;
+            return acc;
+        },
+        {},
+    );
 
     return (
         <section className="rounded-[24px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] p-3">
@@ -56,4 +59,3 @@ export function TaskCalendarView({
         </section>
     );
 }
-

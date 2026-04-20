@@ -1,6 +1,5 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
-import { ConfirmDialog, type ConfirmDialogProps } from "./confirm-dialog";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -14,6 +13,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/utils/index";
+import { ConfirmDialog, type ConfirmDialogProps } from "./confirm-dialog";
+import {
+    ResponsiveConfirmDialog,
+    type ResponsiveConfirmDialogProps,
+} from "./responsive-confirm-dialog";
 
 /**
  * Confirm Options
@@ -126,7 +130,7 @@ export function confirm(options: ConfirmOptions): Promise<boolean> {
                 variant={options.variant}
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
-            />
+            />,
         );
     });
 }
@@ -206,7 +210,7 @@ function PromptDialog({
                     "rounded-[30px]",
                     "border border-[#edd6df] dark:border-[#302631]",
                     "bg-[#fffdfd] dark:bg-[#181419]",
-                    "shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)]"
+                    "shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)]",
                 )}
             >
                 <AlertDialogHeader>
@@ -317,7 +321,7 @@ export function prompt(options: PromptOptions): Promise<string | null> {
                 validate={options.validate}
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
-            />
+            />,
         );
     });
 }
@@ -370,7 +374,7 @@ export function alert(options: AlertOptions): Promise<void> {
                         "rounded-[30px]",
                         "border border-[#edd6df] dark:border-[#302631]",
                         "bg-[#fffdfd] dark:bg-[#181419]",
-                        "shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)]"
+                        "shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)]",
                     )}
                 >
                     <AlertDialogHeader>
@@ -389,7 +393,69 @@ export function alert(options: AlertOptions): Promise<void> {
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
-            </AlertDialog>
+            </AlertDialog>,
+        );
+    });
+}
+/**
+ * responsiveConfirm() - 响应式确认对话框工具函数
+ *
+ * 显示一个响应式确认对话框，自动适配移动端和PC端。
+ * 移动端使用底部Sheet，PC端使用居中Dialog。
+ * 返回 Promise<boolean>。
+ *
+ * @example
+ * ```tsx
+ * const confirmed = await responsiveConfirm({
+ *   title: '确认删除？',
+ *   description: '此操作无法撤销',
+ *   variant: 'destructive'
+ * });
+ *
+ * if (confirmed) {
+ *   // 执行删除操作
+ * }
+ * ```
+ */
+export function responsiveConfirm(options: ConfirmOptions): Promise<boolean> {
+    return new Promise((resolve) => {
+        const container = document.createElement("div");
+        document.body.appendChild(container);
+        const root = createRoot(container);
+
+        const cleanup = () => {
+            root.unmount();
+            document.body.removeChild(container);
+        };
+
+        const handleConfirm = () => {
+            cleanup();
+            resolve(true);
+        };
+
+        const handleCancel = () => {
+            cleanup();
+            resolve(false);
+        };
+
+        const handleOpenChange = (open: boolean) => {
+            if (!open) {
+                handleCancel();
+            }
+        };
+
+        root.render(
+            <ResponsiveConfirmDialog
+                open={true}
+                onOpenChange={handleOpenChange}
+                title={options.title}
+                description={options.description}
+                confirmText={options.confirmText}
+                cancelText={options.cancelText}
+                variant={options.variant}
+                onConfirm={handleConfirm}
+                onCancel={handleCancel}
+            />,
         );
     });
 }

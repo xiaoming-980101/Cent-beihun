@@ -19,7 +19,7 @@
 			"!**/screenshots",
 			"!**/.claude",
 			"!index.html",
-			"!test-results/**"
+			"!test-results"
 		]
 	},
 	"formatter": {
@@ -46,7 +46,8 @@
 				"noStaticElementInteractions": "off",
 				"useKeyWithClickEvents": "off",
 				"noRedundantRoles": "off",
-				"useAltText": "off"
+				"useAltText": "off",
+				"useSemanticElements": "off"
 			}
 		}
 	},

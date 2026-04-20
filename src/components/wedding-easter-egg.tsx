@@ -201,7 +201,9 @@ export default function WeddingEasterEgg({
                     <div
                         className={`mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br ${theme.gradient} shadow-[0_0_0_12px_rgba(255,255,255,0.3)] animate-eggPulse`}
                     >
-                        <i className={`${theme.icon} size-10 text-white animate-eggBeat`} />
+                        <i
+                            className={`${theme.icon} size-10 text-white animate-eggBeat`}
+                        />
                     </div>
 
                     <h3 className="text-2xl font-black text-gray-800 dark:text-white">

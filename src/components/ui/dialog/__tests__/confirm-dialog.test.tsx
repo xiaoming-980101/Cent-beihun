@@ -1,5 +1,11 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
-import { render, screen, fireEvent, waitFor, cleanup } from "@testing-library/react";
+import {
+    cleanup,
+    fireEvent,
+    render,
+    screen,
+    waitFor,
+} from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { ConfirmDialog } from "../confirm-dialog";
 
 /**
@@ -22,7 +28,7 @@ describe("ConfirmDialog", () => {
                 title="确认删除"
                 description="此操作无法撤销"
                 onConfirm={() => {}}
-            />
+            />,
         );
 
         // 验证标题和描述渲染 - 需求 3.2
@@ -39,13 +45,13 @@ describe("ConfirmDialog", () => {
                 onOpenChange={() => {}}
                 title="确认操作"
                 onConfirm={onConfirm}
-            />
+            />,
         );
 
         // 使用 role 查找按钮，避免标题和按钮文本冲突
         const buttons = screen.getAllByRole("button");
-        const confirmButton = buttons.find(btn => btn.textContent === "确认");
-        
+        const confirmButton = buttons.find((btn) => btn.textContent === "确认");
+
         if (confirmButton) {
             fireEvent.click(confirmButton);
         }
@@ -66,7 +72,7 @@ describe("ConfirmDialog", () => {
                 title="确认操作"
                 onConfirm={() => {}}
                 onCancel={onCancel}
-            />
+            />,
         );
 
         const cancelButton = screen.getByRole("button", { name: /取消/i });
@@ -84,12 +90,12 @@ describe("ConfirmDialog", () => {
                 title="确认删除"
                 variant="destructive"
                 onConfirm={() => {}}
-            />
+            />,
         );
 
         // 验证危险操作样式 - 需求 3.6
         const buttons = screen.getAllByRole("button");
-        const confirmButton = buttons.find(btn => btn.textContent === "确认");
+        const confirmButton = buttons.find((btn) => btn.textContent === "确认");
         expect(confirmButton?.className).toContain("destructive");
     });
 
@@ -103,12 +109,12 @@ describe("ConfirmDialog", () => {
                 onOpenChange={onOpenChange}
                 title="确认操作"
                 onConfirm={onConfirm}
-            />
+            />,
         );
 
         const buttons = screen.getAllByRole("button");
-        const confirmButton = buttons.find(btn => btn.textContent === "确认");
-        
+        const confirmButton = buttons.find((btn) => btn.textContent === "确认");
+
         if (confirmButton) {
             fireEvent.click(confirmButton);
         }
@@ -121,9 +127,11 @@ describe("ConfirmDialog", () => {
     });
 
     it("should show loading state during async operation", async () => {
-        const onConfirm = vi.fn().mockImplementation(
-            () => new Promise((resolve) => setTimeout(resolve, 100))
-        );
+        const onConfirm = vi
+            .fn()
+            .mockImplementation(
+                () => new Promise((resolve) => setTimeout(resolve, 100)),
+            );
 
         render(
             <ConfirmDialog
@@ -131,12 +139,12 @@ describe("ConfirmDialog", () => {
                 onOpenChange={() => {}}
                 title="确认操作"
                 onConfirm={onConfirm}
-            />
+            />,
         );
 
         const buttons = screen.getAllByRole("button");
-        const confirmButton = buttons.find(btn => btn.textContent === "确认");
-        
+        const confirmButton = buttons.find((btn) => btn.textContent === "确认");
+
         if (confirmButton) {
             fireEvent.click(confirmButton);
         }
@@ -156,7 +164,7 @@ describe("ConfirmDialog", () => {
                 confirmText="删除"
                 cancelText="放弃"
                 onConfirm={() => {}}
-            />
+            />,
         );
 
         // 验证自定义按钮文本 - 需求 3.4
@@ -171,7 +179,7 @@ describe("ConfirmDialog", () => {
                 onOpenChange={() => {}}
                 title="确认操作"
                 onConfirm={() => {}}
-            />
+            />,
         );
 
         // 验证只有标题，没有描述

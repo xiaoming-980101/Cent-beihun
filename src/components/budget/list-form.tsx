@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import BudgetListForm from "./list";
 
 export function BudgetProvider() {
@@ -14,7 +14,7 @@ export function BudgetProvider() {
     }, []);
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={(nextOpen) => {
                 setOpen(nextOpen);
@@ -33,7 +33,7 @@ export function BudgetProvider() {
                     window.dispatchEvent(new CustomEvent("budget-closed"));
                 }}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

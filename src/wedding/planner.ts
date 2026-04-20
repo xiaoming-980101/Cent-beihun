@@ -35,7 +35,10 @@ export function getWeddingReadiness(data: WeddingData | null) {
 
     return Math.max(
         0,
-        Math.min(100, Math.round(taskWeight + guestWeight + budgetWeight + dateWeight)),
+        Math.min(
+            100,
+            Math.round(taskWeight + guestWeight + budgetWeight + dateWeight),
+        ),
     );
 }
 
@@ -62,7 +65,9 @@ export function getPlannerSuggestions(
         );
     });
     const pendingGuests = data.guests.filter((guest) => {
-        return guest.inviteStatus === "pending" || guest.inviteStatus === "invited";
+        return (
+            guest.inviteStatus === "pending" || guest.inviteStatus === "invited"
+        );
     });
     const confirmedGuests = data.guests.filter((guest) => {
         return guest.inviteStatus === "confirmed";
@@ -85,8 +90,7 @@ export function getPlannerSuggestions(
         suggestions.push({
             id: "set-date",
             title: "先补上婚期，时间线会更准确",
-            detail:
-                "当前还没有设置婚期，任务推荐、预算节奏和宾客提醒都会受影响。",
+            detail: "当前还没有设置婚期，任务推荐、预算节奏和宾客提醒都会受影响。",
             tone: "accent",
             actionLabel: "打开设置",
             actionPath: "/settings",

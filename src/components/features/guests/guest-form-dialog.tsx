@@ -4,15 +4,21 @@
 
 import { useId, useState } from "react";
 import { toast } from "sonner";
-import type { Guest } from "@/wedding/type";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
 import { Button } from "@/components/ui/button";
+import { ResponsiveDialog } from "@/components/ui/dialog/index";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useWeddingStore } from "@/store/wedding";
 import { cn } from "@/utils";
 import { INVITE_STATUS, RELATION_GROUPS } from "@/wedding/constants";
+import type { Guest } from "@/wedding/type";
 
 export function GuestFormDialog({
     open,
@@ -42,22 +48,25 @@ export function GuestFormDialog({
     );
     const [note, setNote] = useState(editGuest?.note || "");
 
+    const [loading, setLoading] = useState(false);
+
     const handleSubmit = async () => {
-        if (!name.trim()) {
-            toast.error("请输入姓名");
-            return;
-        }
-
-        const guestData = {
-            name: name.trim(),
-            phone: phone.trim() || undefined,
-            relation,
-            group,
-            inviteStatus,
-            note: note.trim() || undefined,
-        };
-
+        setLoading(true);
         try {
+            if (!name.trim()) {
+                toast.error("请输入姓名");
+                return;
+            }
+
+            const guestData = {
+                name: name.trim(),
+                phone: phone.trim() || undefined,
+                relation,
+                group,
+                inviteStatus,
+                note: note.trim() || undefined,
+            };
+
             if (editGuest) {
                 await updateGuest(editGuest.id, guestData);
                 toast.success("更新成功");
@@ -68,18 +77,24 @@ export function GuestFormDialog({
             onOpenChange(false);
         } catch (err) {
             toast.error("操作失败");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={editGuest ? "编辑亲友" : "添加亲友"}
-            maxWidth="md"
             fullScreenOnMobile={true}
-            saveButtonText={editGuest ? "保存更新" : "添加亲友"}
-            onSave={handleSubmit}
+            maxWidth="md"
+            actions={{
+                cancelText: "取消",
+                confirmText: editGuest ? "保存更新" : "添加亲友",
+                onConfirm: handleSubmit,
+                loading: loading,
+            }}
         >
             <div className="space-y-5 px-1 pb-1">
                 <div className="wedding-soft-card space-y-5 p-4">
@@ -197,7 +212,10 @@ export function GuestFormDialog({
                                 setInviteStatus(value as typeof inviteStatus)
                             }
                         >
-                            <SelectTrigger id={inviteStatusId} className="wedding-input">
+                            <SelectTrigger
+                                id={inviteStatusId}
+                                className="wedding-input"
+                            >
                                 <SelectValue />
                             </SelectTrigger>
                             <SelectContent>
@@ -233,6 +251,6 @@ export function GuestFormDialog({
                     </div>
                 </div>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }

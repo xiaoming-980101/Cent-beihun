@@ -76,7 +76,9 @@ export class BillIndexedDBStorage implements StashStorage {
         });
     }
 
-    createArrayableStorage: ArrayableStorageFactory = <T extends { id: string }>(
+    createArrayableStorage: ArrayableStorageFactory = <
+        T extends { id: string },
+    >(
         name: Parameters<ArrayableStorageFactory>[0],
     ) => {
         return {

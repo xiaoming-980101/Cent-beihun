@@ -100,7 +100,7 @@ export function ConfirmDialog({
                     "rounded-[30px]",
                     "border border-[#edd6df] dark:border-[#302631]",
                     "bg-[#fffdfd] dark:bg-[#181419]",
-                    "shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)]"
+                    "shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)]",
                 )}
             >
                 <AlertDialogHeader>
@@ -114,7 +114,10 @@ export function ConfirmDialog({
                     )}
                 </AlertDialogHeader>
                 <AlertDialogFooter>
-                    <AlertDialogCancel onClick={handleCancel} disabled={loading}>
+                    <AlertDialogCancel
+                        onClick={handleCancel}
+                        disabled={loading}
+                    >
                         {cancelText}
                     </AlertDialogCancel>
                     <AlertDialogAction
@@ -122,7 +125,7 @@ export function ConfirmDialog({
                         disabled={loading}
                         className={cn(
                             variant === "destructive" &&
-                                "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                "bg-destructive text-destructive-foreground hover:bg-destructive/90",
                         )}
                     >
                         {loading ? "处理中..." : confirmText}

@@ -5,16 +5,16 @@ import { useLedgerStore } from "@/store/ledger";
 import { usePreference } from "@/store/preference";
 import { useUserStore } from "@/store/user";
 import { isSpeechRecognitionSupported } from "../add-button/recognize";
-import { FormDialog } from "../ui/dialog/form-dialog";
 import { Button } from "../ui/button";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import { Switch } from "../ui/switch";
 
-function VoiceSettingsDialog({ 
-    open, 
-    onOpenChange 
-}: { 
-    open: boolean; 
-    onOpenChange: (open: boolean) => void; 
+function VoiceSettingsDialog({
+    open,
+    onOpenChange,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
 }) {
     const t = useIntl();
     const { id: userId } = useUserStore();
@@ -43,7 +43,7 @@ function VoiceSettingsDialog({
         usePreference("voiceByKeyboard");
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("voice-recording-settings")}
@@ -114,7 +114,7 @@ function VoiceSettingsDialog({
                     </div>
                 )}
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

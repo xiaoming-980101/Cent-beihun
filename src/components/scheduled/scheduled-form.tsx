@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
+import type { EditBill } from "@/store/ledger";
 import ScheduledEditForm from "./form";
 import type { Scheduled } from "./type";
-import type { EditBill } from "@/store/ledger";
 
 type EditScheduled = Omit<Scheduled, "id"> & { id?: string };
 
@@ -20,7 +20,9 @@ export function ScheduledEditProvider() {
 
         const handleStoreResolve = ((
             e: CustomEvent<{
-                resolve: (value?: EditScheduled & { needBills?: EditBill[] }) => void;
+                resolve: (
+                    value?: EditScheduled & { needBills?: EditBill[] },
+                ) => void;
             }>,
         ) => {
             setResolveRef({ resolve: e.detail.resolve });
@@ -41,7 +43,9 @@ export function ScheduledEditProvider() {
         };
     }, []);
 
-    const handleConfirm = (value?: EditScheduled & { needBills?: EditBill[] }) => {
+    const handleConfirm = (
+        value?: EditScheduled & { needBills?: EditBill[] },
+    ) => {
         resolveRef?.resolve(value);
         setOpen(false);
         setEdit(undefined);

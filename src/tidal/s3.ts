@@ -1,7 +1,13 @@
 import type { UserInfo } from "@/api/endpoints/type";
 import type { FileEntry } from "@/database/assets";
 import { shortId } from "@/database/id";
-import type { AssetKey, FileLike, StoreStructure, Syncer, UploadContent } from ".";
+import type {
+    AssetKey,
+    FileLike,
+    StoreStructure,
+    Syncer,
+    UploadContent,
+} from ".";
 
 type S3Config = {
     /** S3服务端点URL（例如：https://s3.amazonaws.com 或自建S3服务地址） */

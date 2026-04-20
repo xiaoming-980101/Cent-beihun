@@ -84,8 +84,9 @@ export async function initializeWasm() {
 
     console.log("正在动态加载 jieba-wasm...");
     jiebaModuleLoaded = (async () => {
-        const module = (await import(/* @vite-ignore */ JIEBA_MODULE_URL)) as
-            JiebaLib & { default: (wasmUrl: string) => Promise<void> };
+        const module = (await import(
+            /* @vite-ignore */ JIEBA_MODULE_URL
+        )) as JiebaLib & { default: (wasmUrl: string) => Promise<void> };
 
         // 2. 初始化 WASM，传入 WASM 文件的 URL
         await module.default(WASM_URL);

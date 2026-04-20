@@ -4,18 +4,18 @@ import { useShallow } from "zustand/shallow";
 import { useIntl } from "@/locale";
 import { useLedgerStore } from "@/store/ledger";
 import { decodeApiKey, encodeApiKey } from "@/utils/api-key";
-import { FormDialog } from "../ui/dialog/form-dialog";
-import { confirm } from "../ui/dialog/utils";
 import { Button } from "../ui/button";
+import { ResponsiveDialog } from "../ui/dialog/index";
+import { confirm } from "../ui/dialog/utils";
 import { Input } from "../ui/input";
 
 // 地图配置表单
-function MapConfigDialog({ 
-    open, 
-    onOpenChange 
-}: { 
-    open: boolean; 
-    onOpenChange: (open: boolean) => void; 
+function MapConfigDialog({
+    open,
+    onOpenChange,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
 }) {
     const t = useIntl();
 
@@ -67,13 +67,13 @@ function MapConfigDialog({
             title: t("are-you-sure-to-clear-map-config"),
             variant: "destructive",
             confirmText: t("confirm"),
-            cancelText: t("cancel")
+            cancelText: t("cancel"),
         });
-        
+
         if (!confirmed) {
             return;
         }
-        
+
         // 清除配置
         await useLedgerStore.getState().updateGlobalMeta((prev) => {
             if (prev.map) {
@@ -97,12 +97,17 @@ function MapConfigDialog({
         : "View AMap documentation";
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("map-settings")}
             maxWidth="md"
             fullScreenOnMobile={true}
+            actions={{
+                cancelText: t("cancel"),
+                confirmText: t("save"),
+                onConfirm: handleSave,
+            }}
         >
             <div className="space-y-4">
                 {/* 说明文本 */}
@@ -123,9 +128,7 @@ function MapConfigDialog({
                             type={showAmapKey ? "text" : "password"}
                             placeholder={t("amap-key-placeholder")}
                             value={amapKey}
-                            onChange={(e) =>
-                                setAmapKey(e.currentTarget.value)
-                            }
+                            onChange={(e) => setAmapKey(e.currentTarget.value)}
                             className="pr-10"
                         />
                         <button
@@ -153,12 +156,8 @@ function MapConfigDialog({
                     <div className="relative">
                         <Input
                             name="amap-security-code"
-                            type={
-                                showAmapSecurityCode ? "text" : "password"
-                            }
-                            placeholder={t(
-                                "amap-security-code-placeholder",
-                            )}
+                            type={showAmapSecurityCode ? "text" : "password"}
+                            placeholder={t("amap-security-code-placeholder")}
                             value={amapSecurityCode}
                             onChange={(e) =>
                                 setAmapSecurityCode(e.currentTarget.value)
@@ -168,9 +167,7 @@ function MapConfigDialog({
                         <button
                             type="button"
                             onClick={() =>
-                                setShowAmapSecurityCode(
-                                    !showAmapSecurityCode,
-                                )
+                                setShowAmapSecurityCode(!showAmapSecurityCode)
                             }
                             className="absolute right-0 top-0 flex h-full items-center px-3 text-gray-500 transition-colors hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                         >
@@ -212,25 +209,9 @@ function MapConfigDialog({
                             {t("clear-map-config")}
                         </Button>
                     )}
-                    <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => onOpenChange(false)}
-                            className="flex-1"
-                        >
-                            {t("cancel")}
-                        </Button>
-                        <Button
-                            variant="default"
-                            onClick={handleSave}
-                            className="flex-1"
-                        >
-                            {t("save")}
-                        </Button>
-                    </div>
                 </div>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

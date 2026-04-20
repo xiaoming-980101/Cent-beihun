@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useIntl } from "@/locale";
 import { Button } from "../ui/button";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import TagList from "./list";
 
 export function TagListProvider() {
@@ -16,7 +16,7 @@ export function TagListProvider() {
     }, []);
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={(nextOpen) => {
                 setOpen(nextOpen);
@@ -35,7 +35,7 @@ export function TagListProvider() {
                     window.dispatchEvent(new CustomEvent("tag-list-closed"));
                 }}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 

@@ -1,5 +1,5 @@
-import { useMemo } from "react";
 import type { EChartsOption } from "echarts";
+import { useMemo } from "react";
 import Chart, { type ECOption } from "@/components/chart";
 import { EmptyState } from "@/components/shared";
 import { cn } from "@/utils";
@@ -50,7 +50,9 @@ export function ChartWrapper({
     }, [option]);
 
     return (
-        <section className={cn("wedding-surface-card rounded-[24px] p-4", className)}>
+        <section
+            className={cn("wedding-surface-card rounded-[24px] p-4", className)}
+        >
             {title ? (
                 <div className="mb-4">
                     <h3 className="text-sm font-semibold text-[color:var(--wedding-text)]">
@@ -77,7 +79,10 @@ export function ChartWrapper({
                     />
                 ) : null}
                 {!isLoading && !isEmpty ? (
-                    <Chart className="h-full w-full" option={themedOption as ECOption} />
+                    <Chart
+                        className="h-full w-full"
+                        option={themedOption as ECOption}
+                    />
                 ) : null}
             </div>
         </section>

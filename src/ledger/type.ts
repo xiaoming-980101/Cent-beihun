@@ -12,11 +12,11 @@ import type {
 } from "./extra-type";
 
 export type {
+    BillFilter,
+    BillTagGroup,
+    Budget,
     CustomCurrency,
     PersonalMeta,
-    BillFilter,
-    Budget,
-    BillTagGroup,
     Scheduled,
 };
 

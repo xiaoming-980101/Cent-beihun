@@ -24,8 +24,14 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type React from "react";
-import { type ReactNode, useCallback, useMemo, useState, useEffect } from "react";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
+import {
+    type ReactNode,
+    useCallback,
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
+import { ResponsiveDialog } from "@/components/ui/dialog/index";
 import { useIntl } from "@/locale";
 import { Button } from "../ui/button";
 
@@ -394,25 +400,20 @@ interface SortableGroupFormProps {
     onConfirm?: (v: SortableGroupData[]) => void;
 }
 
-function Form({
-    open,
-    onOpenChange,
-    edit,
-    onConfirm,
-}: SortableGroupFormProps) {
+function Form({ open, onOpenChange, edit, onConfirm }: SortableGroupFormProps) {
     const [list, setList] = useState([...(edit?.group ?? [])]);
     const onReorder: typeof setList = useCallback((v) => {
         setList(v);
     }, []);
     const t = useIntl();
-    
+
     const handleConfirm = () => {
         onConfirm?.(list);
         onOpenChange(false);
     };
-    
+
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("sort")}
@@ -429,12 +430,10 @@ function Form({
                     />
                 </div>
                 <div className="flex justify-end">
-                    <Button onClick={handleConfirm}>
-                        {t("confirm")}
-                    </Button>
+                    <Button onClick={handleConfirm}>{t("confirm")}</Button>
                 </div>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 
@@ -442,7 +441,7 @@ let sortableGroupResolveCallback: ((list: SortableGroupData[]) => void) | null =
     null;
 let sortableGroupEditData:
     | { group: SortableGroupData[]; enableGroupSorting?: boolean }
-    | undefined = undefined;
+    | undefined;
 
 export function showSortableGroup<T extends SortableGroupData>(value?: {
     group: T[];

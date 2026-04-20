@@ -5,10 +5,10 @@
 import dayjs from "dayjs";
 import { SCHEDULE_RULES } from "./constants";
 import type {
-    GuestRelation,
-    InviteStatus,
     GiftRecord,
     GiftType,
+    GuestRelation,
+    InviteStatus,
     PaymentMethod,
     TaskCategory,
     TaskPriority,

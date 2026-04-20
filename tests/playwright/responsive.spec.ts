@@ -9,4 +9,3 @@ test("tools page renders", async ({ page }) => {
     await page.goto("/tools");
     await expect(page.locator("body")).toBeVisible();
 });
-

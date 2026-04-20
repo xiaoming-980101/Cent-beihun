@@ -96,9 +96,7 @@ export const download = async (
         const url = URL.createObjectURL(source);
         try {
             // IE / old Edge fallback
-            if (
-                legacyNav?.msSaveOrOpenBlob
-            ) {
+            if (legacyNav?.msSaveOrOpenBlob) {
                 legacyNav.msSaveOrOpenBlob(source, name);
                 return;
             }
@@ -126,9 +124,7 @@ export const download = async (
         // Fallback to object URL download
         const url = URL.createObjectURL(source);
         try {
-            if (
-                legacyNav?.msSaveOrOpenBlob
-            ) {
+            if (legacyNav?.msSaveOrOpenBlob) {
                 legacyNav.msSaveOrOpenBlob(source, name);
                 return;
             }
@@ -188,9 +184,7 @@ export const download = async (
         const blob = await fetchAsBlob(source);
         const urlObj = URL.createObjectURL(blob);
         try {
-            if (
-                legacyNav?.msSaveOrOpenBlob
-            ) {
+            if (legacyNav?.msSaveOrOpenBlob) {
                 legacyNav.msSaveOrOpenBlob(blob, name);
                 return;
             }

@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import type { CustomCurrency } from "@/ledger/type";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import { EditCurrencyForm } from "./edit";
 
 type CurrencyEdit = Omit<CustomCurrency, "id"> & { id?: string };
@@ -27,11 +27,17 @@ export function EditCurrencyProvider() {
         }) as EventListener;
 
         window.addEventListener("show-edit-currency", handleShow);
-        window.addEventListener("store-edit-currency-resolve", handleStoreResolve);
+        window.addEventListener(
+            "store-edit-currency-resolve",
+            handleStoreResolve,
+        );
 
         return () => {
             window.removeEventListener("show-edit-currency", handleShow);
-            window.removeEventListener("store-edit-currency-resolve", handleStoreResolve);
+            window.removeEventListener(
+                "store-edit-currency-resolve",
+                handleStoreResolve,
+            );
         };
     }, []);
 
@@ -52,17 +58,24 @@ export function EditCurrencyProvider() {
     };
 
     return (
-        <FormDialog open={open} onOpenChange={handleOpenChange} title="编辑币种" fullScreenOnMobile={true}>
+        <ResponsiveDialog
+            open={open}
+            onOpenChange={handleOpenChange}
+            title="编辑币种"
+            fullScreenOnMobile={true}
+        >
             <EditCurrencyForm
                 edit={edit}
                 onConfirm={handleConfirm}
                 onCancel={() => handleOpenChange(false)}
             />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 
-export function showEditCurrency(edit?: CurrencyEdit): Promise<CurrencyEditResult> {
+export function showEditCurrency(
+    edit?: CurrencyEdit,
+): Promise<CurrencyEditResult> {
     return new Promise((resolve) => {
         window.dispatchEvent(
             new CustomEvent("show-edit-currency", { detail: { edit } }),

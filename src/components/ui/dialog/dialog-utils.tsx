@@ -1,6 +1,5 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
-import { ConfirmDialog } from "./confirm-dialog";
 import {
     AlertDialog,
     AlertDialogAction,
@@ -10,6 +9,7 @@ import {
     AlertDialogHeader,
     AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -19,8 +19,8 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { cn } from "@/utils/index";
+import { ConfirmDialog } from "./confirm-dialog";
 
 /**
  * Confirm Options
@@ -94,7 +94,7 @@ export function confirm(options: ConfirmOptions): Promise<boolean> {
                 variant={options.variant}
                 onConfirm={handleConfirm}
                 onCancel={handleCancel}
-            />
+            />,
         );
     });
 }
@@ -155,7 +155,9 @@ export function prompt(options: PromptOptions): Promise<string | null> {
         const root = createRoot(container);
 
         const PromptDialog = () => {
-            const [value, setValue] = React.useState(options.defaultValue || "");
+            const [value, setValue] = React.useState(
+                options.defaultValue || "",
+            );
             const [error, setError] = React.useState<string>("");
 
             const cleanup = () => {
@@ -167,7 +169,9 @@ export function prompt(options: PromptOptions): Promise<string | null> {
                 if (options.validate) {
                     const result = options.validate(value);
                     if (result !== true) {
-                        setError(typeof result === "string" ? result : "输入无效");
+                        setError(
+                            typeof result === "string" ? result : "输入无效",
+                        );
                         return;
                     }
                 }
@@ -192,7 +196,7 @@ export function prompt(options: PromptOptions): Promise<string | null> {
                             "rounded-[30px]",
                             "border border-[#edd6df] dark:border-[#302631]",
                             "bg-[#fffdfd] dark:bg-[#181419]",
-                            "shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)]"
+                            "shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)]",
                         )}
                     >
                         <DialogHeader>
@@ -222,7 +226,9 @@ export function prompt(options: PromptOptions): Promise<string | null> {
                                 autoFocus
                             />
                             {error && (
-                                <p className="text-sm text-destructive">{error}</p>
+                                <p className="text-sm text-destructive">
+                                    {error}
+                                </p>
                             )}
                         </div>
                         <DialogFooter>
@@ -284,13 +290,16 @@ export function alert(options: AlertOptions): Promise<void> {
         };
 
         root.render(
-            <AlertDialog open={true} onOpenChange={(open) => !open && cleanup()}>
+            <AlertDialog
+                open={true}
+                onOpenChange={(open) => !open && cleanup()}
+            >
                 <AlertDialogContent
                     className={cn(
                         "rounded-[30px]",
                         "border border-[#edd6df] dark:border-[#302631]",
                         "bg-[#fffdfd] dark:bg-[#181419]",
-                        "shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)]"
+                        "shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)]",
                     )}
                 >
                     <AlertDialogHeader>
@@ -309,7 +318,7 @@ export function alert(options: AlertOptions): Promise<void> {
                         </AlertDialogAction>
                     </AlertDialogFooter>
                 </AlertDialogContent>
-            </AlertDialog>
+            </AlertDialog>,
         );
     });
 }

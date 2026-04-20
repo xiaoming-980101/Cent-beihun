@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { useShallow } from "zustand/shallow";
 import { showFilePicker } from "@/components/file-picker";
-import { FormDialog } from "@/components/ui/dialog/form-dialog";
+import { ResponsiveDialog } from "@/components/ui/dialog/index";
 import { alert } from "@/components/ui/dialog/utils";
 import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
@@ -68,7 +68,7 @@ function PresetExportDialogForm({
     }, [exportSections, onConfirm, onOpenChange, t]);
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("preset-export-dialog-title")}
@@ -125,7 +125,7 @@ function PresetExportDialogForm({
                     {t("preset-export-confirm")}
                 </Button>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 
@@ -316,12 +316,12 @@ export default function PresetForm({ open, onOpenChange }: PresetFormProps) {
     }, [t]);
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("preset")}
-            maxWidth="md"
             fullScreenOnMobile={true}
+            maxWidth="md"
         >
             <div className="flex flex-col gap-4">
                 <div>
@@ -398,6 +398,6 @@ export default function PresetForm({ open, onOpenChange }: PresetFormProps) {
                     </div>
                 </div>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }

@@ -31,9 +31,7 @@ describe("GiftFormDialog", () => {
                 cancel: vi.fn(),
                 finished: Promise.resolve({} as Animation),
             } as unknown as Animation;
-            Element.prototype.animate = vi
-                .fn()
-                .mockReturnValue(animationMock);
+            Element.prototype.animate = vi.fn().mockReturnValue(animationMock);
         }
     });
 

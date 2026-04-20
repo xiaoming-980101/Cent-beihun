@@ -92,7 +92,10 @@ export const useUserStore = create<UserStore>()(
 
             updateUserInfo();
 
-            const updateProfile = (data: { avatar?: string; nickname?: string }) => {
+            const updateProfile = (data: {
+                avatar?: string;
+                nickname?: string;
+            }) => {
                 set(
                     produce((state: UserStore) => {
                         if (data.avatar) {

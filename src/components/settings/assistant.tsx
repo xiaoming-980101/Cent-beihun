@@ -9,9 +9,9 @@ import { useUserStore } from "@/store/user";
 import { cn } from "@/utils";
 import { decodeApiKey, encodeApiKey } from "@/utils/api-key";
 import { requestAI } from "../assistant/request";
-import { FormDialog } from "../ui/dialog/form-dialog";
-import { prompt } from "../ui/dialog/utils";
 import { Button } from "../ui/button";
+import { ResponsiveDialog } from "../ui/dialog/index";
+import { prompt } from "../ui/dialog/utils";
 import { Input } from "../ui/input";
 import {
     Select,
@@ -76,7 +76,17 @@ function ConfigFormDialog({
 
         onConfirm?.(config);
         onOpenChange(false);
-    }, [name, apiKey, apiUrl, model, apiType, edit, onConfirm, onOpenChange, t]);
+    }, [
+        name,
+        apiKey,
+        apiUrl,
+        model,
+        apiType,
+        edit,
+        onConfirm,
+        onOpenChange,
+        t,
+    ]);
 
     const handleTestConnection = useCallback(async () => {
         if (!apiKey.trim() || !apiUrl.trim() || !model.trim()) {
@@ -120,19 +130,17 @@ function ConfigFormDialog({
     }, [apiKey, apiUrl, model, apiType, t]);
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={edit ? t("edit-ai-config") : t("create-ai-config")}
-            maxWidth="md"
             fullScreenOnMobile={true}
+            maxWidth="md"
         >
             <div className="flex flex-col gap-4">
                 {/* 配置名称 */}
                 <div>
-                    <div className="text-sm py-1">
-                        {t("ai-config-name")}
-                    </div>
+                    <div className="text-sm py-1">{t("ai-config-name")}</div>
                     <Input
                         name="ai-config-name"
                         placeholder={t("ai-config-name-placeholder")}
@@ -195,9 +203,7 @@ function ConfigFormDialog({
 
                 {/* API URL */}
                 <div>
-                    <div className="text-sm py-1">
-                        {t("ai-config-api-url")}
-                    </div>
+                    <div className="text-sm py-1">{t("ai-config-api-url")}</div>
                     <Input
                         name="ai-config-url"
                         placeholder={t("ai-config-api-url-placeholder")}
@@ -222,18 +228,14 @@ function ConfigFormDialog({
 
                 {/* API Key */}
                 <div>
-                    <div className="text-sm py-1">
-                        {t("ai-config-api-key")}
-                    </div>
+                    <div className="text-sm py-1">{t("ai-config-api-key")}</div>
                     <div className="relative">
                         <Input
                             name="ai-config-password"
                             type={showApiKey ? "text" : "password"}
                             placeholder={t("ai-config-api-key-placeholder")}
                             value={apiKey}
-                            onChange={(e) =>
-                                setApiKey(e.currentTarget.value)
-                            }
+                            onChange={(e) => setApiKey(e.currentTarget.value)}
                             className="pr-10"
                         />
                         <button
@@ -255,9 +257,7 @@ function ConfigFormDialog({
 
                 {/* Model */}
                 <div>
-                    <div className="text-sm py-1">
-                        {t("ai-config-model")}
-                    </div>
+                    <div className="text-sm py-1">{t("ai-config-model")}</div>
                     <Input
                         name="ai-config-model"
                         placeholder={t("ai-config-model-placeholder")}
@@ -306,12 +306,13 @@ function ConfigFormDialog({
                     </div>
                 </div>
             </div>
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 
-let configFormResolveCallback: ((config: AIConfig | null) => void) | null = null;
-let configFormEditData: AIConfig | undefined = undefined;
+let configFormResolveCallback: ((config: AIConfig | null) => void) | null =
+    null;
+let configFormEditData: AIConfig | undefined;
 
 export function showConfigForm(edit?: AIConfig): Promise<AIConfig | null> {
     return new Promise((resolve) => {
@@ -498,7 +499,7 @@ function AssistantFormDialog({ open, onOpenChange }: AssistantFormDialogProps) {
                 title: t("are-you-sure-to-delete-this-config"),
             });
             if (!result) return;
-            
+
             await useLedgerStore.getState().updatePersonalMeta((prev) => {
                 if (!prev.assistant?.configs) return prev;
 
@@ -525,12 +526,12 @@ function AssistantFormDialog({ open, onOpenChange }: AssistantFormDialogProps) {
     );
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={onOpenChange}
             title={t("ai-assistant")}
-            maxWidth="md"
             fullScreenOnMobile={true}
+            maxWidth="md"
         >
             <div className="flex flex-col gap-4">
                 {/* 创建配置按钮 */}
@@ -639,7 +640,7 @@ function AssistantFormDialog({ open, onOpenChange }: AssistantFormDialogProps) {
                 </div>
             </div>
             <ConfigFormProvider />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 }
 
@@ -673,12 +674,7 @@ export function AssistantProvider() {
         }
     };
 
-    return (
-        <AssistantFormDialog
-            open={open}
-            onOpenChange={handleOpenChange}
-        />
-    );
+    return <AssistantFormDialog open={open} onOpenChange={handleOpenChange} />;
 }
 
 export default function AssistantSettingsItem() {

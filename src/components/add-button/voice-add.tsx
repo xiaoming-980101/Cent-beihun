@@ -4,7 +4,7 @@ import { useLongPress } from "@/hooks/use-long-press";
 import { t } from "@/locale";
 import { useLedgerStore } from "@/store/ledger";
 import { parseTextToBill } from "../assistant/text-to-bill";
-import { FormDialog } from "../ui/dialog/form-dialog";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import { BaseButton } from "./base";
 import { startRecognize } from "./recognize";
 import VoiceForm, { VoiceFormContext, type VoiceFormState } from "./voice-form";
@@ -12,7 +12,11 @@ import VoiceForm, { VoiceFormContext, type VoiceFormState } from "./voice-form";
 // 事件驱动的弹窗管理
 let resolveCallback: (() => void) | null = null;
 
-export const VoiceFormProvider = ({ formState }: { formState: VoiceFormState }) => {
+export const VoiceFormProvider = ({
+    formState,
+}: {
+    formState: VoiceFormState;
+}) => {
     const [open, setOpen] = useState(false);
 
     useEffect(() => {
@@ -41,28 +45,31 @@ export const VoiceFormProvider = ({ formState }: { formState: VoiceFormState }) 
     };
 
     return (
-        <FormDialog
+        <ResponsiveDialog
             open={open}
             onOpenChange={handleOpenChange}
             title={t("voice-recording-dialog-title")}
             maxWidth="md"
         >
             <VoiceForm onCancel={handleCancel} />
-        </FormDialog>
+        </ResponsiveDialog>
     );
 };
 
-export const showVoiceForm = (): { promise: Promise<void>; cancel: () => void } => {
+export const showVoiceForm = (): {
+    promise: Promise<void>;
+    cancel: () => void;
+} => {
     const promise = new Promise<void>((resolve) => {
         resolveCallback = resolve;
         window.dispatchEvent(new CustomEvent("show-voice-form"));
     });
-    
+
     const cancel = () => {
         resolveCallback?.();
         resolveCallback = null;
     };
-    
+
     return { promise, cancel };
 };
 
@@ -105,52 +112,57 @@ export function VoiceAddButton({
             stopRef.current = stopRecognizing;
 
             // 处理识别结果
-            finished.then(async (value) => {
-                try {
-                    const text = value.trim();
-                    if (text.length === 0) {
+            finished
+                .then(async (value) => {
+                    try {
+                        const text = value.trim();
+                        if (text.length === 0) {
+                            closeDialog();
+                            setFormState({
+                                text: "",
+                                phase: "listening",
+                            });
+                            return;
+                        }
+                        setFormState((prev) => ({ ...prev, phase: "parsing" }));
+                        const bills = await parseTextToBill(text);
+                        if (bills.length === 0) {
+                            toast.error("无法识别账单信息");
+                            return;
+                        }
+                        await useLedgerStore.getState().addBills(bills);
+                        toast.success(
+                            t("voice-add-success", { count: bills.length }),
+                        );
+                    } catch (error) {
+                        console.error(error);
+                        const errorMessage =
+                            error instanceof Error ? error.message : "";
+                        if (errorMessage.includes("aborted")) {
+                            return;
+                        }
+                        toast.error(
+                            t("voice-recognition-failed", {
+                                error:
+                                    error instanceof Error ? error.message : "",
+                            }),
+                        );
+                    } finally {
                         closeDialog();
                         setFormState({
                             text: "",
                             phase: "listening",
                         });
-                        return;
                     }
-                    setFormState((prev) => ({ ...prev, phase: "parsing" }));
-                    const bills = await parseTextToBill(text);
-                    if (bills.length === 0) {
-                        toast.error("无法识别账单信息");
-                        return;
-                    }
-                    await useLedgerStore.getState().addBills(bills);
-                    toast.success(t("voice-add-success", { count: bills.length }));
-                } catch (error) {
+                })
+                .catch((error) => {
                     console.error(error);
-                    const errorMessage =
-                        error instanceof Error ? error.message : "";
-                    if (errorMessage.includes("aborted")) {
-                        return;
-                    }
-                    toast.error(
-                        t("voice-recognition-failed", {
-                            error: error instanceof Error ? error.message : "",
-                        }),
-                    );
-                } finally {
                     closeDialog();
                     setFormState({
                         text: "",
                         phase: "listening",
                     });
-                }
-            }).catch((error) => {
-                console.error(error);
-                closeDialog();
-                setFormState({
-                    text: "",
-                    phase: "listening",
                 });
-            });
         }, []),
         onLongPressEnd: useCallback(() => {
             // 松手：停止录音并开始识别
