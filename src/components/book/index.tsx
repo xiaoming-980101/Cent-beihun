@@ -1,10 +1,12 @@
 import * as Dialog from "@radix-ui/react-dialog";
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+import { useState } from "react";
 import { useIntl } from "@/locale";
 import { useBookStore } from "@/store/book";
 import { useIsLogin } from "@/store/user";
 import { cn } from "@/utils";
 import { Button } from "../ui/button";
+import { ResponsiveDialog } from "../ui/dialog/index";
 import { BookForm } from "./form";
 import { showBookGuide } from "./util";
 
@@ -53,14 +55,36 @@ export default function BookGuide() {
     );
 }
 
+function BookSettingsDialog({
+    open,
+    onOpenChange,
+}: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+}) {
+    const t = useIntl();
+
+    return (
+        <ResponsiveDialog
+            open={open}
+            onOpenChange={onOpenChange}
+            title={t("ledger-books")}
+            maxWidth="md"
+            fullScreenOnMobile={true}
+        >
+            <BookForm />
+        </ResponsiveDialog>
+    );
+}
+
 export function BookSettings() {
     const t = useIntl();
+    const [open, setOpen] = useState(false);
+
     return (
-        <div className="backup">
+        <>
             <Button
-                onClick={() => {
-                    showBookGuide();
-                }}
+                onClick={() => setOpen(true)}
                 variant="ghost"
                 className="h-auto w-full rounded-none px-1 py-1"
             >
@@ -81,6 +105,7 @@ export function BookSettings() {
                     <i className="icon-[mdi--chevron-right] size-5 text-[color:var(--wedding-text-mute)]"></i>
                 </div>
             </Button>
-        </div>
+            <BookSettingsDialog open={open} onOpenChange={setOpen} />
+        </>
     );
 }
