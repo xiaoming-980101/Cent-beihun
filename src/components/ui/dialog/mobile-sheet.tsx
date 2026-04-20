@@ -257,8 +257,7 @@ export function MobileSheet({
                         {/* 内容区域 */}
                         <div
                             className={cn(
-                                "flex-1 overflow-y-auto scrollbar-hidden",
-                                fullscreen ? "px-4" : "", // 全屏时添加左右内边距
+                                "flex-1 overflow-y-auto scrollbar-hidden px-4", // 所有移动端弹窗都添加左右内边距
                                 bodyClassName,
                             )}
                         >
