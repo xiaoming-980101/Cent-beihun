@@ -1,4 +1,3 @@
-import { DropdownMenuTrigger } from "@radix-ui/react-dropdown-menu";
 import { toast } from "sonner";
 import useCategory from "@/hooks/use-category";
 import { useCreators } from "@/hooks/use-creator";
@@ -22,6 +21,7 @@ import {
     DropdownMenuGroup,
     DropdownMenuItem,
     DropdownMenuSeparator,
+    DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 
 export default function BillInfo({
@@ -276,9 +276,10 @@ function MoreAction({
 }) {
     const t = useIntl();
     return (
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
                 <Button
+                    type="button"
                     variant={"ghost"}
                     className="text-base font-normal cursor-pointer"
                 >

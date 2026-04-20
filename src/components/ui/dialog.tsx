@@ -22,6 +22,17 @@ function isFloatingLayerInteraction(target: EventTarget | null): boolean {
   )
 }
 
+function hasOpenFloatingLayer(): boolean {
+  if (typeof document === "undefined") return false
+
+  return Boolean(
+    document.querySelector('[data-radix-dropdown-menu-content][data-state="open"]') ||
+      document.querySelector('[data-radix-popover-content][data-state="open"]') ||
+      document.querySelector('[data-radix-select-content][data-state="open"]') ||
+      document.querySelector(".react-datepicker-popper")
+  )
+}
+
 const Dialog = DialogPrimitive.Root
 
 const DialogTrigger = DialogPrimitive.Trigger
@@ -77,12 +88,12 @@ const DialogContent = React.forwardRef<
       }}
       onFocusOutside={(e) => {
         // 某些浮层(如 DropdownMenu)会先触发焦点迁移，导致弹窗被误判为外部交互
-        if (isFloatingLayerInteraction(e.target)) {
+        if (isFloatingLayerInteraction(e.target) || hasOpenFloatingLayer()) {
           e.preventDefault()
         }
       }}
       onInteractOutside={(e) => {
-        if (isFloatingLayerInteraction(e.target)) {
+        if (isFloatingLayerInteraction(e.target) || hasOpenFloatingLayer()) {
           e.preventDefault()
         }
       }}
