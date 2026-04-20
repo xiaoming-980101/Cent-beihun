@@ -4,6 +4,24 @@ import { X } from "lucide-react"
 
 import { cn } from "@/utils/index"
 
+function isFloatingLayerInteraction(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false
+
+  return Boolean(
+    target.closest('[role="listbox"]') ||
+      target.closest('[role="dialog"]') ||
+      target.closest('[role="menu"]') ||
+      target.closest('[data-radix-popper-content-wrapper]') ||
+      target.closest('[data-radix-select-content]') ||
+      target.closest('[data-radix-select-viewport]') ||
+      target.closest('[data-radix-popover-content]') ||
+      target.closest('[data-radix-dropdown-menu-content]') ||
+      target.closest('[data-radix-context-menu-content]') ||
+      target.closest('.react-datepicker') ||
+      target.closest('.react-datepicker-popper')
+  )
+}
+
 const Dialog = DialogPrimitive.Root
 
 const DialogTrigger = DialogPrimitive.Trigger
@@ -52,22 +70,20 @@ const DialogContent = React.forwardRef<
           : undefined
       }
       onPointerDownOutside={(e) => {
-        // 阻止点击 Select/Popover/DatePicker 等浮层时关闭弹窗
-        const target = e.target as HTMLElement;
-        // 检查是否点击了 Radix UI 的浮层元素
-        if (
-          target.closest('[role="listbox"]') || 
-          target.closest('[role="dialog"]') ||
-          target.closest('[data-radix-popper-content-wrapper]') ||
-          target.closest('[data-radix-select-content]') ||
-          target.closest('[data-radix-select-viewport]') ||
-          target.closest('[data-radix-popover-content]') ||
-          target.closest('[data-radix-dropdown-menu-content]') ||
-          target.closest('[data-radix-context-menu-content]') ||
-          target.closest('.react-datepicker') ||
-          target.closest('.react-datepicker-popper')
-        ) {
-          e.preventDefault();
+        // 阻止点击 Select/Popover/Dropdown 等浮层时关闭弹窗
+        if (isFloatingLayerInteraction(e.target)) {
+          e.preventDefault()
+        }
+      }}
+      onFocusOutside={(e) => {
+        // 某些浮层(如 DropdownMenu)会先触发焦点迁移，导致弹窗被误判为外部交互
+        if (isFloatingLayerInteraction(e.target)) {
+          e.preventDefault()
+        }
+      }}
+      onInteractOutside={(e) => {
+        if (isFloatingLayerInteraction(e.target)) {
+          e.preventDefault()
         }
       }}
       {...props}
