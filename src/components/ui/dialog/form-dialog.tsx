@@ -24,7 +24,7 @@ export interface FormDialogProps {
     description?: React.ReactNode;
     /** 弹窗内容 */
     children: React.ReactNode;
-    /** 最大宽度变体 */
+    /** 最大宽度变量 */
     maxWidth?: "xs" | "sm" | "md" | "lg" | "xl";
     /** 自定义类名 */
     className?: string;
@@ -59,68 +59,6 @@ const maxWidthClasses = {
 
 /**
  * FormDialog - 统一表单弹窗组件
- *
- * 用于显示表单输入界面的弹窗。在移动端从底部滑入，在桌面端居中显示。
- * 提供标准化的布局、样式和交互行为。
- *
- * **移动端响应式布局:**
- * - 使用 `fullScreenOnMobile=true` 适合内容较多的表单(账单编辑器、任务表单、亲友管理等)
- * - 使用 `fullScreenOnMobile=false` (默认)适合内容较少的表单(简单确认框、单字段输入等)
- *
- * @example
- * 基础用法 - 内容较少的表单(默认85%宽度)
- * ```tsx
- * <FormDialog
- *   open={open}
- *   onOpenChange={setOpen}
- *   title="添加预算"
- * >
- *   <BudgetForm onSubmit={handleSubmit} />
- * </FormDialog>
- * ```
- *
- * @example
- * 内容较多的表单 - 移动端全屏显示
- * ```tsx
- * <FormDialog
- *   open={open}
- *   onOpenChange={setOpen}
- *   title="编辑账单"
- *   fullScreenOnMobile={true}
- * >
- *   <GiftForm onSubmit={handleSubmit} />
- * </FormDialog>
- * ```
- *
- * @example
- * 自定义最大宽度 - 桌面端使用大尺寸
- * ```tsx
- * <FormDialog
- *   open={open}
- *   onOpenChange={setOpen}
- *   title="任务详情"
- *   maxWidth="lg"
- *   fullScreenOnMobile={true}
- * >
- *   <TaskForm onSubmit={handleSubmit} />
- * </FormDialog>
- * ```
- *
- * **何时使用 fullScreenOnMobile:**
- * - `true`: 表单包含多个字段、复杂布局、或需要更多空间的内容
- *   - 示例: 账单编辑器(多个输入字段)、任务表单(日期选择器+描述)、亲友管理(多个联系信息字段)
- * - `false` (默认): 表单内容简单、字段较少、或希望保持紧凑布局
- *   - 示例: 简单确认框、单字段输入、快速操作弹窗
- *
- * **验收标准:**
- * - 需求 2.1: 继承 Unified_Dialog 的所有特性
- * - 需求 2.2: 包含标准化的表单容器布局
- * - 需求 2.3: 支持滚动内容区域
- * - 需求 2.4: 在移动端从底部滑入，在桌面端居中显示
- * - 需求 2.5: 支持自定义标题文本
- * - 需求 2.6: 支持编辑模式和新建模式的标题切换
- * - 需求 2.7: 提供标准化的内边距和间距
- * - 需求 2.8: 支持移动端响应式布局(fullScreenOnMobile)
  */
 export function FormDialog({
     open,
@@ -147,16 +85,14 @@ export function FormDialog({
                 hideClose={true}
                 {...(!description ? { "aria-describedby": undefined } : {})}
                 className={cn(
-                    "fixed left-[50%] top-[50%] z-[111] -translate-x-1/2 -translate-y-1/2",
+                    "fixed left-[50%] top-[50%] z-[1001] -translate-x-1/2 -translate-y-1/2",
                     "flex max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] w-full flex-col overflow-hidden",
-                    "rounded-[30px]",
-                    "border border-[#edd6df] dark:border-[#302631]",
-                    "bg-[#fffdfd] dark:bg-[#181419]",
-                    "shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)]",
+                    "rounded-[30px] border-none",
+                    "bg-[color:var(--wedding-surface)] shadow-2xl",
                     "sm:max-h-[min(84vh,760px)]",
                     maxWidthClasses[maxWidth],
                     fullScreenOnMobile
-                        ? "max-sm:inset-0 max-sm:left-0 max-sm:top-0 max-sm:h-[100dvh] max-sm:max-h-[100dvh] max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none max-sm:border-0 max-sm:bg-[color:var(--wedding-app-bg)] max-sm:shadow-none"
+                        ? "max-sm:inset-0 max-sm:left-0 max-sm:top-0 max-sm:h-[100dvh] max-sm:max-h-[100dvh] max-sm:w-full max-sm:max-w-none max-sm:translate-x-0 max-sm:translate-y-0 max-sm:rounded-none max-sm:bg-[color:var(--wedding-app-bg)] max-sm:shadow-none"
                         : "max-sm:w-[min(92vw,32rem)] max-sm:max-w-[92vw] max-sm:max-h-[min(86dvh,760px)] max-sm:rounded-[28px]",
                     className,
                 )}
@@ -173,17 +109,17 @@ export function FormDialog({
                         )}
                     >
                         <X className="h-5 w-5" />
-                        <span className="sr-only">Close</span>
+                        <span className="sr-only">关闭</span>
                     </button>
                 ) : null}
 
                 {showHeader ? (
-                    <DialogHeader className="border-b border-[color:var(--wedding-line)] px-5 pb-4 pt-5">
-                        <DialogTitle className="wedding-topbar-title pl-1 text-[24px] text-[color:var(--wedding-text)]">
+                    <DialogHeader className="px-5 pb-2 pt-6">
+                        <DialogTitle className="wedding-topbar-title pl-1 text-[color:var(--wedding-text)]">
                             {title}
                         </DialogTitle>
                         {description ? (
-                            <DialogDescription className="pl-1 text-sm leading-6 text-[color:var(--wedding-text-mute)]">
+                            <DialogDescription className="pl-1 text-xs leading-6 text-[color:var(--wedding-text-mute)]">
                                 {description}
                             </DialogDescription>
                         ) : null}
@@ -204,7 +140,7 @@ export function FormDialog({
                             ? "px-5 py-5 max-sm:px-4 max-sm:py-4"
                             : "px-5 py-5",
                         showHeader
-                            ? "pt-4"
+                            ? "pt-2"
                             : shouldShowTopClose && fullScreenOnMobile
                               ? "max-sm:pt-4 sm:pt-14"
                               : shouldShowTopClose
@@ -223,15 +159,15 @@ export function FormDialog({
                             type="button"
                             variant="outline"
                             onClick={() => onOpenChange(false)}
-                            className="h-12 flex-1 rounded-full border-[color:var(--wedding-line)] bg-white/90 text-[color:var(--wedding-text)] hover:bg-white dark:border-white/20 dark:bg-white/10 dark:text-white dark:hover:bg-white/15"
+                            className="h-12 flex-1 rounded-full border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] text-[color:var(--wedding-text-soft)] hover:bg-[color:var(--wedding-surface-muted)]" 
                         >
                             关闭
                         </Button>
                         {onSave ? (
                             <Button
                                 type="button"
-                                onClick={onSave}
-                                className="h-12 flex-1 rounded-full bg-gradient-to-r from-[color:var(--wedding-accent)] to-[color:var(--wedding-accent-strong)] text-white shadow-[0_14px_30px_-20px_rgba(15,23,42,0.8)] hover:brightness-105"
+                                onClick={handleSave}
+                                className="h-12 flex-1 rounded-full bg-gradient-to-r from-[color:var(--wedding-accent)] to-[color:var(--wedding-accent-strong)] text-white shadow-[0_12px_24px_-10px_rgba(236,72,153,0.4)] hover:brightness-105"
                             >
                                 {saveButtonText}
                             </Button>
@@ -241,4 +177,10 @@ export function FormDialog({
             </DialogContent>
         </Dialog>
     );
+
+    async function handleSave() {
+        if (onSave) {
+            await onSave();
+        }
+    }
 }

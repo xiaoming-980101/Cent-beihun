@@ -12,6 +12,7 @@ export default function ComplexAddButton({
 }) {
     const [voiceRecordingEnabled] = usePreference("voiceRecordingEnabled");
     const [voiceByKeyboard] = usePreference("voiceByKeyboard");
+
     if (!voiceRecordingEnabled) {
         return (
             <BaseButton className={className} onClick={onClick}>
@@ -19,8 +20,10 @@ export default function ComplexAddButton({
             </BaseButton>
         );
     }
+
     if (voiceByKeyboard) {
         return <KeyboardAddButton className={className} onClick={onClick} />;
     }
+
     return <VoiceAddButton className={className} onClick={onClick} />;
 }

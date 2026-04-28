@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
             manifest: {
                 name: "Cent - 日计",
                 short_name: "Cent",
-                description: "Accounting your life - 记录每一天",
+                description: "Accounting your life - 记录每一�?",
                 theme_color: "#ffffff",
                 icons: [
                     { src: "icon.png", sizes: "192x192", type: "image/png" },
@@ -58,16 +58,16 @@ export default defineConfig(({ mode }) => {
                     } as any,
                 ],
                 launch_handler: {
-                    client_mode: ["navigate-existing", "auto"], // 优先在现有窗口导航
+                    client_mode: ["navigate-existing", "auto"], // 优先在现有窗口导�?
                 },
-                // 注意：标准 URL 链接唤起通过应用层面的 URL 参数处理实现
-                // 见 src/hooks/use-url-handler.tsx
+                // 注意：标�?URL 链接唤起通过应用层面�?URL 参数处理实现
+                // �?src/hooks/use-url-handler.tsx
             },
         }),
     ];
 
     if (shouldAnalyze) {
-        // 只有在环境变量 ANALYZE=true 时才添加分析插件
+        // 只有在环境变�?ANALYZE=true 时才添加分析插件
         plugins.push(
             analyzer({
                 analyzerMode: "static",
@@ -161,11 +161,12 @@ export default defineConfig(({ mode }) => {
             format: "es",
         },
         server: {
+            port: 3000,
             proxy: {
-                // 这里的 '/api' 是你在代码中调用的路径前缀
+                // 这里�?'/api' 是你在代码中调用的路径前缀
                 "/google-api": {
                     target: "https://generativelanguage.googleapis.com", // 目标接口域名
-                    changeOrigin: true, // 必须设置为 true，以便绕过主机检查
+                    changeOrigin: true, // 必须设置�?true，以便绕过主机检�?
                     rewrite: (path) => path.replace(/^\/google-api/, ""), // 去掉路径中的前缀
                     // 如果你的网络环境需要科学上网，且使用了本地代理软件，可能需要配置此项（可选）
                     // secure: false,
@@ -174,3 +175,4 @@ export default defineConfig(({ mode }) => {
         },
     };
 });
+

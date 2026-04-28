@@ -26,7 +26,7 @@ const DrawerOverlay = React.forwardRef<
 >(({ className, ...props }, ref) => (
     <DrawerPrimitive.Overlay
         ref={ref}
-        className={cn("fixed inset-0 z-50 bg-black/80", className)}
+        className={cn("fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm", className)}
         {...props}
     />
 ));
@@ -41,13 +41,16 @@ const DrawerContent = React.forwardRef<
         <DrawerPrimitive.Content
             ref={ref}
             className={cn(
-                "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
+                "fixed inset-x-0 bottom-0 z-[1001] mt-24 flex h-auto flex-col rounded-t-[20px] border-none bg-background shadow-2xl",
+                "pb-[env(safe-area-inset-bottom)]", // 适配底部安全区域
                 className,
             )}
             {...props}
         >
-            <div className="mx-auto mt-4 h-2 w-[100px] rounded-full bg-muted" />
-            {children}
+            <div className="mx-auto mt-3 h-1.5 w-12 flex-shrink-0 rounded-full bg-muted/40" />
+            <div className="flex-1 overflow-visible"> {/* 允许子元素（弹出层）溢出显示 */}
+                {children}
+            </div>
         </DrawerPrimitive.Content>
     </DrawerPortal>
 ));
@@ -58,7 +61,7 @@ const DrawerHeader = ({
     ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
     <div
-        className={cn("grid gap-1.5 p-4 text-center sm:text-left", className)}
+        className={cn("grid gap-1.5 p-6 text-center sm:text-left", className)}
         {...props}
     />
 );
@@ -69,7 +72,7 @@ const DrawerFooter = ({
     ...props
 }: React.HTMLAttributes<HTMLDivElement>) => (
     <div
-        className={cn("mt-auto flex flex-col gap-2 p-4", className)}
+        className={cn("mt-auto flex flex-col gap-2 p-6", className)}
         {...props}
     />
 );
@@ -82,7 +85,7 @@ const DrawerTitle = React.forwardRef<
     <DrawerPrimitive.Title
         ref={ref}
         className={cn(
-            "text-lg font-semibold leading-none tracking-tight",
+            "text-[17px] font-semibold leading-tight tracking-tight text-foreground",
             className,
         )}
         {...props}

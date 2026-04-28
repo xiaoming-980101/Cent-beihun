@@ -118,7 +118,7 @@ export function BillsTimelineSection({
                                     bill.type === "income"
                                         ? "text-emerald-500"
                                         : "text-orange-500",
-                                onClick: async () => {
+                                onClick: async (e) => {
                                     await showBillInfo(bill);
                                 },
                             };

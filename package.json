@@ -4,13 +4,13 @@
 	"version": "1.4",
 	"type": "module",
 	"scripts": {
-		"dev": "vite --host",
+		"dev": "vite --host --port 3000",
 		"build": "vite build",
 		"analyze": "ANALYZE=true vite build",
 		"analyze:report": "ANALYZE=true vite build && node scripts/report-bundle.mjs",
 		"lint": "tsc -b",
 		"lint:biome": "biome check --diagnostic-level error",
-		"preview": "vite preview --host --port 5173",
+		"preview": "vite preview --host --port 3000",
 		"check": "biome check --write",
 		"pre-commit": "pnpm run lint",
 		"screenshot": "node screenshots/capture.cjs",
@@ -135,3 +135,4 @@
 		"workbox-strategies": "^7.3.0"
 	}
 }
+

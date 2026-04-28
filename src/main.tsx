@@ -21,13 +21,22 @@ if ("scrollRestoration" in window.history) {
     window.history.scrollRestoration = "manual";
 }
 
-initIntl(lang).then(() => {
-    const rootElement = document.getElementById("root");
-    if (!rootElement) {
-        throw new Error("Root element not found");
-    }
+const rootElement = document.getElementById("root");
+if (!rootElement) {
+    throw new Error("Root element not found");
+}
 
-    createRoot(rootElement).render(
+// 使用全局变量防止 HMR 时重复创建 root
+const globalObject = (typeof window !== "undefined"
+    ? window
+    : {}) as any;
+const root = globalObject.__reactRoot || createRoot(rootElement);
+if (import.meta.env.DEV) {
+    globalObject.__reactRoot = root;
+}
+
+initIntl(lang).then(() => {
+    root.render(
         <StrictMode>
             <ThemeProvider defaultTheme="system" storageKey="wedding-app-theme">
                 <LocaleProvider>

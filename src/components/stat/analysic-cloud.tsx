@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useSize } from "react-use";
 import WordCloud from "wordcloud";
-import { useTheme } from "@/hooks/use-theme";
+import { useTheme } from "@/lib/theme/use-theme";
 import { useIntl } from "@/locale";
 import { cn } from "@/utils";
 import { processText } from "@/utils/word";

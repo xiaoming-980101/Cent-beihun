@@ -1,7 +1,11 @@
 import type { ComponentProps, ReactNode } from "react";
-import { useNavigate } from "react-router";
+import { useLayoutEffect, useRef } from "react";
+import { useLocation, useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/utils";
+
+// 简单的全局滚动位置缓存
+const scrollCache: Record<string, number> = {};
 
 type ShellProps = {
     children: ReactNode;
@@ -14,10 +18,38 @@ export function WeddingPageShell({
     className,
     contentClassName,
 }: ShellProps) {
+    const location = useLocation();
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // 恢复滚动位置
+    useLayoutEffect(() => {
+        const path = location.pathname;
+        const container = containerRef.current;
+        if (!container) return;
+
+        // 恢复之前保存的位置
+        if (scrollCache[path]) {
+            container.scrollTop = scrollCache[path];
+        } else {
+            container.scrollTop = 0;
+        }
+
+        // 监听滚动并保存
+        const handleScroll = () => {
+            scrollCache[path] = container.scrollTop;
+        };
+
+        container.addEventListener("scroll", handleScroll, { passive: true });
+        return () => {
+            container.removeEventListener("scroll", handleScroll);
+        };
+    }, [location.pathname]);
+
     return (
         <div
+            ref={containerRef}
             className={cn(
-                "wedding-app-shell h-full min-h-0 overflow-y-auto",
+                "wedding-app-shell h-full min-h-0 overflow-y-auto scroll-smooth",
                 className,
             )}
         >
@@ -60,41 +92,41 @@ export function WeddingTopBar({
     return (
         <div
             className={cn(
-                "hidden items-center justify-between rounded-[22px] border border-[color:var(--wedding-line)] px-4 py-3 sm:flex",
-                "bg-[color:var(--wedding-surface)]",
+                "hidden sm:flex items-center justify-between px-4 py-4 sticky top-0 z-30 transition-all",
+                "bg-[color:var(--wedding-app-bg)]/80 backdrop-blur-xl",
                 className,
             )}
         >
-            <div className="flex min-w-0 items-center gap-3">
+            <div className="flex min-w-0 items-center gap-4">
                 {backTo ? (
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-10 w-10 rounded-full text-[color:var(--wedding-text)] hover:bg-[color:var(--wedding-surface-muted)]"
+                        className="h-10 w-10 rounded-full bg-[color:var(--wedding-surface-muted)] text-[color:var(--wedding-text)] transition-all active:scale-90"
                         onClick={() => goBackOrNavigate(navigate, backTo)}
                     >
-                        <i className="icon-[mdi--chevron-left] size-5" />
+                        <i className="icon-[mdi--chevron-left] size-6" />
                     </Button>
                 ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface-muted)] text-sm font-bold text-pink-500 shadow-sm">
-                        <i className="icon-[mdi--account] size-4" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-pink-500/10 to-violet-500/10 text-pink-500 shadow-sm border border-pink-500/10">
+                        <i className="icon-[mdi--account] size-5" />
                     </div>
                 )}
                 <div className="min-w-0">
-                    <div
+                    <h1
                         className={cn(
-                            "truncate text-[26px] leading-none",
+                            "truncate font-bold tracking-tight",
                             backTo
-                                ? "wedding-topbar-title text-[color:var(--wedding-text)]"
-                                : "wedding-brand",
+                                ? "text-[24px] text-[color:var(--wedding-text)]"
+                                : "wedding-brand text-[28px]",
                         )}
                     >
                         {title}
-                    </div>
+                    </h1>
                     {subtitle ? (
-                        <div className="mt-1 truncate text-xs wedding-muted">
+                        <p className="mt-0.5 truncate text-[11px] font-medium opacity-60">
                             {subtitle}
-                        </div>
+                        </p>
                     ) : null}
                 </div>
             </div>
@@ -103,7 +135,7 @@ export function WeddingTopBar({
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="h-10 w-10 rounded-full text-[color:var(--wedding-text-soft)] hover:bg-[color:var(--wedding-surface-muted)]"
+                        className="h-10 w-10 rounded-full bg-[color:var(--wedding-surface-muted)] text-[color:var(--wedding-text-soft)] transition-all active:scale-90"
                     >
                         <i className="icon-[mdi--bell-outline] size-5" />
                     </Button>

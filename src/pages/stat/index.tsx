@@ -52,7 +52,7 @@ export default function Page() {
 
     const { bills } = useLedgerStore();
     const bookLabel = currentBookName || "当前账本";
-    const endTime = useMemo(() => Date.now(), []); //bills[0]?.time ?? dayjs();
+    const endTime = useMemo(() => Date.now(), []);
     const startTime = bills[bills.length - 1]?.time ?? dayjs();
 
     const customFilters = useLedgerStore(
@@ -128,10 +128,7 @@ export default function Page() {
 
     useEffect(() => {
         const book = useBookStore.getState().currentBookId;
-        if (!book) {
-            return;
-        }
-        if (!selectedFilter) {
+        if (!book || !selectedFilter) {
             return;
         }
         StorageDeferredAPI.filter(book, {
@@ -141,7 +138,7 @@ export default function Page() {
         }).then((result) => {
             setFiltered(result);
         });
-    }, [selectedFilter, realRange[0], realRange[1]]);
+    }, [selectedFilter, realRange]);
 
     const [focusType, setFocusType] = useState<FocusType>("expense");
     const [dimension, setDimension] = useState<"category" | "user">("category");
@@ -275,10 +272,6 @@ export default function Page() {
             setAnalysis(undefined);
             return;
         }
-        if (!analysisUnit) {
-            setAnalysis(undefined);
-            return;
-        }
         StorageDeferredAPI.analysis(
             book,
             [realRange[0], realRange[1]],
@@ -287,7 +280,7 @@ export default function Page() {
         ).then((v) => {
             setAnalysis(v);
         });
-    }, [analysisUnit, focusType, realRange[0], realRange[1]]);
+    }, [analysisUnit, focusType, realRange]);
 
     const { updateFilter, addFilter } = useCustomFilters();
     const toChangeFilter = async () => {
@@ -297,7 +290,6 @@ export default function Page() {
         const id = selectedFilterView.id;
         const action = await showBillFilterView({
             ...selectedFilterView,
-            // hideDelete: id === DefaultFilterViewId,
         });
         if (action === "delete") {
             await updateFilter(id);
@@ -347,127 +339,111 @@ export default function Page() {
     const { allCurrencies, baseCurrency } = useCurrency();
 
     return (
-        <WeddingPageShell className="page-show" contentClassName="desktop-grid">
+        <WeddingPageShell className="bg-[color:var(--wedding-app-bg)]" contentClassName="pb-32 px-4">
             <WeddingTopBar
-                title="统计分析"
-                subtitle={`${bookLabel}支出与收入结构总览`}
+                title={t("analysis")}
+                subtitle={`${bookLabel}收支结构概览`}
+                backTo="/"
             />
-            <div className="w-full flex flex-col gap-4">
-                <div className="rounded-[28px] bg-[linear-gradient(135deg,#fbbcdf,#ddb6f7)] p-4 text-[#3b0d29] shadow-[0_18px_36px_-28px_rgba(244,114,182,0.45)] dark:bg-[linear-gradient(135deg,#3d1030,#1e0d30)] dark:text-white">
-                    <div className="flex items-center justify-between gap-3">
-                        <div>
-                            <div className="text-sm font-medium opacity-80">
-                                统计分析
-                            </div>
-                            <div className="mt-1 text-[28px] font-bold leading-none">
-                                {filtered.length}
-                            </div>
-                            <div className="mt-1 text-xs opacity-75">
-                                当前筛选范围内账单数
+            
+            <div className="flex flex-col gap-6 mt-6">
+                {/* 顶部总览卡片 - Apple 风格的高级感 */}
+                <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#f05cab] via-[#d64dc8] to-[#9333ea] p-7 text-white shadow-2xl shadow-purple-500/20">
+                    <div className="relative z-10">
+                        <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium opacity-80 uppercase tracking-widest">{t("summary")}</span>
+                            <div className="flex -space-x-2">
+                                <div className="h-8 w-8 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md flex items-center justify-center">
+                                    <i className="icon-[mdi--chart-line] size-4"></i>
+                                </div>
                             </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-2 text-center">
-                            <div className="rounded-2xl bg-white/40 px-3 py-2 dark:bg-white/10">
-                                <div className="text-[10px] opacity-75">
-                                    维度
-                                </div>
-                                <div className="text-sm font-semibold">
-                                    {dimension === "category" ? "分类" : "成员"}
-                                </div>
+                        <div className="mt-4 flex items-baseline gap-2">
+                            <span className="text-4xl font-black tracking-tighter">
+                                ¥{Number(totalMoneys[focusType === "expense" ? 1 : 0]).toLocaleString()}
+                            </span>
+                        </div>
+                        <div className="mt-1 text-sm font-medium opacity-70">
+                            {focusType === "expense" ? "总支出金额" : focusType === "income" ? "总收入金额" : "当前结余金额"}
+                        </div>
+                        
+                        <div className="mt-8 grid grid-cols-2 gap-4">
+                            <div className="rounded-2xl bg-white/10 p-3 backdrop-blur-md">
+                                <div className="text-[10px] uppercase tracking-wider opacity-60">记录总数</div>
+                                <div className="mt-1 text-lg font-bold">{filtered.length}</div>
                             </div>
-                            <div className="rounded-2xl bg-white/40 px-3 py-2 dark:bg-white/10">
-                                <div className="text-[10px] opacity-75">
-                                    焦点
-                                </div>
-                                <div className="text-sm font-semibold">
-                                    {focusType === "expense"
-                                        ? "支出"
-                                        : focusType === "income"
-                                          ? "收入"
-                                          : "结余"}
-                                </div>
+                            <div className="rounded-2xl bg-white/10 p-3 backdrop-blur-md">
+                                <div className="text-[10px] uppercase tracking-wider opacity-60">筛选维度</div>
+                                <div className="mt-1 text-lg font-bold">{dimension === "category" ? "分类" : "成员"}</div>
                             </div>
                         </div>
                     </div>
+                    {/* 背景装饰 */}
+                    <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl"></div>
+                    <div className="absolute -left-10 -bottom-10 h-40 w-40 rounded-full bg-purple-500/20 blur-3xl"></div>
                 </div>
-                <div className="space-y-3">
-                    <div className="wedding-surface-card flex p-2">
-                        <div className="flex-1 flex gap-2 overflow-x-auto scrollbar-hidden">
-                            {allFilterViews.map((filter) => {
-                                const displayCurrency =
-                                    filter.displayCurrency === baseCurrency.id
-                                        ? undefined
-                                        : allCurrencies.find(
-                                              (v) =>
-                                                  v.id ===
-                                                  filter.displayCurrency,
-                                          );
-                                return (
-                                    <Button
-                                        key={filter.id}
-                                        size={"sm"}
-                                        className={cn(
-                                            "rounded-[12px]",
-                                            filterViewId !== filter.id
-                                                ? "text-[color:var(--wedding-text-soft)]"
-                                                : "bg-pink-500/12 text-pink-500",
-                                        )}
-                                        variant="ghost"
-                                        onClick={() => {
-                                            setSliceId(undefined);
-                                            setFilterViewId(filter.id);
-                                        }}
-                                    >
-                                        {displayCurrency?.symbol}
-                                        {filter.name}
-                                    </Button>
-                                );
-                            })}
-                        </div>
-                        <div className="flex gap-1">
-                            <Button
-                                variant="ghost"
-                                className="rounded-[12px]"
-                                onClick={toAddFilter}
-                                size="sm"
-                            >
+
+                {/* 筛选控制器 */}
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between px-1">
+                        <h2 className="text-lg font-bold text-[color:var(--wedding-text)]">数据筛选</h2>
+                        <div className="flex gap-2">
+                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={toAddFilter}>
                                 <i className="icon-[mdi--plus] size-4"></i>
                             </Button>
-                            <Button
-                                variant="ghost"
-                                className="rounded-[12px]"
-                                onClick={toReOrder}
-                                size="sm"
-                            >
-                                <i className="icon-[mdi--menu] size-4"></i>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={toReOrder}>
+                                <i className="icon-[mdi--sort-variant] size-4"></i>
                             </Button>
                         </div>
                     </div>
-                    <DateSliced
-                        {...dateSlicedProps}
-                        onClickSettings={toChangeFilter}
-                    >
-                        <div className="relative flex items-center pr-2">
-                            <Switch.Root
-                                checked={dimension === "user"}
-                                onCheckedChange={() => {
-                                    setDimension((v) => {
-                                        return v === "category"
-                                            ? "user"
-                                            : "category";
-                                    });
-                                }}
-                                className="group relative z-[0] h-[29px] w-[54px] cursor-pointer rounded-sm bg-pink-100 outline-none dark:bg-white/10"
+                    
+                    <div className="wedding-surface-card flex items-center gap-2 overflow-x-auto p-1.5 scrollbar-hidden">
+                        {allFilterViews.map((filter) => {
+                            const isActive = filterViewId === filter.id;
+                            return (
+                                <button
+                                    key={filter.id}
+                                    onClick={() => {
+                                        setSliceId(undefined);
+                                        setFilterViewId(filter.id);
+                                    }}
+                                    className={cn(
+                                        "flex h-9 min-w-fit items-center rounded-full px-4 text-sm font-medium transition-all whitespace-nowrap",
+                                        isActive
+                                            ? "bg-pink-500 text-white shadow-lg shadow-pink-500/25"
+                                            : "text-[color:var(--wedding-text-soft)] hover:bg-[color:var(--wedding-surface-muted)]"
+                                    )}
+                                >
+                                    {filter.name}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    <DateSliced {...dateSlicedProps} onClickSettings={toChangeFilter}>
+                        <div className="flex items-center pr-1">
+                            <button
+                                onClick={() => setDimension(d => d === "category" ? "user" : "category")}
+                                className={cn(
+                                    "flex h-8 w-14 items-center rounded-full bg-[color:var(--wedding-surface-muted)] p-1 transition-all",
+                                    dimension === "user" ? "bg-purple-100 dark:bg-purple-900/30" : ""
+                                )}
                             >
-                                <div className="absolute top-0 left-0 w-full h-full flex items-center justify-center gap-2 z-[1]">
-                                    <i className="icon-[mdi--view-grid-outline] group-[data-[state=checked]]:text-white"></i>
-                                    <i className="icon-[mdi--account-outline]"></i>
+                                <div className={cn(
+                                    "h-6 w-6 rounded-full bg-white shadow-sm flex items-center justify-center transition-all",
+                                    dimension === "user" ? "translate-x-6" : ""
+                                )}>
+                                    <i className={cn(
+                                        "size-3.5",
+                                        dimension === "category" ? "icon-[mdi--format-list-bulleted] text-pink-500" : "icon-[mdi--account] text-purple-500"
+                                    )}></i>
                                 </div>
-                                <Switch.Thumb className="block size-[22px] translate-x-[4px] rounded-sm bg-background transition-transform duration-100 will-change-transform data-[state=checked]:translate-x-[28px]" />
-                            </Switch.Root>
+                            </button>
                         </div>
                     </DateSliced>
                 </div>
+
+                {/* 焦点选择器 */}
                 <FocusTypeSelector
                     value={focusType}
                     onValueChange={(v) => {
@@ -476,153 +452,123 @@ export default function Page() {
                     }}
                     money={totalMoneys}
                 />
-                <div className="grid gap-3 md:grid-cols-3">
+
+                {/* 三大核心指标 */}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     {[
-                        ["总支出", totalMoneys[1], "text-rose-500"],
-                        ["总收入", totalMoneys[0], "text-emerald-500"],
-                        ["当前结余", totalMoneys[2], "text-violet-500"],
-                    ].map(([label, value, tone]) => (
-                        <div
-                            key={label}
-                            className="wedding-surface-card rounded-[24px] p-5 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)]"
-                        >
-                            <div className="text-xs wedding-muted">{label}</div>
-                            <div
-                                className={cn(
-                                    "mt-2 text-[34px] font-black tracking-tight",
-                                    tone,
-                                )}
-                            >
-                                ¥ {Number(value).toLocaleString()}
+                        { label: "支出总计", value: totalMoneys[1], color: "text-rose-500", bg: "bg-rose-50 dark:bg-rose-500/10" },
+                        { label: "收入总计", value: totalMoneys[0], color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-500/10" },
+                        { label: "收支净额", value: totalMoneys[2], color: "text-violet-500", bg: "bg-violet-50 dark:bg-violet-500/10" },
+                    ].map((item) => (
+                        <div key={item.label} className="wedding-surface-card rounded-[28px] p-5">
+                            <div className="text-xs font-semibold uppercase tracking-wider opacity-50">{item.label}</div>
+                            <div className={cn("mt-3 text-[28px] font-black tracking-tight", item.color)}>
+                                ¥{Number(item.value).toLocaleString()}
+                            </div>
+                            <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/5">
+                                <div className={cn("h-full rounded-full opacity-60", item.bg.replace('bg-', 'bg-').split(' ')[0])} style={{ width: '100%' }}></div>
                             </div>
                         </div>
                     ))}
                 </div>
-            </div>
-            <div className="w-full flex-1 overflow-y-auto px-1">
-                <div className="relative flex w-full flex-col items-center gap-4">
+
+                {/* 趋势图表 */}
+                <div className="wedding-surface-card overflow-hidden rounded-[32px] p-0 shadow-sm">
                     <ChartWrapper
-                        title="收支趋势预览"
-                        description="按当前筛选范围聚合展示收入、支出与净收益走势。"
+                        title="资金走势"
+                        description="基于当前筛选范围的收支走势分析"
                         option={trendPreviewOption}
                         isLoading={false}
                         isEmpty={filtered.length === 0}
                     />
+                </div>
+
+                {/* 主体分析部分 */}
+                <div className="space-y-6">
                     {Part}
+                    
                     {tagStructure.length > 0 && (
-                        <div className="wedding-surface-card w-full rounded-[24px] p-4 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)] flex flex-col">
-                            <h2 className="my-3 text-center text-lg font-medium text-pink-500">
-                                {t("tag-details")}
-                            </h2>
-                            <div className="table w-full border-collapse">
-                                <div className="table-row-group divide-y">
-                                    {tagStructure.map((struct) => {
-                                        const index =
-                                            FocusTypes.indexOf(focusType);
-                                        const money = [
-                                            struct.income,
-                                            struct.expense,
-                                            struct.income - struct.expense,
-                                        ][index];
-                                        const total = totalMoneys[index];
-                                        return (
-                                            <TagItem
-                                                key={struct.id}
-                                                name={struct.name}
-                                                money={money}
-                                                total={total}
-                                                type={focusType}
-                                                onClick={() => {
-                                                    seeDetails({
-                                                        tags: [struct.id],
-                                                    });
-                                                }}
-                                            ></TagItem>
-                                        );
-                                    })}
-                                </div>
+                        <div className="wedding-surface-card rounded-[32px] p-6 shadow-sm">
+                            <h2 className="mb-6 text-xl font-bold text-[color:var(--wedding-text)]">{t("tag-details")}</h2>
+                            <div className="space-y-4">
+                                {tagStructure.map((struct) => {
+                                    const index = FocusTypes.indexOf(focusType);
+                                    const money = [struct.income, struct.expense, struct.income - struct.expense][index];
+                                    return (
+                                        <TagItem
+                                            key={struct.id}
+                                            name={struct.name}
+                                            money={money}
+                                            total={totalMoneys[index]}
+                                            type={focusType}
+                                            onClick={() => seeDetails({ tags: [struct.id] })}
+                                        />
+                                    );
+                                })}
                             </div>
                         </div>
                     )}
-                    <AnalysisCloud
-                        bills={
-                            focusType === "expense"
-                                ? filteredExpenseBills
-                                : focusType === "income"
-                                  ? filteredIncomeBills
-                                  : filtered
-                        }
-                    />
-                    <AnalysisMap
-                        bills={
-                            focusType === "expense"
-                                ? filteredExpenseBills
-                                : focusType === "income"
-                                  ? filteredIncomeBills
-                                  : filtered
-                        }
-                    />
+
+                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div className="wedding-surface-card rounded-[32px] p-6 shadow-sm">
+                            <h2 className="mb-6 text-xl font-bold text-[color:var(--wedding-text)]">标签云图</h2>
+                            <AnalysisCloud bills={focusType === "expense" ? filteredExpenseBills : focusType === "income" ? filteredIncomeBills : filtered} />
+                        </div>
+                        <div className="wedding-surface-card rounded-[32px] p-6 shadow-sm">
+                            <h2 className="mb-6 text-xl font-bold text-[color:var(--wedding-text)]">地域分布</h2>
+                            <AnalysisMap bills={focusType === "expense" ? filteredExpenseBills : focusType === "income" ? filteredIncomeBills : filtered} />
+                        </div>
+                    </div>
+
                     {analysis && (
-                        <div className="wedding-surface-card w-full rounded-[24px] p-4 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)] flex flex-col">
-                            <h2 className="my-3 text-center text-lg font-medium text-pink-500">
-                                {t("analysis")}
-                            </h2>
-                            <AnalysisDetail
-                                analysis={analysis}
-                                type={focusType}
-                                unit={analysisUnit}
-                            />
+                        <div className="wedding-surface-card rounded-[32px] p-6 shadow-sm">
+                            <h2 className="mb-6 text-xl font-bold text-[color:var(--wedding-text)]">{t("analysis")}</h2>
+                            <AnalysisDetail analysis={analysis} type={focusType} unit={analysisUnit} />
                         </div>
                     )}
-                    <div className="w-full flex flex-col gap-4">
+
+                    {/* 最高额记录 */}
+                    <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                         {dataSources.highestExpenseBill && (
-                            <div className="wedding-surface-card rounded-[24px] p-4 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)]">
-                                <div className="mb-3 text-sm font-semibold text-rose-500">
-                                    {t("highest-expense")}
+                            <div className="wedding-surface-card overflow-hidden rounded-[32px] p-6 shadow-sm">
+                                <div className="mb-4 flex items-center justify-between">
+                                    <span className="text-sm font-bold text-rose-500">{t("highest-expense")}</span>
+                                    <i className="icon-[mdi--arrow-down-thick] text-rose-500"></i>
                                 </div>
                                 <BillItem
-                                    className="w-full"
+                                    className="p-0 border-none bg-transparent"
                                     bill={dataSources.highestExpenseBill}
                                     showTime
-                                    onClick={() =>
-                                        showBillInfo(
-                                            dataSources.highestExpenseBill ??
-                                                undefined,
-                                        )
-                                    }
+                                    onClick={() => showBillInfo(dataSources.highestExpenseBill ?? undefined)}
                                 />
                             </div>
                         )}
                         {dataSources.highestIncomeBill && (
-                            <div className="wedding-surface-card rounded-[24px] p-4 shadow-[0_12px_30px_-26px_rgba(15,23,42,0.35)]">
-                                <div className="mb-3 text-sm font-semibold text-emerald-500">
-                                    {t("highest-income")}
+                            <div className="wedding-surface-card overflow-hidden rounded-[32px] p-6 shadow-sm">
+                                <div className="mb-4 flex items-center justify-between">
+                                    <span className="text-sm font-bold text-emerald-500">{t("highest-income")}</span>
+                                    <i className="icon-[mdi--arrow-up-thick] text-emerald-500"></i>
                                 </div>
                                 <BillItem
-                                    className="w-full"
+                                    className="p-0 border-none bg-transparent"
                                     bill={dataSources.highestIncomeBill}
                                     showTime
-                                    onClick={() =>
-                                        showBillInfo(
-                                            dataSources.highestIncomeBill ??
-                                                undefined,
-                                        )
-                                    }
+                                    onClick={() => showBillInfo(dataSources.highestIncomeBill ?? undefined)}
                                 />
                             </div>
                         )}
                     </div>
-                    <div>
-                        <Button
-                            variant="ghost"
-                            onClick={() => seeDetails()}
-                            className="text-pink-500 hover:bg-pink-500/10"
-                        >
-                            {t("see-all-ledgers")}
-                            <i className="icon-[mdi--arrow-up-right]"></i>
-                        </Button>
-                    </div>
-                    <div className="w-full h-20 flex-shrink-0"></div>
+                </div>
+
+                <div className="flex justify-center mt-4">
+                    <Button
+                        variant="ghost"
+                        onClick={() => seeDetails()}
+                        className="rounded-full px-8 py-6 text-pink-500 hover:bg-pink-500/5 font-bold"
+                    >
+                        {t("see-all-ledgers")}
+                        <i className="icon-[mdi--arrow-right] ml-2"></i>
+                    </Button>
                 </div>
             </div>
             <BillFilterViewProvider />

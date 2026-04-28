@@ -99,7 +99,7 @@ export function WeddingDateDialogV2({
             onOpenChange={onOpenChange}
             title="设置婚礼信息"
             description="完善你们的婚礼信息，让应用更加个性化"
-            fullScreenOnMobile={false} // 简单表单，不需要全屏
+            fullScreenOnMobile={true} // 启用全屏，防止时间选择器被遮挡
             maxWidth="sm"
             actions={{
                 cancelText: "取消",

@@ -6,8 +6,8 @@
 // 动画时长（毫秒）
 export const ANIMATION_DURATION = {
     fast: 150, // 按钮反馈
-    normal: 250, // 弹窗进入/退出
-    slow: 350, // 复杂动画
+    normal: 200, // 弹窗进入/退出（加速）
+    slow: 300, // 复杂动画
 } as const;
 
 // Spring 弹性配置
@@ -19,12 +19,12 @@ export const SPRING_CONFIG = {
         stiffness: 300,
         mass: 0.8,
     },
-    // 半屏弹窗 - 较快速的弹性
+    // 半屏弹窗 - 响应灵敏的弹性（经过优化以提升流畅度）
     snappy: {
         type: "spring" as const,
-        damping: 35,
-        stiffness: 400,
-        mass: 0.6,
+        damping: 38,
+        stiffness: 450,
+        mass: 0.5, // 减小质量，让动画更轻快
     },
     // 按钮反馈 - 较弹的效果
     bouncy: {
@@ -41,7 +41,7 @@ export const MODAL_VARIANTS = {
     fullscreenMobile: {
         initial: {
             y: "100%",
-            opacity: 0,
+            opacity: 0.5,
         },
         animate: {
             y: 0,
@@ -56,7 +56,7 @@ export const MODAL_VARIANTS = {
     // 全屏弹窗（PC端）- 缩放淡入
     fullscreenDesktop: {
         initial: {
-            scale: 0.95,
+            scale: 0.98,
             opacity: 0,
             y: "-50%",
             x: "-50%",
@@ -68,42 +68,36 @@ export const MODAL_VARIANTS = {
             x: "-50%",
         },
         exit: {
-            scale: 0.95,
+            scale: 0.98,
             opacity: 0,
             y: "-50%",
             x: "-50%",
         },
     },
 
-    // 半屏弹窗 - 从底部滑入（较短距离）
+    // 半屏弹窗 - 从底部滑入
     halfscreen: {
         initial: {
             y: "100%",
-            opacity: 0,
         },
         animate: {
             y: 0,
-            opacity: 1,
         },
         exit: {
             y: "100%",
-            opacity: 0,
         },
     },
 
-    // 背景遮罩 - 淡入 + 模糊
+    // 背景遮罩 - 仅淡入，模糊效果由静态 CSS 处理以提升性能
     backdrop: {
         initial: {
             opacity: 0,
-            backdropFilter: "blur(0px)",
         },
         animate: {
             opacity: 1,
-            backdropFilter: "blur(8px)",
         },
         exit: {
             opacity: 0,
-            backdropFilter: "blur(0px)",
         },
     },
 } as const;
@@ -112,7 +106,7 @@ export const MODAL_VARIANTS = {
 export const BUTTON_VARIANTS = {
     // 点击反馈
     tap: {
-        scale: 0.95,
+        scale: 0.96,
     },
     // 悬停效果（PC端）
     hover: {
@@ -125,16 +119,16 @@ export const DRAG_CONFIG = {
     // 拖拽约束
     dragConstraints: { top: 0, bottom: 0, left: 0, right: 0 },
     // 拖拽弹性
-    dragElastic: 0.1,
-    // 关闭阈值（拖拽距离超过此值自动关闭）
-    closeThreshold: 100,
-    // 拖拽速度阈值（快速拖拽时降低关闭阈值）
-    velocityThreshold: 500,
+    dragElastic: 0.05,
+    // 关闭阈值
+    closeThreshold: 80,
+    // 速度阈值
+    velocityThreshold: 400,
 } as const;
 
 // 响应式断点
 export const BREAKPOINTS = {
-    mobile: 640, // sm breakpoint
+    mobile: 640,
 } as const;
 
 // 工具函数：判断是否为移动端
@@ -169,13 +163,10 @@ export const shouldCloseOnDrag = (
 ): boolean => {
     const { closeThreshold, velocityThreshold } = DRAG_CONFIG;
 
-    // 向下拖拽
     if (offset.y > 0) {
-        // 快速拖拽时降低阈值
         if (velocity.y > velocityThreshold) {
-            return offset.y > closeThreshold * 0.5;
+            return offset.y > closeThreshold * 0.4;
         }
-        // 正常拖拽
         return offset.y > closeThreshold;
     }
 

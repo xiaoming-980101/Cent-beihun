@@ -3,7 +3,7 @@ import type { EditBill } from "@/store/ledger";
 import { ResponsiveDialog } from "../ui/dialog/index";
 import BillInfo from "./form";
 
-// 事件驱动的弹窗管理
+// 事件驱动的弹窗管�?
 let resolveCallback: ((value: boolean | null) => void) | null = null;
 
 export const BillInfoProvider = () => {
@@ -69,3 +69,4 @@ export const showBillInfo = (edit?: EditBill): Promise<boolean | null> => {
         );
     });
 };
+

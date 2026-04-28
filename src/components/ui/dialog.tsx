@@ -4,6 +4,9 @@ import * as React from "react";
 
 import { cn } from "@/utils/index";
 
+/**
+ * 判断是否是浮层交互
+ */
 function isFloatingLayerInteraction(target: EventTarget | null): boolean {
     if (!(target instanceof Element)) return false;
 
@@ -22,6 +25,9 @@ function isFloatingLayerInteraction(target: EventTarget | null): boolean {
     );
 }
 
+/**
+ * 判断当前是否有打开的浮层
+ */
 function hasOpenFloatingLayer(): boolean {
     if (typeof document === "undefined") return false;
 
@@ -54,7 +60,7 @@ const DialogOverlay = React.forwardRef<
     <DialogPrimitive.Overlay
         ref={ref}
         className={cn(
-            "fixed inset-0 z-[110] bg-[rgba(15,12,18,0.72)] backdrop-blur-[2px] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+            "fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 will-change-[opacity,backdrop-filter]",
             className,
         )}
         {...props}
@@ -77,8 +83,10 @@ const DialogContent = React.forwardRef<
         <DialogPrimitive.Content
             ref={ref}
             className={cn(
-                "fixed left-[50%] top-[50%] z-[111] grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border p-6 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
-                "rounded-[30px] border-[#edd6df] bg-[#fffdfd] shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)] dark:border-[#302631] dark:bg-[#181419]",
+                "fixed left-[50%] top-[50%] z-[1001] flex w-full max-w-lg translate-x-[-50%] translate-y-[-50%] flex-col gap-4 p-6 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
+                "rounded-[30px] border-none bg-[color:var(--wedding-surface)] shadow-2xl",
+                "pb-[calc(1.5rem+env(safe-area-inset-bottom))]",
+                "will-change-transform transform-gpu", // 硬件加速
                 className,
             )}
             aria-describedby={
@@ -118,7 +126,7 @@ const DialogContent = React.forwardRef<
                     className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] flex h-9 w-9 items-center justify-center rounded-full text-[color:var(--wedding-text-mute)] transition hover:bg-[color:var(--wedding-surface-muted)] hover:text-[color:var(--wedding-text)] focus:outline-none focus:ring-2 focus:ring-[color:var(--wedding-line-strong)] focus:ring-offset-2 disabled:pointer-events-none"
                 >
                     <X className="h-5 w-5" />
-                    <span className="sr-only">Close</span>
+                    <span className="sr-only">关闭</span>
                 </DialogPrimitive.Close>
             )}
         </DialogPrimitive.Content>
@@ -161,7 +169,7 @@ const DialogTitle = React.forwardRef<
     <DialogPrimitive.Title
         ref={ref}
         className={cn(
-            "text-base font-semibold leading-tight tracking-tight",
+            "text-[17px] font-semibold leading-tight tracking-tight text-[color:var(--wedding-text)]",
             className,
         )}
         {...props}

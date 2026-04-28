@@ -68,23 +68,6 @@ export interface MobileSheetProps {
 
 /**
  * MobileSheet 组件
- *
- * @example
- * ```tsx
- * <MobileSheet
- *   open={open}
- *   onOpenChange={setOpen}
- *   title="编辑信息"
- *   fullscreen={true}
- *   actions={{
- *     cancelText: "取消",
- *     confirmText: "保存",
- *     onConfirm: handleSave,
- *   }}
- * >
- *   <YourFormContent />
- * </MobileSheet>
- * ```
  */
 export function MobileSheet({
     open,
@@ -169,7 +152,7 @@ export function MobileSheet({
     }, [open]);
 
     // 如果在服务端渲染或者弹窗未打开，不渲染任何内容
-    if (typeof document === "undefined" || !open) {
+    if (typeof document === "undefined") {
         return null;
     }
 
@@ -179,21 +162,22 @@ export function MobileSheet({
                 <>
                     {/* 背景遮罩 */}
                     <motion.div
-                        className="fixed inset-0 z-[110] bg-black/60"
+                        className="fixed inset-0 z-[1000] bg-black/40 backdrop-blur-sm will-change-[opacity,backdrop-filter]"
                         variants={MODAL_VARIANTS.backdrop}
                         initial="initial"
                         animate="animate"
                         exit="exit"
-                        transition={SPRING_CONFIG.gentle}
+                        transition={SPRING_CONFIG.snappy} // 使用更快的配置
                         onClick={handleClose}
                     />
 
                     {/* 弹窗内容 */}
                     <motion.div
                         className={cn(
-                            "fixed inset-x-0 bottom-0 z-[111] flex flex-col overflow-hidden",
-                            "rounded-t-[20px] border-t border-[color:var(--wedding-line)]",
-                            "bg-[color:var(--wedding-surface)] shadow-[0_-8px_32px_-8px_rgba(0,0,0,0.3)]",
+                            "fixed inset-x-0 bottom-0 z-[1001] flex flex-col overflow-visible",
+                            "rounded-t-[20px] border-none",
+                            "bg-[color:var(--wedding-surface)] shadow-2xl",
+                            "will-change-transform transform-gpu", // 开启 GPU 加速
                             fullscreen
                                 ? "h-[100dvh] max-h-[100dvh]"
                                 : "max-h-[70vh]",
@@ -207,14 +191,10 @@ export function MobileSheet({
                         initial="initial"
                         animate="animate"
                         exit="exit"
-                        transition={
-                            fullscreen
-                                ? SPRING_CONFIG.gentle
-                                : SPRING_CONFIG.snappy
-                        }
+                        transition={SPRING_CONFIG.snappy} // 统一使用快响配置
                         drag={disableDragClose ? false : "y"}
                         dragConstraints={{ top: 0 }}
-                        dragElastic={0.1}
+                        dragElastic={0.05} // 减小弹性系数，减少计算量
                         onDragStart={handleDragStart}
                         onDrag={handleDrag}
                         onDragEnd={handleDragEnd}
@@ -225,18 +205,18 @@ export function MobileSheet({
                         {/* 拖拽条 */}
                         {!hideDragHandle && (
                             <div className="flex justify-center py-3">
-                                <div className="h-1 w-12 rounded-full bg-[color:var(--wedding-text-mute)]/30" />
+                                <div className="h-1.5 w-12 rounded-full bg-[color:var(--wedding-text-mute)]/20" />
                             </div>
                         )}
 
-                        {/* 顶部导航栏 */}
-                        <div className="flex items-center justify-between px-4 py-3 border-b border-[color:var(--wedding-line)]">
+                        {/* 顶部导航 */}
+                        <div className="flex items-center justify-between px-5 pb-2 pt-6">
                             <div className="flex-1">
-                                <h2 className="text-lg font-semibold text-[color:var(--wedding-text)]">
+                                <h2 className="text-[17px] font-semibold text-[color:var(--wedding-text)]">
                                     {title}
                                 </h2>
                                 {description && (
-                                    <p className="mt-1 text-sm text-[color:var(--wedding-text-mute)]">
+                                    <p className="mt-0.5 text-xs text-[color:var(--wedding-text-mute)]">
                                         {description}
                                     </p>
                                 )}
@@ -259,7 +239,7 @@ export function MobileSheet({
                         {/* 内容区域 */}
                         <div
                             className={cn(
-                                "flex-1 overflow-y-auto scrollbar-hidden px-4", // 所有移动端弹窗都添加左右内边距
+                                "flex-1 overflow-y-auto scrollbar-hidden px-4",
                                 bodyClassName,
                             )}
                         >
@@ -274,7 +254,6 @@ export function MobileSheet({
                                     paddingBottom: `max(1rem, ${safeAreaInsets.bottom}px)`,
                                 }}
                             >
-                                {/* 取消按钮 */}
                                 <motion.div
                                     className="flex-1"
                                     whileTap={BUTTON_VARIANTS.tap}
@@ -284,13 +263,12 @@ export function MobileSheet({
                                         variant="outline"
                                         onClick={handleCancel}
                                         disabled={actions.loading}
-                                        className="h-12 w-full rounded-full border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] text-[color:var(--wedding-text)] hover:bg-[color:var(--wedding-surface-muted)]"
+                                        className="h-12 w-full rounded-full border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] text-[color:var(--wedding-text-soft)] hover:bg-[color:var(--wedding-surface-muted)]" 
                                     >
                                         {actions.cancelText || "取消"}
                                     </Button>
                                 </motion.div>
 
-                                {/* 确认按钮 */}
                                 {actions.onConfirm && (
                                     <motion.div
                                         className="flex-1"
@@ -305,10 +283,9 @@ export function MobileSheet({
                                             }
                                             className={cn(
                                                 "h-12 w-full rounded-full text-white shadow-lg",
-                                                actions.confirmVariant ===
-                                                    "destructive"
-                                                    ? "bg-red-500 hover:bg-red-600"
-                                                    : "bg-gradient-to-r from-[color:var(--wedding-accent)] to-[color:var(--wedding-accent-strong)] hover:brightness-105",
+                                                actions.confirmVariant === "destructive"
+                                                    ? "bg-[color:var(--wedding-danger)] text-white hover:bg-[color:var(--wedding-danger)]/90"
+                                                    : "bg-gradient-to-r from-[color:var(--wedding-accent)] to-[color:var(--wedding-accent-strong)] text-white shadow-[0_12px_24px_-10px_rgba(236,72,153,0.4)] hover:brightness-105",
                                             )}
                                         >
                                             {actions.loading ? (
@@ -331,5 +308,3 @@ export function MobileSheet({
         document.body,
     );
 }
-
-// 导出类型（避免重复导出）

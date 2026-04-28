@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1776697949204,
-  "projectRoot": "/Users/baobeizhenkeai/Documents/beihun",
+  "lastScanned": 1777359721886,
+  "projectRoot": "d:\\ai\\dinghun\\Cent-beihun",
   "techStack": {
     "languages": [
       {
@@ -62,7 +62,7 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "pnpm build",
+    "buildCommand": "cd D:/ai/dinghun/Cent-beihun && pnpm build 2>&1 | tail -10",
     "testCommand": "pnpm test",
     "lintCommand": "pnpm lint",
     "devCommand": "pnpm dev",
@@ -93,6 +93,7 @@
     "workspaces": [],
     "mainDirectories": [
       "docs",
+      "lib",
       "public",
       "scripts",
       "src",
@@ -108,21 +109,21 @@
     "dist": {
       "path": "dist",
       "purpose": "Distribution/build output",
-      "fileCount": 8,
-      "lastAccessed": 1776697949169,
+      "fileCount": 7,
+      "lastAccessed": 1777359721721,
       "keyFiles": [
-        "__headers",
         "favicon.ico",
         "icon.png",
         "index.html",
-        "manifest.webmanifest"
+        "manifest.webmanifest",
+        "registerSW.js"
       ]
     },
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
       "fileCount": 9,
-      "lastAccessed": 1776697949170,
+      "lastAccessed": 1777359721722,
       "keyFiles": [
         "2026-04-16-final-summary.md",
         "2026-04-16-phase2-improvements.md",
@@ -131,35 +132,49 @@
         "2026-04-16-task-list-optimization.md"
       ]
     },
+    "lib": {
+      "path": "lib",
+      "purpose": "Library code",
+      "fileCount": 0,
+      "lastAccessed": 1777359721723,
+      "keyFiles": []
+    },
+    "outputs": {
+      "path": "outputs",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1777359721723,
+      "keyFiles": []
+    },
     "public": {
       "path": "public",
       "purpose": "Public files",
       "fileCount": 3,
-      "lastAccessed": 1776697949178,
+      "lastAccessed": 1777359721828,
       "keyFiles": [
-        "__headers",
         "favicon.ico",
-        "icon.png"
+        "icon.png",
+        "__headers"
       ]
     },
     "screenshots": {
       "path": "screenshots",
       "purpose": null,
       "fileCount": 24,
-      "lastAccessed": 1776697949178,
+      "lastAccessed": 1777359721828,
       "keyFiles": [
         "1776263653187.png",
         "capture.cjs",
+        "config.cjs",
         "config.example.cjs",
-        "mobile-dialog-bill-editor-date-picker.png",
-        "mobile-dialog-bill-editor.png"
+        "mobile-dialog-bill-editor-date-picker.png"
       ]
     },
     "scripts": {
       "path": "scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 1,
-      "lastAccessed": 1776697949178,
+      "lastAccessed": 1777359721829,
       "keyFiles": [
         "report-bundle.mjs"
       ]
@@ -168,7 +183,7 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 5,
-      "lastAccessed": 1776697949178,
+      "lastAccessed": 1777359721829,
       "keyFiles": [
         "index.css",
         "main.tsx",
@@ -181,60 +196,96 @@
       "path": "test-results",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1776697949190,
+      "lastAccessed": 1777359721830,
       "keyFiles": []
     },
     "tests": {
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 0,
-      "lastAccessed": 1776697949199,
+      "lastAccessed": 1777359721830,
       "keyFiles": []
     },
-    "dist/assets": {
-      "path": "dist/assets",
+    "dist\\assets": {
+      "path": "dist\\assets",
       "purpose": "Static assets",
-      "fileCount": 79,
-      "lastAccessed": 1776697949201,
+      "fileCount": 81,
+      "lastAccessed": 1777359721831,
       "keyFiles": [
-        "GiftBook-CeI7P7Wy.js",
-        "GuestManagement-D5NdT4zc.js",
-        "PlannerAssistant-CJ3UXhKi.js"
+        "analysis-BjIaxNDP.js",
+        "assistant-Bi150tgC.js",
+        "async-C5r6CgX2.js"
       ]
     },
-    "src/api": {
-      "path": "src/api",
+    "src\\api": {
+      "path": "src\\api",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1776697949204,
+      "lastAccessed": 1777359721833,
       "keyFiles": []
     },
-    "src/assets": {
-      "path": "src/assets",
+    "src\\assets": {
+      "path": "src\\assets",
       "purpose": "Static assets",
       "fileCount": 0,
-      "lastAccessed": 1776697949204,
+      "lastAccessed": 1777359721833,
       "keyFiles": []
     },
-    "src/components": {
-      "path": "src/components",
+    "src\\components": {
+      "path": "src\\components",
       "purpose": "UI components",
       "fileCount": 15,
-      "lastAccessed": 1776697949204,
+      "lastAccessed": 1777359721834,
       "keyFiles": [
         "animated-number.tsx",
         "clearable.tsx",
         "date-picker.tsx"
       ]
-    },
-    "src/lib": {
-      "path": "src/lib",
-      "purpose": "Library code",
-      "fileCount": 0,
-      "lastAccessed": 1776697949204,
-      "keyFiles": []
     }
   },
-  "hotPaths": [],
+  "hotPaths": [
+    {
+      "path": "src\\layouts\\main-layout.tsx",
+      "accessCount": 11,
+      "lastAccessed": 1777368336477,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\navigation.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1777367174904,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\loading\\mystery.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1777367189712,
+      "type": "file"
+    },
+    {
+      "path": "src\\pages\\home\\index.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1777367575982,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\home\\bills-timeline-section.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1777367577163,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\bill-info\\index.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1777367581622,
+      "type": "file"
+    },
+    {
+      "path": "src\\components\\wedding-ui.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1777367832832,
+      "type": "file"
+    }
+  ],
   "userDirectives": []
 }

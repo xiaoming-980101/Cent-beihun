@@ -186,7 +186,7 @@ function AppContent() {
                 return (
                     <CachedPageLayer
                         key={entry.key}
-                        pageKey={pathname}
+                        pageKey={entry.key}
                         active={entry.key === activeCachedEntry?.key}
                     >
                         <Suspense

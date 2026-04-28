@@ -1,4 +1,4 @@
-import { type Theme, useTheme } from "@/hooks/use-theme";
+import { type Theme, useTheme } from "@/lib/theme/use-theme";
 import { useIntl } from "@/locale";
 import { cn } from "@/utils";
 import { Button } from "../ui/button";
