@@ -139,8 +139,8 @@ export function ResponsiveDialog({
             bodyClassName={bodyClassName}
             hideClose={hideClose}
             fullScreenOnMobile={false} // PC端不使用全屏
-            saveButtonText={saveButtonText}
-            onSave={onSave}
+            saveButtonText={actions?.confirmText ?? saveButtonText}
+            onSave={actions?.onConfirm ?? onSave}
             {...props}
         >
             {children}

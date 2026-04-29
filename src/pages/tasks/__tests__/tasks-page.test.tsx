@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router";
 import { describe, expect, it, vi } from "vitest";
 import Tasks from "../Tasks";
 
@@ -44,7 +45,11 @@ vi.mock("@/store/wedding", () => ({
 
 describe("Tasks Page", () => {
     it("renders and switches to calendar", () => {
-        render(<Tasks />);
+        render(
+            <MemoryRouter>
+                <Tasks />
+            </MemoryRouter>,
+        );
         expect(screen.getByText("婚礼任务")).toBeInTheDocument();
         fireEvent.click(screen.getByText("日历"));
         expect(navigateMock).toHaveBeenCalledWith("/tasks/calendar");

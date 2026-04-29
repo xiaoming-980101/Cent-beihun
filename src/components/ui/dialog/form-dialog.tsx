@@ -87,8 +87,9 @@ export function FormDialog({
                 className={cn(
                     "fixed left-[50%] top-[50%] z-[1001] -translate-x-1/2 -translate-y-1/2",
                     "flex max-h-[calc(100dvh-1.5rem-env(safe-area-inset-top)-env(safe-area-inset-bottom))] w-full flex-col overflow-hidden",
-                    "rounded-[30px] border-none",
-                    "bg-[color:var(--wedding-surface)] shadow-2xl",
+                    "rounded-[30px] border border-[#edd6df] dark:border-[#302631]",
+                    "bg-[#fffdfd] dark:bg-[#181419]",
+                    "shadow-[0_32px_60px_-28px_rgba(31,41,55,0.45)]",
                     "sm:max-h-[min(84vh,760px)]",
                     maxWidthClasses[maxWidth],
                     fullScreenOnMobile
@@ -115,7 +116,7 @@ export function FormDialog({
 
                 {showHeader ? (
                     <DialogHeader className="px-5 pb-2 pt-6">
-                        <DialogTitle className="wedding-topbar-title pl-1 text-[color:var(--wedding-text)]">
+                        <DialogTitle className="wedding-topbar-title pl-1 text-[24px] text-[color:var(--wedding-text)]">
                             {title}
                         </DialogTitle>
                         {description ? (
@@ -153,13 +154,20 @@ export function FormDialog({
                     {children}
                 </div>
 
-                {showBottomCloseOnMobileFullScreen ? (
-                    <div className="flex gap-3 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3 sm:hidden">
+                {showBottomCloseOnMobileFullScreen || onSave ? (
+                    <div
+                        className={cn(
+                            "flex gap-3 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3",
+                            showBottomCloseOnMobileFullScreen
+                                ? "sm:hidden"
+                                : "",
+                        )}
+                    >
                         <Button
                             type="button"
                             variant="outline"
                             onClick={() => onOpenChange(false)}
-                            className="h-12 flex-1 rounded-full border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] text-[color:var(--wedding-text-soft)] hover:bg-[color:var(--wedding-surface-muted)]" 
+                            className="h-12 flex-1 rounded-full border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] text-[color:var(--wedding-text-soft)] hover:bg-[color:var(--wedding-surface-muted)]"
                         >
                             关闭
                         </Button>

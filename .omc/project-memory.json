@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1777359721886,
-  "projectRoot": "d:\\ai\\dinghun\\Cent-beihun",
+  "lastScanned": 1777453929314,
+  "projectRoot": "D:\\ai\\dinghun\\Cent-beihun",
   "techStack": {
     "languages": [
       {
@@ -62,18 +62,18 @@
     "runtime": null
   },
   "build": {
-    "buildCommand": "cd D:/ai/dinghun/Cent-beihun && pnpm build 2>&1 | tail -10",
+    "buildCommand": "pnpm build",
     "testCommand": "pnpm test",
     "lintCommand": "pnpm lint",
     "devCommand": "pnpm dev",
     "scripts": {
-      "dev": "vite --host",
+      "dev": "vite --host --port 3000",
       "build": "vite build",
       "analyze": "ANALYZE=true vite build",
       "analyze:report": "ANALYZE=true vite build && node scripts/report-bundle.mjs",
       "lint": "tsc -b",
       "lint:biome": "biome check --diagnostic-level error",
-      "preview": "vite preview --host --port 5173",
+      "preview": "vite preview --host --port 3000",
       "check": "biome check --write",
       "pre-commit": "pnpm run lint",
       "screenshot": "node screenshots/capture.cjs",
@@ -110,7 +110,7 @@
       "path": "dist",
       "purpose": "Distribution/build output",
       "fileCount": 7,
-      "lastAccessed": 1777359721721,
+      "lastAccessed": 1777453929245,
       "keyFiles": [
         "favicon.ico",
         "icon.png",
@@ -122,8 +122,8 @@
     "docs": {
       "path": "docs",
       "purpose": "Documentation",
-      "fileCount": 9,
-      "lastAccessed": 1777359721722,
+      "fileCount": 11,
+      "lastAccessed": 1777453929246,
       "keyFiles": [
         "2026-04-16-final-summary.md",
         "2026-04-16-phase2-improvements.md",
@@ -136,21 +136,21 @@
       "path": "lib",
       "purpose": "Library code",
       "fileCount": 0,
-      "lastAccessed": 1777359721723,
+      "lastAccessed": 1777453929254,
       "keyFiles": []
     },
     "outputs": {
       "path": "outputs",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1777359721723,
+      "lastAccessed": 1777453929254,
       "keyFiles": []
     },
     "public": {
       "path": "public",
       "purpose": "Public files",
       "fileCount": 3,
-      "lastAccessed": 1777359721828,
+      "lastAccessed": 1777453929254,
       "keyFiles": [
         "favicon.ico",
         "icon.png",
@@ -161,7 +161,7 @@
       "path": "screenshots",
       "purpose": null,
       "fileCount": 24,
-      "lastAccessed": 1777359721828,
+      "lastAccessed": 1777453929255,
       "keyFiles": [
         "1776263653187.png",
         "capture.cjs",
@@ -174,7 +174,7 @@
       "path": "scripts",
       "purpose": "Build/utility scripts",
       "fileCount": 1,
-      "lastAccessed": 1777359721829,
+      "lastAccessed": 1777453929255,
       "keyFiles": [
         "report-bundle.mjs"
       ]
@@ -183,7 +183,7 @@
       "path": "src",
       "purpose": "Source code",
       "fileCount": 5,
-      "lastAccessed": 1777359721829,
+      "lastAccessed": 1777453929255,
       "keyFiles": [
         "index.css",
         "main.tsx",
@@ -196,46 +196,46 @@
       "path": "test-results",
       "purpose": null,
       "fileCount": 1,
-      "lastAccessed": 1777359721830,
+      "lastAccessed": 1777453929255,
       "keyFiles": []
     },
     "tests": {
       "path": "tests",
       "purpose": "Test files",
       "fileCount": 0,
-      "lastAccessed": 1777359721830,
+      "lastAccessed": 1777453929256,
       "keyFiles": []
     },
     "dist\\assets": {
       "path": "dist\\assets",
       "purpose": "Static assets",
-      "fileCount": 81,
-      "lastAccessed": 1777359721831,
+      "fileCount": 74,
+      "lastAccessed": 1777453929257,
       "keyFiles": [
-        "analysis-BjIaxNDP.js",
-        "assistant-Bi150tgC.js",
-        "async-C5r6CgX2.js"
+        "analysis-CILE2kUJ.js",
+        "assistant-DRP6cyiQ.js",
+        "async-DACroR05.js"
       ]
     },
     "src\\api": {
       "path": "src\\api",
       "purpose": "API routes",
       "fileCount": 0,
-      "lastAccessed": 1777359721833,
+      "lastAccessed": 1777453929258,
       "keyFiles": []
     },
     "src\\assets": {
       "path": "src\\assets",
       "purpose": "Static assets",
       "fileCount": 0,
-      "lastAccessed": 1777359721833,
+      "lastAccessed": 1777453929259,
       "keyFiles": []
     },
     "src\\components": {
       "path": "src\\components",
       "purpose": "UI components",
       "fileCount": 15,
-      "lastAccessed": 1777359721834,
+      "lastAccessed": 1777453929259,
       "keyFiles": [
         "animated-number.tsx",
         "clearable.tsx",
@@ -243,49 +243,6 @@
       ]
     }
   },
-  "hotPaths": [
-    {
-      "path": "src\\layouts\\main-layout.tsx",
-      "accessCount": 11,
-      "lastAccessed": 1777368336477,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\navigation.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1777367174904,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\loading\\mystery.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1777367189712,
-      "type": "file"
-    },
-    {
-      "path": "src\\pages\\home\\index.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1777367575982,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\home\\bills-timeline-section.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1777367577163,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\bill-info\\index.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1777367581622,
-      "type": "file"
-    },
-    {
-      "path": "src\\components\\wedding-ui.tsx",
-      "accessCount": 1,
-      "lastAccessed": 1777367832832,
-      "type": "file"
-    }
-  ],
+  "hotPaths": [],
   "userDirectives": []
 }

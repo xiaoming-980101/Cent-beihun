@@ -1,0 +1,454 @@
+# Google AI Studio 对比生图提示词
+
+本文档用于在 Google AI Studio 中生成 Cent / YueWed 项目的页面重设计图，方便与 `chatgpt-images-2` 输出做横向对比。
+
+使用方式：
+
+1. 先复制“全局项目设定”。
+2. 再复制“白天/黑夜基础色调”。
+3. 最后追加对应页面的“页面任务提示词”。
+4. 每个页面至少生成白天版和黑夜版；涉及表单、弹窗、筛选、详情、确认、空状态的页面，额外生成覆盖层状态。
+
+## 与当前项目的关系
+
+这些提示词不是把 Cent 改成一个全新的婚礼 App，而是在现有 Cent 记账 PWA 上做 YueWed 婚礼主题重设计。当前项目有两层产品身份，生成图时必须同时保留：
+
+```text
+Layer 1: Original Cent finance app capabilities
+- collaborative ledger/books
+- bill add, edit, detail, delete
+- central add button with normal add, voice entry, keyboard quick entry
+- search and advanced filters
+- analytics/statistics
+- category and tag management
+- multi-currency and exchange rates
+- scheduled/recurring bills
+- original budget management
+- data import/export, backup, Smart Import, import preview
+- GitHub, Gitee, WebDAV, S3, offline sync endpoints
+- configurable AI assistant and chat cards
+- theme, language, map, lab, about, user profile settings
+
+Layer 2: YueWed wedding extension
+- wedding home dashboard
+- wedding tasks and task calendar
+- gift ledger
+- guest management
+- wedding vendor budget
+- planning suggestions
+- resource center
+```
+
+Hard rule:
+
+```text
+Do not remove or hide the original Cent identity. The UI should look like a wedding redesign of a finance PWA, not a pure wedding planning app.
+```
+
+## 全局项目设定
+
+```text
+Create a high-fidelity mobile app UI screenshot for YueWed / Cent, a wedding planning and personal finance PWA.
+
+The product is not a marketing website. It is a real daily-use productivity app for couples and families planning a wedding. It combines wedding tasks, guest management, gift ledger, budget tracking, financial statistics, search, AI planning suggestions, settings, and data backup.
+
+Important product fidelity: this is still the existing Cent finance PWA. Keep visible or implied entry points for bill creation, ledger/books, sync, search, statistics, data manager, AI assistant, category/tag/currency/scheduled bill settings, user profile, theme, and language. Do not simplify it into only wedding tasks and guests.
+
+Visual direction:
+- modern, refined, emotional but practical
+- premium wedding planning tool, not a generic pink app
+- clear information hierarchy, real product density, easy to scan
+- inspired by Apple Health, Linear, Craft, Structured, and a high-end wedding planning notebook
+- Chinese UI text
+- mobile app screenshot, 390x844
+- realistic app interface, not poster, not landing page, not Figma frame
+
+Component style:
+- clean top app bar
+- rounded cards with 16-28px radius
+- subtle shadows, thin borders, soft surfaces
+- line icons similar to lucide or Material Design Icons
+- readable charts, tags, buttons, lists, forms
+- fixed bottom action area for dialogs and forms
+- avoid decorative clutter
+
+Do not:
+- do not make it a marketing hero page
+- do not use cartoon wedding illustrations
+- do not fill the whole screen with cheap pink gradients
+- do not add explanatory design notes inside the UI
+- do not make controls look fake or non-clickable
+```
+
+## 白天基础色调
+
+```text
+Day theme base palette:
+- App background: #FAFAFA, #FFF7FB, #F8FAFC
+- Main cards: #FFFFFF, with very subtle pink/lavender surfaces #FFF7FB -> #F8F3FF
+- Primary brand: #F472B6, #EC4899
+- Secondary: #A855F7, #3B82F6
+- Success: #22C55E
+- Warning: #F97316
+- Danger: #EF4444
+- Main text: #111827
+- Body text: #374151
+- Muted text: #6B7280, #9CA3AF
+- Borders: #E5E7EB, #F3E8FF
+- Gold may appear only as a thin accent line or tiny icon detail, not a main color.
+
+The day theme should feel like warm white paper, misty rose, ice blue function color, and restrained lavender ceremony.
+```
+
+## 黑夜基础色调
+
+```text
+Night theme base palette:
+- App background: #0F172A, #111827, #171122
+- Main cards: #1F2937, #231A2E, rgba(255,255,255,0.06)
+- Secondary cards: #111827, #1A1323, rgba(255,255,255,0.04)
+- Primary brand: #F472B6 -> #A855F7, lower brightness, not neon
+- Secondary surfaces: rgba(59,130,246,0.16), rgba(168,85,247,0.16), rgba(244,114,182,0.14)
+- Success: #4ADE80
+- Warning: #FDBA74
+- Danger: #F87171
+- Main text: #F9FAFB
+- Body text: #E5E7EB
+- Muted text: #CBD5E1, #94A3B8
+- Borders: rgba(255,255,255,0.10), rgba(244,114,182,0.16)
+
+The night theme should feel like deep blue-gray, dark plum, low-brightness rose-lavender brand light, and excellent readability. It must not look cyberpunk or neon.
+```
+
+## 弹窗与覆盖层通用提示词
+
+```text
+Create the overlay/dialog state for the same YueWed / Cent mobile app page.
+
+Requirements:
+- 390x844 mobile screenshot
+- keep the original page visible behind a translucent blurred or dimmed overlay
+- use a bottom sheet for simple dialogs and filters
+- use a full-screen mobile sheet for complex forms
+- include a drag handle, title, description, close/back control
+- form fields must look real and filled with useful Chinese sample data
+- include fixed bottom actions: cancel and confirm
+- confirm button uses the page accent color or the pink-purple brand gradient
+- do not let the bottom actions cover the form content
+- generate both day theme and night theme versions
+```
+
+## 页面任务提示词
+
+### 01 首页 `/`
+
+```text
+Design the YueWed / Cent home dashboard.
+
+Must include:
+- top bar with “Cent” and current ledger subtitle
+- sync status icon
+- hero area with wedding date, partner nickname, money summary, task count, guest count, gift count
+- engagement countdown card and wedding countdown card
+- shortcut grid: tasks, gift book, guests, budget, statistics, search
+- quick stats: total budget, paid amount, pending tasks, today tasks
+- latest bills timeline with 3 records
+- activity feed: guest added, budget updated, task completed
+- bottom navigation or floating add button
+
+Also generate overlay states:
+- wedding info settings dialog
+- engagement easter egg dialog
+- wedding easter egg dialog
+- sync failed toast/dialog
+- empty state before wedding date is configured
+- loading skeleton for latest bills
+```
+
+### 02 任务列表 `/tasks`
+
+```text
+Design the wedding task list page.
+
+Must include:
+- top bar with title and back to tools
+- “婚礼任务” heading and completed count
+- circular add button
+- segmented tabs: list and calendar
+- overall progress bar
+- status chips: all, in progress, pending, completed
+- category chips: venue, photography, dress, guests, materials
+- at least 5 task cards with title, category, deadline, owner, priority, status
+
+Also generate overlay states:
+- add task full-screen sheet
+- edit task full-screen sheet
+- empty filtered state
+- abandon edit confirm dialog
+```
+
+### 03 任务日历 `/tasks/calendar`
+
+```text
+Design the wedding task calendar page.
+
+Must include:
+- month switcher card with left/right arrows
+- month title and monthly task count
+- 7-column calendar grid with lunar/holiday labels
+- selected date highlight
+- today state
+- task count badges on date cells
+- three stats: monthly tasks, selected date, completed
+- selected date details and task schedule list
+- floating add button
+
+Also generate overlay states:
+- add task form with selected date as default deadline
+- collapsed weekly calendar view
+- empty selected date state
+- task detail/edit dialog
+```
+
+### 04 工具箱 `/tools`
+
+```text
+Design the wedding tools hub.
+
+Must include:
+- top bar with theme toggle
+- title and subtitle
+- four compact stats: pending tasks, guests, gifts, budget items
+- three main tool cards: gift book, guest management, wedding budget
+- more tools grid: task calendar, statistics, search, voice record, tag management, AI assistant
+- shortcut planning suggestion card
+- resource center card
+- AI wedding assistant promo card
+
+Also generate overlay states:
+- theme switch popover
+- AI assistant expanded entry
+- no wedding data state
+```
+
+### 05 礼金簿 `/tools/gift-book`
+
+```text
+Design the wedding gift ledger page.
+
+Must include:
+- top bar with filter icon
+- summary card: received total, sent total, net income
+- tabs: all, received, sent
+- gift records list with at least 5 items
+- each item shows guest name, relation, side, date, amount
+- received amount in green, sent amount in orange or blue
+- accordion style detail affordance
+- floating add button
+
+Also generate overlay states:
+- add gift form
+- edit gift form
+- filter menu
+- expanded gift detail
+- delete confirm dialog
+- empty state
+```
+
+### 06 亲友管理 `/tools/guests`
+
+```text
+Design the guest management page.
+
+Must include:
+- top bar and subtitle
+- four stats: total guests, confirmed, invited, pending
+- search input
+- side filter chips: all, groom side, bride side, shared
+- guest list with at least 6 items
+- avatar initials, name, party size, relation tag, side tag, phone, invite status badge
+- status colors: confirmed green, invited blue, pending orange, declined red
+- floating add button
+
+Also generate overlay states:
+- add guest form
+- edit guest form
+- invite status picker
+- guest detail card
+- delete confirm dialog
+- search empty state
+```
+
+### 07 婚礼预算 `/tools/wedding-budget`
+
+```text
+Design the wedding budget page.
+
+Must include:
+- top summary card with total budget, paid percent, paid amount, balance, progress bar
+- status filter chips
+- budget list with at least 5 vendor/project cards
+- each card includes category, vendor, budget, status, deposit/paid, balance, progress, phone or due date
+- one over-budget warning item
+- floating add button
+
+Also generate overlay states:
+- add budget form
+- edit budget form
+- payment status picker
+- over-budget warning state
+- delete confirm dialog
+- empty state
+```
+
+### 08 智能筹备建议 `/tools/planner-assistant`
+
+```text
+Design the AI planning assistant page.
+
+Must include:
+- top analysis card with Planner label, readiness percentage, wedding date
+- three stats: suggestion count, upcoming tasks, AI config
+- next suggestions section with at least 4 suggestion cards
+- each suggestion has action tag, title, detail, and go button
+- quick cards: view timeline, open resource center
+- use subtle sparkles/route/brain line icons, not a chatbot mascot
+
+Also generate overlay states:
+- AI config dialog
+- AI not configured empty state
+- suggestion detail dialog
+- generating/loading state
+- config error state
+```
+
+### 09 资料整理中心 `/tools/resource-center`
+
+```text
+Design the resource center page.
+
+Must include:
+- Resource Hub hero card
+- “打开数据管理” action
+- three stats: sync status, ledger data, current ledger
+- four system action cards: export and backup, sync now, manage ledger, open settings
+- common jumps: task calendar, search, statistics
+
+Also generate overlay states:
+- data manager dialog
+- syncing dialog
+- sync failed dialog
+- ledger management dialog
+- export preview dialog
+- smart import preview dialog
+```
+
+### 10 统计分析 `/stat`
+
+```text
+Design the statistics analytics page.
+
+Must include:
+- summary card with total amount, record count, analysis dimension
+- filter view chips
+- date slice controls
+- income/expense/net focus selector
+- three core metric cards
+- trend line chart with income, expense, net
+- category/member analysis chart
+- tag details
+- word cloud
+- location map preview
+- highest expense and highest income records
+
+Also generate overlay states:
+- filter view edit dialog
+- add filter dialog
+- reorder filter dialog
+- chart empty state
+- bill detail dialog
+- chart selected tooltip/detail state
+```
+
+### 11 搜索记录 `/search`
+
+```text
+Design the bill search page.
+
+Must include:
+- top search summary card
+- search input with button
+- collapsible filter controls
+- reset, save for analyze, filter actions
+- sorting and multi-select operation row
+- results list with at least 5 bill records
+- each record includes icon, category, note, time, tags, amount
+- selected bill state
+- applied filter badge
+
+Also generate overlay states:
+- expanded detailed filter panel
+- save filter name prompt
+- batch edit dialog
+- batch delete confirm dialog
+- multi-select mode
+- search empty state
+- bill detail dialog
+```
+
+### 12 设置 `/settings`
+
+```text
+Design the settings page.
+
+Must include:
+- title “设置” and subtitle “项目配置与个人偏好”
+- current ledger/user summary card
+- grouped settings list:
+  account and ledger, theme, wedding date, voice record, AI assistant, quick entry, categories and tags, map settings, language, lab, about
+- each row includes icon, title, current status, chevron
+- footer text “YueWed · 用爱筹备每一个细节”
+
+Also generate overlay states:
+- theme settings dialog
+- AI assistant settings dialog
+- voice record settings dialog
+- wedding date settings dialog
+- language settings dialog
+- data and sync settings dialog
+- about dialog
+- collapsed group state
+```
+
+## 输出命名建议
+
+```text
+01-home-day.png
+01-home-night.png
+01-home-modal-wedding-info-day.png
+01-home-modal-wedding-info-night.png
+
+02-tasks-list-day.png
+02-tasks-list-night.png
+02-tasks-modal-add-day.png
+02-tasks-modal-add-night.png
+
+...
+
+12-settings-day.png
+12-settings-night.png
+12-settings-modal-theme-day.png
+12-settings-modal-theme-night.png
+```
+
+## 对比评审维度
+
+用 Google AI Studio 生成后，和 `chatgpt-images-2` 对比时重点看：
+
+- 页面是否像真实 App，而不是概念图。
+- 中文是否自然、信息是否可读。
+- 白天/黑夜是否同一套设计语言。
+- 弹窗是否能指导实际代码复刻。
+- 表单字段是否完整，是否覆盖页面真实交互。
+- 统计、搜索、预算这类高密度页面是否仍然清楚。
+- 是否有过度粉色、过度霓虹、过度卡通的问题。

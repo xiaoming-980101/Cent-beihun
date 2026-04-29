@@ -1,4 +1,3 @@
-import * as Switch from "@radix-ui/react-switch";
 import dayjs from "dayjs";
 import type { EChartsOption } from "echarts";
 import { useEffect, useMemo, useState } from "react";
@@ -27,7 +26,6 @@ import {
 import { TagItem } from "@/components/stat/static-item";
 import { Button } from "@/components/ui/button";
 import { WeddingPageShell, WeddingTopBar } from "@/components/wedding-ui";
-import { useCurrency } from "@/hooks/use-currency";
 import {
     DefaultFilterViewId,
     useCustomFilters,
@@ -175,21 +173,49 @@ export default function Page() {
         const labels = Array.from(dailyMap.keys());
         return {
             grid: {
-                left: 8,
-                right: 8,
-                top: 30,
-                bottom: 18,
+                left: 4,
+                right: 6,
+                top: 26,
+                bottom: 72,
                 containLabel: true,
             },
             legend: {
                 data: ["收入", "支出", "净收益"],
+                type: "scroll",
+                bottom: 6,
+                left: 0,
+                right: 0,
+                itemWidth: 10,
+                itemHeight: 10,
+                itemGap: 12,
+                textStyle: {
+                    fontSize: 11,
+                },
+                formatter: (name: string) =>
+                    name.length > 6 ? `${name.slice(0, 6)}...` : name,
             },
             xAxis: {
                 type: "category" as const,
                 data: labels,
+                axisLabel: {
+                    hideOverlap: true,
+                    margin: 12,
+                },
             },
             yAxis: {
                 type: "value" as const,
+                axisLabel: {
+                    formatter: (value: number) => {
+                        const abs = Math.abs(value);
+                        if (abs >= 100000000) {
+                            return `${value / 100000000}亿`;
+                        }
+                        if (abs >= 10000) {
+                            return `${value / 10000}万`;
+                        }
+                        return `${value}`;
+                    },
+                },
             },
             dataZoom: [
                 {
@@ -201,6 +227,7 @@ export default function Page() {
                     name: "收入",
                     type: "line",
                     smooth: true,
+                    symbolSize: 7,
                     data: labels.map(
                         (label) => dailyMap.get(label)?.income ?? 0,
                     ),
@@ -209,6 +236,7 @@ export default function Page() {
                     name: "支出",
                     type: "line",
                     smooth: true,
+                    symbolSize: 7,
                     data: labels.map(
                         (label) => dailyMap.get(label)?.expense ?? 0,
                     ),
@@ -217,6 +245,7 @@ export default function Page() {
                     name: "净收益",
                     type: "line",
                     smooth: true,
+                    symbolSize: 7,
                     data: labels.map((label) => dailyMap.get(label)?.net ?? 0),
                 },
             ],
@@ -336,22 +365,25 @@ export default function Page() {
         setFilterViewId(id);
     };
 
-    const { allCurrencies, baseCurrency } = useCurrency();
-
     return (
-        <WeddingPageShell className="bg-[color:var(--wedding-app-bg)]" contentClassName="pb-32 px-4">
+        <WeddingPageShell
+            className="bg-[color:var(--wedding-app-bg)]"
+            contentClassName="gap-5 px-4 pb-32"
+        >
             <WeddingTopBar
                 title={t("analysis")}
                 subtitle={`${bookLabel}收支结构概览`}
                 backTo="/"
             />
-            
-            <div className="flex flex-col gap-6 mt-6">
+
+            <div className="flex flex-col gap-5 sm:gap-6">
                 {/* 顶部总览卡片 - Apple 风格的高级感 */}
-                <div className="relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#f05cab] via-[#d64dc8] to-[#9333ea] p-7 text-white shadow-2xl shadow-purple-500/20">
+                <div className="relative overflow-hidden rounded-[28px] bg-gradient-to-br from-[#f05cab] via-[#d64dc8] to-[#9333ea] p-5 text-white shadow-[0_18px_40px_-28px_rgba(147,51,234,0.65)] sm:p-7">
                     <div className="relative z-10">
                         <div className="flex items-center justify-between">
-                            <span className="text-sm font-medium opacity-80 uppercase tracking-widest">{t("summary")}</span>
+                            <span className="text-sm font-medium opacity-80 uppercase tracking-widest">
+                                {t("summary")}
+                            </span>
                             <div className="flex -space-x-2">
                                 <div className="h-8 w-8 rounded-full border-2 border-white/20 bg-white/10 backdrop-blur-md flex items-center justify-center">
                                     <i className="icon-[mdi--chart-line] size-4"></i>
@@ -360,21 +392,38 @@ export default function Page() {
                         </div>
                         <div className="mt-4 flex items-baseline gap-2">
                             <span className="text-4xl font-black tracking-tighter">
-                                ¥{Number(totalMoneys[focusType === "expense" ? 1 : 0]).toLocaleString()}
+                                ¥
+                                {Number(
+                                    totalMoneys[
+                                        focusType === "expense" ? 1 : 0
+                                    ],
+                                ).toLocaleString()}
                             </span>
                         </div>
                         <div className="mt-1 text-sm font-medium opacity-70">
-                            {focusType === "expense" ? "总支出金额" : focusType === "income" ? "总收入金额" : "当前结余金额"}
+                            {focusType === "expense"
+                                ? "总支出金额"
+                                : focusType === "income"
+                                  ? "总收入金额"
+                                  : "当前结余金额"}
                         </div>
-                        
-                        <div className="mt-8 grid grid-cols-2 gap-4">
+
+                        <div className="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:gap-4">
                             <div className="rounded-2xl bg-white/10 p-3 backdrop-blur-md">
-                                <div className="text-[10px] uppercase tracking-wider opacity-60">记录总数</div>
-                                <div className="mt-1 text-lg font-bold">{filtered.length}</div>
+                                <div className="text-[10px] uppercase tracking-wider opacity-60">
+                                    记录总数
+                                </div>
+                                <div className="mt-1 text-lg font-bold">
+                                    {filtered.length}
+                                </div>
                             </div>
                             <div className="rounded-2xl bg-white/10 p-3 backdrop-blur-md">
-                                <div className="text-[10px] uppercase tracking-wider opacity-60">筛选维度</div>
-                                <div className="mt-1 text-lg font-bold">{dimension === "category" ? "分类" : "成员"}</div>
+                                <div className="text-[10px] uppercase tracking-wider opacity-60">
+                                    筛选维度
+                                </div>
+                                <div className="mt-1 text-lg font-bold">
+                                    {dimension === "category" ? "分类" : "成员"}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -386,17 +435,29 @@ export default function Page() {
                 {/* 筛选控制器 */}
                 <div className="space-y-4">
                     <div className="flex items-center justify-between px-1">
-                        <h2 className="text-lg font-bold text-[color:var(--wedding-text)]">数据筛选</h2>
+                        <h2 className="text-lg font-bold text-[color:var(--wedding-text)]">
+                            数据筛选
+                        </h2>
                         <div className="flex gap-2">
-                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={toAddFilter}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 rounded-full"
+                                onClick={toAddFilter}
+                            >
                                 <i className="icon-[mdi--plus] size-4"></i>
                             </Button>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full" onClick={toReOrder}>
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 rounded-full"
+                                onClick={toReOrder}
+                            >
                                 <i className="icon-[mdi--sort-variant] size-4"></i>
                             </Button>
                         </div>
                     </div>
-                    
+
                     <div className="wedding-surface-card flex items-center gap-2 overflow-x-auto p-1.5 scrollbar-hidden">
                         {allFilterViews.map((filter) => {
                             const isActive = filterViewId === filter.id;
@@ -411,7 +472,7 @@ export default function Page() {
                                         "flex h-9 min-w-fit items-center rounded-full px-4 text-sm font-medium transition-all whitespace-nowrap",
                                         isActive
                                             ? "bg-pink-500 text-white shadow-lg shadow-pink-500/25"
-                                            : "text-[color:var(--wedding-text-soft)] hover:bg-[color:var(--wedding-surface-muted)]"
+                                            : "text-[color:var(--wedding-text-soft)] hover:bg-[color:var(--wedding-surface-muted)]",
                                     )}
                                 >
                                     {filter.name}
@@ -420,23 +481,40 @@ export default function Page() {
                         })}
                     </div>
 
-                    <DateSliced {...dateSlicedProps} onClickSettings={toChangeFilter}>
+                    <DateSliced
+                        {...dateSlicedProps}
+                        onClickSettings={toChangeFilter}
+                    >
                         <div className="flex items-center pr-1">
                             <button
-                                onClick={() => setDimension(d => d === "category" ? "user" : "category")}
+                                onClick={() =>
+                                    setDimension((d) =>
+                                        d === "category" ? "user" : "category",
+                                    )
+                                }
                                 className={cn(
                                     "flex h-8 w-14 items-center rounded-full bg-[color:var(--wedding-surface-muted)] p-1 transition-all",
-                                    dimension === "user" ? "bg-purple-100 dark:bg-purple-900/30" : ""
+                                    dimension === "user"
+                                        ? "bg-purple-100 dark:bg-purple-900/30"
+                                        : "",
                                 )}
                             >
-                                <div className={cn(
-                                    "h-6 w-6 rounded-full bg-white shadow-sm flex items-center justify-center transition-all",
-                                    dimension === "user" ? "translate-x-6" : ""
-                                )}>
-                                    <i className={cn(
-                                        "size-3.5",
-                                        dimension === "category" ? "icon-[mdi--format-list-bulleted] text-pink-500" : "icon-[mdi--account] text-purple-500"
-                                    )}></i>
+                                <div
+                                    className={cn(
+                                        "h-6 w-6 rounded-full bg-white shadow-sm flex items-center justify-center transition-all",
+                                        dimension === "user"
+                                            ? "translate-x-6"
+                                            : "",
+                                    )}
+                                >
+                                    <i
+                                        className={cn(
+                                            "size-3.5",
+                                            dimension === "category"
+                                                ? "icon-[mdi--format-list-bulleted] text-pink-500"
+                                                : "icon-[mdi--account] text-purple-500",
+                                        )}
+                                    ></i>
                                 </div>
                             </button>
                         </div>
@@ -456,44 +534,85 @@ export default function Page() {
                 {/* 三大核心指标 */}
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
                     {[
-                        { label: "支出总计", value: totalMoneys[1], color: "text-rose-500", bg: "bg-rose-50 dark:bg-rose-500/10" },
-                        { label: "收入总计", value: totalMoneys[0], color: "text-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-500/10" },
-                        { label: "收支净额", value: totalMoneys[2], color: "text-violet-500", bg: "bg-violet-50 dark:bg-violet-500/10" },
+                        {
+                            label: "支出总计",
+                            value: totalMoneys[1],
+                            color: "text-rose-500",
+                            bg: "bg-rose-50 dark:bg-rose-500/10",
+                        },
+                        {
+                            label: "收入总计",
+                            value: totalMoneys[0],
+                            color: "text-emerald-500",
+                            bg: "bg-emerald-50 dark:bg-emerald-500/10",
+                        },
+                        {
+                            label: "收支净额",
+                            value: totalMoneys[2],
+                            color: "text-violet-500",
+                            bg: "bg-violet-50 dark:bg-violet-500/10",
+                        },
                     ].map((item) => (
-                        <div key={item.label} className="wedding-surface-card rounded-[28px] p-5">
-                            <div className="text-xs font-semibold uppercase tracking-wider opacity-50">{item.label}</div>
-                            <div className={cn("mt-3 text-[28px] font-black tracking-tight", item.color)}>
+                        <div
+                            key={item.label}
+                            className="wedding-surface-card rounded-[28px] p-5"
+                        >
+                            <div className="text-xs font-semibold uppercase tracking-wider opacity-50">
+                                {item.label}
+                            </div>
+                            <div
+                                className={cn(
+                                    "mt-3 text-[28px] font-black tracking-tight",
+                                    item.color,
+                                )}
+                            >
                                 ¥{Number(item.value).toLocaleString()}
                             </div>
                             <div className="mt-3 h-1 w-full overflow-hidden rounded-full bg-black/5 dark:bg-white/5">
-                                <div className={cn("h-full rounded-full opacity-60", item.bg.replace('bg-', 'bg-').split(' ')[0])} style={{ width: '100%' }}></div>
+                                <div
+                                    className={cn(
+                                        "h-full rounded-full opacity-60",
+                                        item.bg
+                                            .replace("bg-", "bg-")
+                                            .split(" ")[0],
+                                    )}
+                                    style={{ width: "100%" }}
+                                ></div>
                             </div>
                         </div>
                     ))}
                 </div>
 
                 {/* 趋势图表 */}
-                <div className="wedding-surface-card overflow-hidden rounded-[32px] p-0 shadow-sm">
+                <div className="overflow-hidden rounded-[28px] border border-[color:var(--wedding-line)] bg-[color:var(--wedding-surface)] shadow-[0_14px_34px_-30px_rgba(15,23,42,0.45)]">
                     <ChartWrapper
                         title="资金走势"
                         description="基于当前筛选范围的收支走势分析"
                         option={trendPreviewOption}
                         isLoading={false}
                         isEmpty={filtered.length === 0}
+                        className="rounded-none border-0 bg-transparent p-5"
+                        heightClassName="h-[340px]"
                     />
                 </div>
 
                 {/* 主体分析部分 */}
                 <div className="space-y-6">
                     {Part}
-                    
+
                     {tagStructure.length > 0 && (
                         <div className="wedding-surface-card rounded-[32px] p-6 shadow-sm">
-                            <h2 className="mb-6 text-xl font-bold text-[color:var(--wedding-text)]">{t("tag-details")}</h2>
+                            <h2 className="mb-6 text-xl font-bold text-[color:var(--wedding-text)]">
+                                {t("tag-details")}
+                            </h2>
                             <div className="space-y-4">
                                 {tagStructure.map((struct) => {
                                     const index = FocusTypes.indexOf(focusType);
-                                    const money = [struct.income, struct.expense, struct.income - struct.expense][index];
+                                    const money = [
+                                        struct.income,
+                                        struct.expense,
+                                        struct.income - struct.expense,
+                                    ][index];
                                     return (
                                         <TagItem
                                             key={struct.id}
@@ -501,7 +620,11 @@ export default function Page() {
                                             money={money}
                                             total={totalMoneys[index]}
                                             type={focusType}
-                                            onClick={() => seeDetails({ tags: [struct.id] })}
+                                            onClick={() =>
+                                                seeDetails({
+                                                    tags: [struct.id],
+                                                })
+                                            }
                                         />
                                     );
                                 })}
@@ -510,20 +633,46 @@ export default function Page() {
                     )}
 
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                        <div className="wedding-surface-card rounded-[32px] p-6 shadow-sm">
-                            <h2 className="mb-6 text-xl font-bold text-[color:var(--wedding-text)]">标签云图</h2>
-                            <AnalysisCloud bills={focusType === "expense" ? filteredExpenseBills : focusType === "income" ? filteredIncomeBills : filtered} />
+                        <div className="wedding-surface-card rounded-[28px] p-5 shadow-sm">
+                            <h2 className="mb-4 text-lg font-bold text-[color:var(--wedding-text)]">
+                                高频备注
+                            </h2>
+                            <AnalysisCloud
+                                bills={
+                                    focusType === "expense"
+                                        ? filteredExpenseBills
+                                        : focusType === "income"
+                                          ? filteredIncomeBills
+                                          : filtered
+                                }
+                            />
                         </div>
-                        <div className="wedding-surface-card rounded-[32px] p-6 shadow-sm">
-                            <h2 className="mb-6 text-xl font-bold text-[color:var(--wedding-text)]">地域分布</h2>
-                            <AnalysisMap bills={focusType === "expense" ? filteredExpenseBills : focusType === "income" ? filteredIncomeBills : filtered} />
+                        <div className="wedding-surface-card rounded-[28px] p-5 shadow-sm">
+                            <h2 className="mb-4 text-lg font-bold text-[color:var(--wedding-text)]">
+                                地域分布
+                            </h2>
+                            <AnalysisMap
+                                bills={
+                                    focusType === "expense"
+                                        ? filteredExpenseBills
+                                        : focusType === "income"
+                                          ? filteredIncomeBills
+                                          : filtered
+                                }
+                            />
                         </div>
                     </div>
 
                     {analysis && (
                         <div className="wedding-surface-card rounded-[32px] p-6 shadow-sm">
-                            <h2 className="mb-6 text-xl font-bold text-[color:var(--wedding-text)]">{t("analysis")}</h2>
-                            <AnalysisDetail analysis={analysis} type={focusType} unit={analysisUnit} />
+                            <h2 className="mb-6 text-xl font-bold text-[color:var(--wedding-text)]">
+                                {t("analysis")}
+                            </h2>
+                            <AnalysisDetail
+                                analysis={analysis}
+                                type={focusType}
+                                unit={analysisUnit}
+                            />
                         </div>
                     )}
 
@@ -532,28 +681,42 @@ export default function Page() {
                         {dataSources.highestExpenseBill && (
                             <div className="wedding-surface-card overflow-hidden rounded-[32px] p-6 shadow-sm">
                                 <div className="mb-4 flex items-center justify-between">
-                                    <span className="text-sm font-bold text-rose-500">{t("highest-expense")}</span>
+                                    <span className="text-sm font-bold text-rose-500">
+                                        {t("highest-expense")}
+                                    </span>
                                     <i className="icon-[mdi--arrow-down-thick] text-rose-500"></i>
                                 </div>
                                 <BillItem
                                     className="p-0 border-none bg-transparent"
                                     bill={dataSources.highestExpenseBill}
                                     showTime
-                                    onClick={() => showBillInfo(dataSources.highestExpenseBill ?? undefined)}
+                                    onClick={() =>
+                                        showBillInfo(
+                                            dataSources.highestExpenseBill ??
+                                                undefined,
+                                        )
+                                    }
                                 />
                             </div>
                         )}
                         {dataSources.highestIncomeBill && (
                             <div className="wedding-surface-card overflow-hidden rounded-[32px] p-6 shadow-sm">
                                 <div className="mb-4 flex items-center justify-between">
-                                    <span className="text-sm font-bold text-emerald-500">{t("highest-income")}</span>
+                                    <span className="text-sm font-bold text-emerald-500">
+                                        {t("highest-income")}
+                                    </span>
                                     <i className="icon-[mdi--arrow-up-thick] text-emerald-500"></i>
                                 </div>
                                 <BillItem
                                     className="p-0 border-none bg-transparent"
                                     bill={dataSources.highestIncomeBill}
                                     showTime
-                                    onClick={() => showBillInfo(dataSources.highestIncomeBill ?? undefined)}
+                                    onClick={() =>
+                                        showBillInfo(
+                                            dataSources.highestIncomeBill ??
+                                                undefined,
+                                        )
+                                    }
                                 />
                             </div>
                         )}

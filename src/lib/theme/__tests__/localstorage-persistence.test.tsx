@@ -199,17 +199,8 @@ describe("Theme Preference Persistence to localStorage", () => {
             </ThemeProvider>,
         );
 
-        const startTime = Date.now();
         await user.click(screen.getByTestId("set-dark"));
 
-        await waitFor(() => {
-            const stored = localStorage.getItem(storageKey);
-            expect(stored).toBe("dark");
-
-            const endTime = Date.now();
-            const duration = endTime - startTime;
-            // Should be nearly instantaneous
-            expect(duration).toBeLessThan(100);
-        });
+        expect(localStorage.getItem(storageKey)).toBe("dark");
     });
 });

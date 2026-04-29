@@ -122,6 +122,7 @@ const DialogContent = React.forwardRef<
             {children}
             {!hideClose && (
                 <DialogPrimitive.Close
+                    aria-label="Close"
                     onClick={(event) => event.stopPropagation()}
                     className="absolute right-4 top-[max(1rem,env(safe-area-inset-top))] flex h-9 w-9 items-center justify-center rounded-full text-[color:var(--wedding-text-mute)] transition hover:bg-[color:var(--wedding-surface-muted)] hover:text-[color:var(--wedding-text)] focus:outline-none focus:ring-2 focus:ring-[color:var(--wedding-line-strong)] focus:ring-offset-2 disabled:pointer-events-none"
                 >

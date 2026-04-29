@@ -6,12 +6,12 @@ import { BookConfirmProvider } from "@/components/book/util";
 import { SortableListProvider } from "@/components/sortable";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { goBackOrNavigate } from "@/components/wedding-ui";
 import { useInitPreset } from "@/hooks/use-preset";
 import { useScheduled } from "@/hooks/use-scheduled";
 import { useUrlHandler } from "@/hooks/use-url-handler";
-import { startBackgroundPredict } from "@/utils/predict";
-import { goBackOrNavigate } from "@/components/wedding-ui";
 import { cn } from "@/utils";
+import { startBackgroundPredict } from "@/utils/predict";
 
 // 使用 lazy 加载以打破可能的循环依赖
 const Navigation = lazy(() => import("@/components/navigation"));
@@ -27,7 +27,7 @@ const isTabPath = (path: string) => TAB_PATHS.includes(path);
 export default function MainLayout() {
     const location = useLocation();
     const navigate = useNavigate();
-    
+
     useEffect(() => {
         // 启动后台预测
         startBackgroundPredict();
@@ -44,36 +44,54 @@ export default function MainLayout() {
     }, []);
 
     useInitPreset();
-    
+
     const isTabChild = isTabPath(location.pathname);
 
     return (
         <TooltipProvider>
             <div className="flex h-full w-full flex-col overflow-hidden sm:pl-[100px]">
-                {/* 移动端悬浮返回按钮 - 仅在二级页面显示 */}
-                {!isTabChild && (
-                    <button
-                        type="button"
-                        onClick={() => goBackOrNavigate(navigate, "/")}
-                        className={cn(
-                            "fixed left-4 top-[calc(env(safe-area-inset-top)+1rem)] z-20 flex h-10 w-10 items-center justify-center rounded-full",
-                            "bg-black/10 text-white backdrop-blur-md transition-all active:scale-90 sm:hidden",
-                            "shadow-sm border border-white/10"
-                        )}
-                        aria-label="返回"
-                    >
-                        <i className="icon-[mdi--chevron-left] size-6" />
-                    </button>
-                )}
-
                 <div
                     className={cn(
                         "min-h-0 flex-1 overflow-hidden sm:pb-0",
-                        isTabChild ? "pb-[calc(72px+env(safe-area-inset-bottom)+0.5rem)]" : "pb-0"
+                        isTabChild
+                            ? "pb-[calc(72px+env(safe-area-inset-bottom)+0.5rem)]"
+                            : "pb-0",
                     )}
                 >
-                    <div className={cn("h-full min-h-0", !isTabChild && "sm:mt-0 mt-14")}>
-                        <Outlet />
+                    <div
+                        className={cn(
+                            "h-full min-h-0",
+                            !isTabChild &&
+                                "flex flex-col bg-[color:var(--wedding-app-bg)]",
+                        )}
+                    >
+                        {/* 移动端返回区 - 预留空间并与内容背景保持一致 */}
+                        {!isTabChild && (
+                            <div className="shrink-0 bg-[color:var(--wedding-app-bg)] px-4 pb-2 pt-[calc(env(safe-area-inset-top)+1rem)] sm:hidden">
+                                <button
+                                    type="button"
+                                    onClick={() =>
+                                        goBackOrNavigate(navigate, "/")
+                                    }
+                                    className={cn(
+                                        "flex h-10 w-10 items-center justify-center rounded-full",
+                                        "bg-[color:var(--wedding-surface-muted)] text-[color:var(--wedding-text)] backdrop-blur-md transition-all active:scale-90",
+                                        "border border-[color:var(--wedding-line)] shadow-sm",
+                                    )}
+                                    aria-label="返回"
+                                >
+                                    <i className="icon-[mdi--chevron-left] size-6" />
+                                </button>
+                            </div>
+                        )}
+                        <div
+                            className={cn(
+                                "min-h-0 overflow-hidden",
+                                isTabChild ? "h-full" : "flex-1",
+                            )}
+                        >
+                            <Outlet />
+                        </div>
                     </div>
                 </div>
             </div>
